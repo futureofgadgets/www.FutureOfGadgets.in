@@ -34,7 +34,7 @@ export async function POST(request: Request) {
     if (!prod) return NextResponse.json({ error: `Invalid product ${it.productId}` }, { status: 400 })
     const line: OrderItem = {
       productId: prod.id,
-      title: prod.title,
+      title: prod.name,
       price: prod.price,
       qty: Math.max(1, Math.floor(it.qty || 1)),
       image: prod.image,
