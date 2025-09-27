@@ -342,7 +342,7 @@ export default function ProductPage() {
                 <>
                   <li>• Processor: 13th Generation Intel Core i3-1305U (10MB, up to 4.50 GHz, 5 Core)</li>
                   <li>• RAM: 16GB: 2x8GB, DDR4, 2666 MHz & Storage: 512GB SSD</li>
-                  <li>• Display: 15.6" FHD WVA AG 120Hz 250 nits Narrow Border & Graphics: Intel UHD Graphics</li>
+                  <li>• Display: 15.6&quot; FHD WVA AG 120Hz 250 nits Narrow Border & Graphics: Intel UHD Graphics</li>
                   <li>• Keyboard: Standard Keyboard & Software: Win 11 + Office H&S 2024</li>
                   <li>• Ports: 1 USB 2.0 port, 1 Headset jack, 1 HDMI 1.4 port, 1 RJ-45 port, 1 SD card slot, USB 3.2 Gen 1 Type-C</li>
                 </>
