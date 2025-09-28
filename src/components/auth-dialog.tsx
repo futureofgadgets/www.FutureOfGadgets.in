@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Eye, EyeOff } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface AuthDialogProps {
@@ -19,6 +20,7 @@ export function AuthDialog({ open, onOpenChange, mode }: AuthDialogProps) {
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [isSignUp, setIsSignUp] = useState(mode === 'signup')
   const [isLoading, setIsLoading] = useState(false)
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
@@ -27,20 +29,65 @@ export function AuthDialog({ open, onOpenChange, mode }: AuthDialogProps) {
     setIsSignUp(mode === 'signup')
   }, [mode])
 
+  const validatePassword = (password: string) => {
+    const minLength = password.length >= 8
+    const hasLetter = /[a-zA-Z]/.test(password)
+    const hasNumber = /\d/.test(password)
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password)
+    return minLength && hasLetter && hasNumber && hasSpecial
+  }
+
+  const getPasswordWarning = () => {
+    if (!isSignUp || !password) return ''
+    const issues = []
+    if (password.length < 8) issues.push('8+ characters')
+    if (!/[a-zA-Z]/.test(password)) issues.push('letters')
+    if (!/\d/.test(password)) issues.push('numbers')
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) issues.push('special characters')
+    return issues.length > 0 ? `Missing: ${issues.join(', ')}` : ''
+  }
+
   const handleCredentialsAuth = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (isSignUp && !validatePassword(password)) {
+      toast.error('Password must be 8+ characters with letters, numbers, and special characters')
+      return
+    }
+    
     setIsLoading(true)
     try {
       const result = await signIn('credentials', { 
         email, 
         password,
+        name: name || email.split('@')[0],
+        phone,
+        isSignUp: isSignUp.toString(),
         redirect: false
       })
       if (result?.ok) {
         toast.success(isSignUp ? 'Account created successfully!' : 'Welcome back!')
         onOpenChange(false)
+      } else if (result?.error === 'CredentialsSignin') {
+        if (isSignUp) {
+          // Check if user already exists
+          const checkUser = await fetch('/api/check-user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+          })
+          const userData = await checkUser.json()
+          if (userData.exists) {
+            toast.error('Account already exists. Please sign in.')
+            setIsSignUp(false)
+          } else {
+            toast.error('Failed to create account. Please try again.')
+          }
+        } else {
+          toast.error('Invalid email or password. Please try again.')
+        }
       } else {
-        toast.error('Invalid credentials. Please try again.')
+        toast.error('Something went wrong. Please try again.')
       }
     } catch (error) {
       toast.error('Something went wrong. Please try again.')
@@ -129,15 +176,29 @@ export function AuthDialog({ open, onOpenChange, mode }: AuthDialogProps) {
               <Label htmlFor="password" className="text-sm font-medium">
                 Password
               </Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="h-11"
-                required
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder={isSignUp ? "8+ chars, letters, numbers, symbols" : "Enter your password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="h-11 pr-10"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              {getPasswordWarning() && (
+                <p className="text-xs text-red-500 mt-1">
+                  {getPasswordWarning()}
+                </p>
+              )}
             </div>
             <button type="submit" className="w-full h-11 font-medium text-sm rounded-md cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white flex items-center justify-center" disabled={isLoading}>
               {isLoading ? (
