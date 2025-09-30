@@ -21,11 +21,13 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       return NextResponse.json({ error: "Order not found" }, { status: 404 })
     }
     
-    if (!order.billUrl) {
+    const orderWithBill = order as any
+    
+    if (!orderWithBill.billUrl) {
       return NextResponse.json({ error: "No bill found for this order" }, { status: 404 })
     }
     
-    return NextResponse.json({ billUrl: order.billUrl })
+    return NextResponse.json({ billUrl: orderWithBill.billUrl })
   } catch (error) {
     console.error('Error fetching bill:', error)
     return NextResponse.json({ 
