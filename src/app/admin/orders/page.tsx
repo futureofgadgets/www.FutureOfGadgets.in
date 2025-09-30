@@ -149,16 +149,19 @@ export default function AdminOrdersPage() {
 
     setUploadingBill(true);
     try {
-      if (file.size > 10 * 1024 * 1024) {
-        throw new Error("File size must be less than 10MB");
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const uploadResponse = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error('Failed to upload file');
       }
 
-      const base64 = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = () => reject(new Error("Failed to read file"));
-        reader.readAsDataURL(file);
-      });
+      const { url } = await uploadResponse.json();
 
       const response = await fetch(
         `/api/admin/orders/${selectedOrder.id}/bill`,
@@ -166,7 +169,7 @@ export default function AdminOrdersPage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            billData: base64,
+            billUrl: url,
             fileName: file.name,
             fileType: file.type,
           }),
@@ -177,9 +180,10 @@ export default function AdminOrdersPage() {
         throw new Error("Failed to upload bill");
       }
 
+      const data = await response.json();
       toast.success("Bill uploaded successfully");
 
-      const updatedOrder = { ...selectedOrder, billUrl: base64 };
+      const updatedOrder = data.order;
       setSelectedOrder(updatedOrder);
       setOrders((prev) =>
         prev.map((order) =>

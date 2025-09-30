@@ -83,10 +83,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     const orderWithBill = updatedOrder as any
     
     return NextResponse.json({ 
-      order: {
-        ...updatedOrder,
-        billUrl: orderWithBill.billUrl ? 'uploaded' : null // Don't send full base64 in response
-      }, 
+      order: updatedOrder, 
       success: true 
     })
   } catch (error) {
