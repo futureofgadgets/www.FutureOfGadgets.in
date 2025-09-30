@@ -112,7 +112,7 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ id: str
         <div className="text-center">
           <ShoppingCart className="h-16 w-16 text-gray-400 mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Order not found</h2>
-          <p className="text-gray-600">The order you're looking for doesn't exist.</p>
+          <p className="text-gray-600">The order you&apos;re looking for doesn&apos;t exist.</p>
         </div>
       </div>
     )
