@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 
-export async function POST(request: Request, { params }: { params: { id: string } }) {
+export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions)
   
   if (!session || (session.user?.role !== 'admin' && session.user?.email !== 'admin@electronic.com')) {
@@ -11,6 +11,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
   }
 
   try {
+    const { id } = await params
     const { billData, fileName, fileType } = await request.json()
     
     if (!billData) {
@@ -19,7 +20,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     
     // Check if order exists first
     const existingOrder = await prisma.order.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
     
     if (!existingOrder) {
@@ -27,7 +28,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     }
     
     const updatedOrder = await prisma.order.update({
-      where: { id: params.id },
+      where: { id },
       data: { 
         billUrl: billData,
         updatedAt: new Date()
