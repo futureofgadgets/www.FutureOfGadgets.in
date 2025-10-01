@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-function compressBase64(base64: string, quality: number = 0.6): string {
+function validateBase64(base64: string): string {
   // For server-side, we'll just validate and return
   // Compression happens on client-side for better performance
-  if (!base64.startsWith('data:image/')) {
-    throw new Error('Invalid image format')
+  if (!base64.startsWith('data:image/') && !base64.startsWith('data:application/pdf')) {
+    throw new Error('Invalid file format - only images and PDFs are allowed')
   }
   return base64
 }
@@ -17,18 +17,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No images provided' }, { status: 400 })
     }
 
-    // Validate and process images
-    const processedImages = images.map((imageData: string, index: number) => {
+    // Validate and process files (images and PDFs)
+    const processedFiles = images.map((fileData: string, index: number) => {
       try {
-        return compressBase64(imageData)
+        return validateBase64(fileData)
       } catch (error) {
-        throw new Error(`Invalid image format at index ${index}`)
+        throw new Error(`Invalid file format at index ${index}: ${error instanceof Error ? error.message : 'Unknown error'}`)
       }
     })
 
     return NextResponse.json({ 
       success: true, 
-      files: processedImages 
+      files: processedFiles 
     })
   } catch (error) {
     console.error('Upload error:', error)

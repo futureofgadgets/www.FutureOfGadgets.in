@@ -172,25 +172,55 @@ export default function AdminOrdersPage() {
   const handleBillUpload = async (file: File) => {
     if (!selectedOrder) return;
 
+    // Validate file
+    if (!file.type.startsWith('image/') && file.type !== 'application/pdf') {
+      toast.error('File must be an image or PDF');
+      return;
+    }
+
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      toast.error('File must be less than 5MB');
+      return;
+    }
+
     setUploadingBill(true);
     try {
-      // Convert file to base64
-      const reader = new FileReader();
-      const base64Promise = new Promise<string>((resolve, reject) => {
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
+      let base64: string;
+      
+      if (file.type.startsWith('image/')) {
+        // Use same compression method as products
+        const { convertFileToBase64 } = await import('@/lib/image-utils');
+        base64 = await convertFileToBase64(file, 1200, 0.8);
+      } else {
+        // For PDFs, convert directly to base64
+        const reader = new FileReader();
+        base64 = await new Promise<string>((resolve, reject) => {
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      }
+
+      // Upload using same API as products
+      const uploadResponse = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ images: [base64] }),
       });
 
-      const base64 = await base64Promise;
+      const uploadResult = await uploadResponse.json();
+      if (!uploadResult.success) {
+        throw new Error(uploadResult.error || 'Upload failed');
+      }
 
-      // Update order with bill URL directly (base64)
+      // Update order with bill URL
       const response = await fetch("/api/admin/orders", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
           orderId: selectedOrder.id, 
-          billUrl: base64 
+          billUrl: uploadResult.files[0]
         }),
       });
 
