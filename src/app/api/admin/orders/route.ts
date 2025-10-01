@@ -42,11 +42,15 @@ export async function PATCH(request: Request) {
   }
   
   try {
-    const { orderId, status } = await request.json()
+    const { orderId, status, billUrl } = await request.json()
+    
+    const updateData: any = {}
+    if (status) updateData.status = status
+    if (billUrl) updateData.billUrl = billUrl
     
     const updatedOrder = await prisma.order.update({
       where: { id: orderId },
-      data: { status },
+      data: updateData,
       include: {
         user: {
           select: {

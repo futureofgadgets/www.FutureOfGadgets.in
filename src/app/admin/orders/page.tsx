@@ -16,7 +16,25 @@ import {
   Download,
   ArrowUpDown,
   Loader2,
+  Filter,
+  MoreHorizontal,
 } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -149,47 +167,53 @@ export default function AdminOrdersPage() {
 
     setUploadingBill(true);
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const uploadResponse = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
+      // Convert file to base64
+      const reader = new FileReader();
+      const base64Promise = new Promise<string>((resolve, reject) => {
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
       });
 
-      if (!uploadResponse.ok) {
-        throw new Error('Failed to upload file');
-      }
+      const base64 = await base64Promise;
 
-      const { url } = await uploadResponse.json();
+      // Upload using the same API as products
+      const uploadRes = await fetch("/api/upload", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ images: [base64] }),
+      });
 
-      const response = await fetch(
-        `/api/admin/orders/${selectedOrder.id}/bill`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            billUrl: url,
-            fileName: file.name,
-            fileType: file.type,
-          }),
-        }
-      );
+      const uploadResult = await uploadRes.json();
+      if (!uploadResult.success) throw new Error(uploadResult.error);
 
-      if (!response.ok) {
-        throw new Error("Failed to upload bill");
-      }
+      const billUrl = uploadResult.files[0];
+
+      // Update order with bill URL
+      const response = await fetch("/api/admin/orders", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          orderId: selectedOrder.id, 
+          billUrl: billUrl 
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to update order with bill");
 
       const data = await response.json();
-      toast.success("Bill uploaded successfully");
-
       const updatedOrder = data.order;
+
       setSelectedOrder(updatedOrder);
       setOrders((prev) =>
         prev.map((order) =>
           order.id === selectedOrder.id ? updatedOrder : order
         )
       );
+
+      toast.success("Bill uploaded successfully");
     } catch (error) {
       toast.error("Failed to upload bill");
     } finally {
@@ -298,46 +322,64 @@ export default function AdminOrdersPage() {
   return (
     <div className="flex flex-col h-full">
         {/* Header */}
-        <header className="bg-white px-8 py-6 border-b border-gray-200 flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Order</h1>
-            <p className="text-gray-600">
-              {filteredAndSortedOrders.length} of {orders.length} orders
-            </p>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <input
-                type="text"
-                placeholder="Search by name, address..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64"
-              />
+        <header className="bg-white px-4 sm:px-6 lg:px-8 py-4 sm:py-6 border-b border-gray-200">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Orders</h1>
+              <p className="text-sm sm:text-base text-gray-600">
+                {filteredAndSortedOrders.length} of {orders.length} orders
+              </p>
             </div>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="date-desc">Newest First</option>
-              <option value="date-asc">Oldest First</option>
-              <option value="price-desc">Price: High to Low</option>
-              <option value="price-asc">Price: Low to High</option>
-              <option value="name-asc">Name: A to Z</option>
-              <option value="name-desc">Name: Z to A</option>
-            </select>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Input
+                  type="text"
+                  placeholder="Search orders..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 w-full sm:w-64"
+                />
+              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="w-full sm:w-auto">
+                    <ArrowUpDown className="h-4 w-4 mr-2" />
+                    Sort
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem onClick={() => setSortBy("date-desc")}>
+                    Newest First
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSortBy("date-asc")}>
+                    Oldest First
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSortBy("price-desc")}>
+                    Price: High to Low
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSortBy("price-asc")}>
+                    Price: Low to High
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSortBy("name-asc")}>
+                    Name: A to Z
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSortBy("name-desc")}>
+                    Name: Z to A
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </header>
 
         {/* Tabs */}
-        <div className="flex gap-8 px-8 py-4 border-b border-gray-200">
+        <div className="flex overflow-x-auto gap-4 sm:gap-8 px-4 sm:px-6 lg:px-8 py-4 border-b border-gray-200">
           {["all", "shipped", "pending", "delivered"].map((tab) => (
             <button
               key={tab}
               onClick={() => setStatusFilter(tab)}
-              className={`pb-2 font-medium border-b-2 transition ${
+              className={`pb-2 font-medium border-b-2 transition whitespace-nowrap ${
                 statusFilter === tab
                   ? "border-black text-black"
                   : "border-transparent text-gray-400"
@@ -352,44 +394,45 @@ export default function AdminOrdersPage() {
         </div>
 
         {/* Orders Table */}
-        <div className="flex-1 p-8 overflow-auto">
+        <div className="flex-1 p-4 sm:p-6 lg:p-8 overflow-auto">
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
-                    Id
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
-                    Name
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
-                    Address
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
-                    Date
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
-                    Price
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
-                    Status
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
-                    Action
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="px-3 sm:px-6 py-4 text-left text-sm font-semibold text-gray-600">
+                      Id
+                    </TableHead>
+                    <TableHead className="px-3 sm:px-6 py-4 text-left text-sm font-semibold text-gray-600">
+                      Customer
+                    </TableHead>
+                    <TableHead className="hidden md:table-cell px-3 sm:px-6 py-4 text-left text-sm font-semibold text-gray-600">
+                      Address
+                    </TableHead>
+                    <TableHead className="hidden sm:table-cell px-3 sm:px-6 py-4 text-left text-sm font-semibold text-gray-600">
+                      Date
+                    </TableHead>
+                    <TableHead className="px-3 sm:px-6 py-4 text-left text-sm font-semibold text-gray-600">
+                      Total
+                    </TableHead>
+                    <TableHead className="px-3 sm:px-6 py-4 text-left text-sm font-semibold text-gray-600">
+                      Status
+                    </TableHead>
+                    <TableHead className="px-3 sm:px-6 py-4 text-left text-sm font-semibold text-gray-600">
+                      Actions
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+              <TableBody>
                 {loading ? (
-                  <tr>
-                    <td colSpan={7} className="py-8 text-center text-gray-500">
+                  <TableRow>
+                    <TableCell colSpan={7} className="py-8 text-center text-gray-500">
                       Loading orders...
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ) : filteredAndSortedOrders.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="py-16 text-center">
+                  <TableRow>
+                    <TableCell colSpan={7} className="py-16 text-center">
                       <div className="flex flex-col items-center">
                         <ShoppingCart className="h-16 w-16 text-gray-300 mb-4" />
                         <h3 className="text-lg font-medium text-gray-900 mb-2">
@@ -413,15 +456,15 @@ export default function AdminOrdersPage() {
                             : "No orders have been completed yet."}
                         </p>
                       </div>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ) : (
                   filteredAndSortedOrders.map((order, i) => {
                     const isSelected = selectedOrderId === order.id;
                     return (
-                      <tr
+                      <TableRow
                         key={order.id}
-                        className={`border-b cursor-pointer ${
+                        className={`cursor-pointer ${
                           isSelected
                             ? "bg-blue-600 text-white"
                             : "hover:bg-gray-50"
@@ -432,46 +475,59 @@ export default function AdminOrdersPage() {
                           setShowOrderDialog(true);
                         }}
                       >
-                        <td className="px-6 py-4 font-medium">
-                          #{order.id.slice(0, 4)}
-                        </td>
-                        <td className="px-6 py-4 flex items-center gap-3">
-                          <div
-                            className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                              isSelected ? "bg-yellow-400" : "bg-gray-200"
-                            }`}
-                          >
-                            <User
-                              className={
-                                isSelected
-                                  ? "text-gray-800 h-4 w-4"
-                                  : "text-gray-600 h-4 w-4"
-                              }
-                            />
+                        <TableCell className="px-3 sm:px-6 py-4 font-medium">
+                          <span className="text-xs sm:text-sm">#{order.id.slice(0, 6)}</span>
+                        </TableCell>
+                        <TableCell className="px-3 sm:px-6 py-4">
+                          <div className="flex items-center gap-2 sm:gap-3">
+                            <div
+                              className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center ${
+                                isSelected ? "bg-yellow-400" : "bg-gray-200"
+                              }`}
+                            >
+                              <User
+                                className={
+                                  isSelected
+                                    ? "text-gray-800 h-3 w-3 sm:h-4 sm:w-4"
+                                    : "text-gray-600 h-3 w-3 sm:h-4 sm:w-4"
+                                }
+                              />
+                            </div>
+                            <div className="min-w-0">
+                              <div className="text-xs sm:text-sm font-medium truncate">
+                                {order.user.name || order.user.email}
+                              </div>
+                              <div className="text-xs text-gray-500 sm:hidden truncate">
+                                {order.address.city}
+                              </div>
+                            </div>
                           </div>
-                          {order.user.name || order.user.email}
-                        </td>
-                        <td className="px-6 py-4">
-                          {order.address.city}, {order.address.state}
-                        </td>
-                        <td className="px-6 py-4">
-                          {new Date(order.createdAt).toLocaleDateString(
-                            "en-GB",
-                            {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                            }
-                          )}
-                        </td>
-                        <td className="px-6 py-4">${order.total.toFixed(2)}</td>
-                        <td className="px-6 py-4">
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell px-3 sm:px-6 py-4">
+                          <span className="text-sm">{order.address.city}, {order.address.state}</span>
+                        </TableCell>
+                        <TableCell className="hidden sm:table-cell px-3 sm:px-6 py-4">
+                          <span className="text-xs sm:text-sm">
+                            {new Date(order.createdAt).toLocaleDateString(
+                              "en-GB",
+                              {
+                                day: "2-digit",
+                                month: "short",
+                                year: "2-digit",
+                              }
+                            )}
+                          </span>
+                        </TableCell>
+                        <TableCell className="px-3 sm:px-6 py-4">
+                          <span className="text-xs sm:text-sm font-medium">${order.total.toFixed(2)}</span>
+                        </TableCell>
+                        <TableCell className="px-3 sm:px-6 py-4">
                           <span
-                            className={`px-2 py-1 text-xs rounded-full ${
+                            className={`px-2 py-1 text-xs rounded-full font-medium ${
                               order.status === "pending"
                                 ? "bg-yellow-100 text-yellow-800"
                                 : order.status === "shipped"
-                                ? "bg-green-100 text-green-800"
+                                ? "bg-blue-100 text-blue-800"
                                 : order.status === "delivered"
                                 ? "bg-green-100 text-green-800"
                                 : "bg-gray-100 text-gray-800"
@@ -479,78 +535,62 @@ export default function AdminOrdersPage() {
                           >
                             {order.status}
                           </span>
-                        </td>
-                        <td
-                          className="px-6 py-4"
+                        </TableCell>
+                        <TableCell
+                          className="px-3 sm:px-6 py-4"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <div className="flex gap-2">
-                            <select
-                              value={order.status}
-                              onChange={(e) => {
-                                const newStatus = e.target.value;
-
-                                const statusOrder = [
-                                  "pending",
-                                  "shipped",
-                                  "out-for-delivery",
-                                  "delivered",
-                                ];
-                                const currentIndex = statusOrder.indexOf(
-                                  order.status
-                                );
-                                const newIndex = statusOrder.indexOf(newStatus);
-
-                                // Check if trying to revert
-                                if (newIndex < currentIndex) {
-                                  const timeSinceUpdate =
-                                    Date.now() -
-                                    new Date(order.updatedAt).getTime();
-                                  const fiveMinutes = 5 * 60 * 1000;
-
-                                  // Allow only one step back within 5 minutes
-                                  if (currentIndex - newIndex > 1) {
-                                    toast.error(
-                                      "Cannot revert more than one step at a time"
-                                    );
-                                    return;
-                                  }
-
-                                  if (timeSinceUpdate > fiveMinutes) {
-                                    toast.error(
-                                      "Cannot revert status after 5 minutes"
-                                    );
-                                    return;
-                                  }
-
-                                  toast.warning(
-                                    "Reverting order status - allowed within 5 minutes"
-                                  );
-                                } else {
-                                  toast.success(
-                                    `Updating order status to ${newStatus}`
-                                  );
-                                }
-
-                                handleStatusChange(order.id, newStatus);
-                              }}
-                              className="text-xs border-0 bg-transparent p-1 focus:outline-none"
-                            >
-                              <option value="pending">Order Confirmed</option>
-                              <option value="shipped">Shipped</option>
-                              <option value="out-for-delivery">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setSelectedOrderId(order.id);
+                                  setSelectedOrder(order);
+                                  setShowOrderDialog(true);
+                                }}
+                              >
+                                <Eye className="h-4 w-4 mr-2" />
+                                View Details
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => handleStatusChange(order.id, "pending")}
+                                disabled={updatingOrder === order.id}
+                              >
+                                Pending
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => handleStatusChange(order.id, "shipped")}
+                                disabled={updatingOrder === order.id}
+                              >
+                                Shipped
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => handleStatusChange(order.id, "out-for-delivery")}
+                                disabled={updatingOrder === order.id}
+                              >
                                 Out for Delivery
-                              </option>
-                              <option value="delivered">Delivered</option>
-                            </select>
-                          </div>
-                        </td>
-                      </tr>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => handleStatusChange(order.id, "delivered")}
+                                disabled={updatingOrder === order.id}
+                              >
+                                Delivered
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
                     );
                   })
                 )}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
+            </div>
           </div>
         </div>
 
