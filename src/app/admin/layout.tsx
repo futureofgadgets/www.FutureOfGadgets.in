@@ -63,9 +63,11 @@ export default function AdminLayout({
       <Sidebar>
         <SidebarHeader>
           <Link href="/" className="flex items-center gap-3 p-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <Package className="h-5 w-5 text-white" />
-            </div>
+             <img
+              src="/logo.png"
+              alt="Store logo"
+              className="h-10 w-10 rounded bg-transparent"
+            />
             <div>
               <h1 className="text-lg font-bold text-gray-900">Electronic</h1>
               <p className="text-xs text-gray-500">Admin Panel</p>

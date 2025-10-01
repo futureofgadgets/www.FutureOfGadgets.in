@@ -406,8 +406,8 @@ export default function AdminOrdersPage() {
               onClick={() => setStatusFilter(tab)}
               className={`pb-2 font-medium border-b-2 transition whitespace-nowrap ${
                 statusFilter === tab
-                  ? "border-black text-black"
-                  : "border-transparent text-gray-400"
+                  ? "border-blue-600 text-blue-700"
+                  : "border-transparent text-gray-400 cursor-pointer"
               }`}
             >
               {tab === "all" && "All orders"}
@@ -521,7 +521,7 @@ export default function AdminOrdersPage() {
                         }}
                       >
                         <TableCell className="px-3 sm:px-6 py-4 font-medium">
-                          <span className="text-xs sm:text-sm">#{order.id.slice(0, 6)}</span>
+                          <span className="text-xs sm:text-sm">#{order.id.slice(-6)}</span>
                         </TableCell>
                         <TableCell className="px-3 sm:px-6 py-4">
                           <div className="flex items-center gap-2 sm:gap-3">
@@ -827,7 +827,7 @@ export default function AdminOrdersPage() {
                     </h3>
                     {selectedOrder.billUrl ? (
                       <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                        <div className="mb-2">
+                        <div className="mb-3">
                           <p className="text-green-800 font-medium text-sm flex items-center gap-2">
                             <CheckCircle className="h-4 w-4" />
                             Bill uploaded
@@ -839,7 +839,7 @@ export default function AdminOrdersPage() {
                             onOpenChange={setShowBillDialog}
                           >
                             <DialogTrigger asChild>
-                              <button className="bg-blue-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-blue-700 flex items-center gap-2">
+                              <button className="border border-blue-600 bg-blue-100 text-blue-700 px-3 py-1 hover:bg-blue-200 rounded-md text-sm cursor-pointer flex items-center gap-2">
                                 <Eye className="h-4 w-4" />
                                 View Bill
                               </button>
@@ -887,7 +887,7 @@ export default function AdminOrdersPage() {
                               link.click();
                               document.body.removeChild(link);
                             }}
-                            className="bg-green-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-green-700 flex items-center gap-2"
+                            className="border border-green-600 bg-green-100 text-green-700 px-3 py-1 hover:bg-green-200 rounded-md text-sm cursor-pointer flex items-center gap-2"
                           >
                             <Download className="h-4 w-4" />
                             Download

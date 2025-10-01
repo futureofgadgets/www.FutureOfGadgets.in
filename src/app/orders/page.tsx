@@ -182,7 +182,7 @@ export default function OrdersPage() {
                   </div>
                 </div>
 
-                <div className="flex gap-3 mt-6 pt-4 border-t">
+                <div className="flex gap-3 mt-6 pt-4 border-t ">
                   <Dialog open={showModal} onOpenChange={setShowModal}>
                     <DialogTrigger asChild>
                       <button 

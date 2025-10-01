@@ -297,24 +297,36 @@ export default function ProductPage() {
 
           {/* Action Buttons */}
           <div className="space-y-4 pt-6 bottom-0 sticky">
-            <div className="flex gap-2">
-              <button 
-                onClick={handleAddToCart}
-                className="flex-1 flex justify-center gap-2 items-center cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={(product.stock || product.quantity) === 0}
-              >
-                <ShoppingCart/>
-                <span>Add to Cart</span>
-              </button>
-              <button 
-                onClick={handleBuyNow}
-                className="flex-1 cursor-pointer bg-green-600 hover:bg-green-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={(product.stock || product.quantity) === 0}
-              >
-                Buy Now
-              </button>
-            </div>
-          </div>
+  <div className="flex gap-2">
+    {/* Add to Cart */}
+    <button 
+      onClick={handleAddToCart}
+      disabled={(product.stock || product.quantity) === 0}
+      className="flex-1 flex justify-center items-center gap-2 
+                 cursor-pointer border border-blue-500 
+                 bg-blue-100 hover:bg-blue-200 text-blue-800 
+                 font-semibold py-4 px-6 rounded-lg 
+                 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      <ShoppingCart className="w-5 h-5" />
+      <span>Add to Cart</span>
+    </button>
+
+    {/* Buy Now */}
+    <button 
+      onClick={handleBuyNow}
+      disabled={(product.stock || product.quantity) === 0}
+      className="flex-1 flex justify-center items-center gap-2 
+                 cursor-pointer border border-green-500 
+                 bg-green-100 hover:bg-green-200 text-green-800 
+                 font-semibold py-4 px-6 rounded-lg 
+                 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      <span>Buy Now</span>
+    </button>
+  </div>
+</div>
+
 
           {/* Product Specifications */}
           <div className="border-t pt-6">

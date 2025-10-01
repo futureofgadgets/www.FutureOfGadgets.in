@@ -220,7 +220,7 @@ export default function ProductTable() {
   const handleDelete = async (id: string) => {
     setDeleting(id);
     const originalData = data;
-    
+
     // Optimistic update
     setData((prev) => prev.filter((item) => item.id !== id));
     toast.success("Item deleted successfully!");
@@ -235,9 +235,9 @@ export default function ProductTable() {
         const data = await res.json();
         throw new Error(data?.error || "Failed to delete");
       }
-      
+
       // Invalidate cache
-      invalidateCache('products');
+      invalidateCache("products");
     } catch (err: any) {
       setData(originalData);
       console.error(err);
@@ -264,8 +264,6 @@ export default function ProductTable() {
       .replace(/(^-|-$)/g, "");
   };
 
-
-
   const onSubmit = async (values: ItemFormValues) => {
     if (!frontImage && !editId && !currentFrontImage) {
       toast.error("Front image is required");
@@ -280,15 +278,19 @@ export default function ProductTable() {
       // Only upload new images if files are selected
       if (frontImage || additionalImages.length > 0) {
         const imagesToUpload = [];
-        
+
         if (frontImage) {
-          const frontImageBase64 = await convertFileToBase64(frontImage, 2000, 0.9);
+          const frontImageBase64 = await convertFileToBase64(
+            frontImage,
+            2000,
+            0.9
+          );
           imagesToUpload.push(frontImageBase64);
         }
-        
+
         if (additionalImages.length > 0) {
           const additionalImagesBase64 = await Promise.all(
-            additionalImages.map(img => convertFileToBase64(img, 1500, 0.85))
+            additionalImages.map((img) => convertFileToBase64(img, 1500, 0.85))
           );
           imagesToUpload.push(...additionalImagesBase64);
         }
@@ -296,7 +298,7 @@ export default function ProductTable() {
         const uploadRes = await fetch("/api/upload", {
           method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({ images: imagesToUpload }),
         });
@@ -355,19 +357,23 @@ export default function ProductTable() {
         price: values.price,
         quantity: values.quantity,
         brand: values.brand || "",
-        sku: editId ? data.find((item) => item.id === editId)?.sku || `SKU-${Date.now()}` : `SKU-${Date.now()}`,
+        sku: editId
+          ? data.find((item) => item.id === editId)?.sku || `SKU-${Date.now()}`
+          : `SKU-${Date.now()}`,
         updatedAt: new Date().toISOString(),
       };
 
       if (editId) {
-        setData(prev => prev.map(item => item.id === editId ? newItem : item));
+        setData((prev) =>
+          prev.map((item) => (item.id === editId ? newItem : item))
+        );
       } else {
-        setData(prev => [newItem, ...prev]);
+        setData((prev) => [newItem, ...prev]);
       }
 
       // Invalidate cache to ensure fresh data on next load
-      invalidateCache('products');
-      
+      invalidateCache("products");
+
       toast.success(`Item ${editId ? "updated" : "added"} successfully!`);
       form.reset(defaultValues);
       setFrontImage(null);
@@ -407,9 +413,11 @@ export default function ProductTable() {
               Add Item <Plus />
             </Button>
           </DialogTrigger>
-        <DialogContent className="sm:min-w-[60vw] h-[90vh] max-w-none overflow-y-auto p-8">
+          <DialogContent className="sm:min-w-[60vw] h-[90vh] max-w-none overflow-y-auto p-8">
             <DialogHeader className="pb-6">
-              <DialogTitle className="text-2xl font-semibold">{editId ? "Edit Item" : "Add New Item"}</DialogTitle>
+              <DialogTitle className="text-2xl font-semibold">
+                {editId ? "Edit Item" : "Add New Item"}
+              </DialogTitle>
             </DialogHeader>
             <Form {...form}>
               <form
@@ -418,7 +426,9 @@ export default function ProductTable() {
               >
                 <div className="flex flex-col sm:flex-row gap-8">
                   <div className="flex-1 space-y-6">
-                    <h3 className="text-xl font-semibold text-gray-900 border-b-2 pb-3">Product Details</h3>
+                    <h3 className="text-xl font-semibold text-gray-900 border-b-2 pb-3">
+                      Product Details
+                    </h3>
                     <div className="space-y-6">
                       {/* Name */}
                       <FormField
@@ -477,7 +487,11 @@ export default function ProductTable() {
                                   </SelectTrigger>
                                   <SelectContent>
                                     {productTypes.map((type) => (
-                                      <SelectItem key={type} value={type} className="relative flex items-center justify-between pr-8">
+                                      <SelectItem
+                                        key={type}
+                                        value={type}
+                                        className="relative flex items-center justify-between pr-8"
+                                      >
                                         <span>{type}</span>
                                         {field.value === type ? (
                                           <span className="absolute right-2 text-green-500 text-sm w-4 h-4 flex items-center justify-center">
@@ -488,8 +502,12 @@ export default function ProductTable() {
                                             onMouseDown={(e) => {
                                               e.preventDefault();
                                               e.stopPropagation();
-                                              setProductTypes(prev => prev.filter(t => t !== type));
-                                              toast.success(`Removed category: ${type}`);
+                                              setProductTypes((prev) =>
+                                                prev.filter((t) => t !== type)
+                                              );
+                                              toast.success(
+                                                `Removed category: ${type}`
+                                              );
                                             }}
                                             className="absolute right-2 text-red-500 hover:text-red-700 text-sm w-4 h-4 flex items-center justify-center cursor-pointer z-10"
                                           >
@@ -579,7 +597,7 @@ export default function ProductTable() {
                         />
                       </div>
 
-                       {/* Description */}
+                      {/* Description */}
                       <FormField
                         control={form.control}
                         name="description"
@@ -602,7 +620,9 @@ export default function ProductTable() {
 
                   {/* Images Section */}
                   <div className="flex-1 space-y-6">
-                    <h3 className="text-xl font-semibold text-gray-900 border-b-2 pb-3">Product Images</h3>
+                    <h3 className="text-xl font-semibold text-gray-900 border-b-2 pb-3">
+                      Product Images
+                    </h3>
 
                     <div className="space-y-6">
                       <div>
@@ -666,17 +686,20 @@ export default function ProductTable() {
                           multiple
                           onChange={(e) => {
                             const files = Array.from(e.target.files || []);
-                            
+
                             // Validate each file
                             for (const file of files) {
                               const validation = validateImageFile(file);
                               if (!validation.valid) {
-                                toast.error(`${file.name}: ${validation.error}`);
+                                toast.error(
+                                  `${file.name}: ${validation.error}`
+                                );
                                 return;
                               }
                             }
-                            
-                            const totalImages = (frontImage ? 1 : 0) + files.length;
+
+                            const totalImages =
+                              (frontImage ? 1 : 0) + files.length;
                             if (totalImages > 5) {
                               toast.error(
                                 `Maximum 5 images allowed (including front image). You selected ${totalImages} images.`
@@ -729,7 +752,8 @@ export default function ProductTable() {
 
                 {/* Action Buttons */}
                 <div className="flex gap-4 justify-end pt-6 border-t-2 mt-8">
-                  <Button className="cursor-pointer"
+                  <Button
+                    className="cursor-pointer"
                     type="button"
                     variant="outline"
                     onClick={() => setOpen(false)}
@@ -817,7 +841,11 @@ export default function ProductTable() {
                   {/* Edit with AlertDialog */}
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button size="sm" variant="outline" className="cursor-pointer">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="cursor-pointer"
+                      >
                         Edit
                       </Button>
                     </AlertDialogTrigger>
@@ -830,12 +858,16 @@ export default function ProductTable() {
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+                        <AlertDialogCancel className="cursor-pointer">
+                          Cancel
+                        </AlertDialogCancel>
                         <AlertDialogAction
-                          className="bg-green-600 text-white hover:bg-green-700 cursor-pointer"
+                          className="border border-blue-500 
+                 bg-blue-100 hover:bg-blue-200 text-blue-800 
+                 font-semibold cursor-pointer"
                           onClick={() => handleEditClick(item)}
                         >
-                          Yes
+                          Edit
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
@@ -844,9 +876,9 @@ export default function ProductTable() {
                   {/* Delete with AlertDialog */}
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <LoadingButton 
-                        size="sm" 
-                        variant="destructive" 
+                      <LoadingButton
+                        size="sm"
+                        variant="destructive"
                         loading={deleting === item.id}
                         disabled={deleting !== null}
                       >
@@ -865,9 +897,13 @@ export default function ProductTable() {
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+                        <AlertDialogCancel className="cursor-pointer">
+                          Cancel
+                        </AlertDialogCancel>
                         <AlertDialogAction
-                          className="bg-red-600 text-white hover:bg-red-700 cursor-pointer"
+                         className="border border-red-500 
+                 bg-red-100 hover:bg-red-200 text-red-700 
+                 font-semibold cursor-pointer"
                           onClick={() => handleDelete(item.id)}
                         >
                           Delete
