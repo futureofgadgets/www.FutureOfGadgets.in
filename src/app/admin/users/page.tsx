@@ -170,26 +170,42 @@ export default function AdminUsersPage() {
           </div>
         </div>
 
-        {/* Usage in AdminUsersPage */}
+        {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
-          <StatCard
-            label="Total Users"
-            value={users.length}
-            icon={<Users className="h-6 w-6 text-blue-600" />}
-            color="bg-blue-100"
-          />
-          <StatCard
-            label="Admins"
-            value={adminCount}
-            icon={<Crown className="h-6 w-6 text-orange-600" />}
-            color="bg-orange-100"
-          />
-          <StatCard
-            label="Regular Users"
-            value={userCount}
-            icon={<User className="h-6 w-6 text-green-600" />}
-            color="bg-green-100"
-          />
+          {loading ? (
+            [...Array(3)].map((_, i) => (
+              <div key={i} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="h-4 bg-gray-200 rounded w-20 mb-2 animate-pulse"></div>
+                    <div className="h-8 bg-gray-200 rounded w-12 animate-pulse"></div>
+                  </div>
+                  <div className="h-12 w-12 bg-gray-200 rounded-full animate-pulse"></div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <>
+              <StatCard
+                label="Total Users"
+                value={users.length}
+                icon={<Users className="h-6 w-6 text-blue-600" />}
+                color="bg-blue-100"
+              />
+              <StatCard
+                label="Admins"
+                value={adminCount}
+                icon={<Crown className="h-6 w-6 text-orange-600" />}
+                color="bg-orange-100"
+              />
+              <StatCard
+                label="Regular Users"
+                value={userCount}
+                icon={<User className="h-6 w-6 text-green-600" />}
+                color="bg-green-100"
+              />
+            </>
+          )}
         </div>
 
         {/* Users Table */}
