@@ -60,7 +60,7 @@ export default function CheckoutSuccessPage() {
         {/* Support Section */}
         <div className="bg-white rounded-lg p-8 shadow-sm border">
           <h2 className="text-xl font-semibold text-gray-900 mb-6 text-center">
-            Need Help? We're Here for You
+            Need Help? We&apos;re Here for You
           </h2>
           
           <div className="grid md:grid-cols-3 gap-6">
