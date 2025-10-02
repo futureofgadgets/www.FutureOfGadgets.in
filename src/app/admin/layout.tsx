@@ -30,6 +30,7 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -50,17 +51,18 @@ const navItems = [
   { href: "/admin/settings", icon: SettingsIcon, label: "Settings" },
 ];
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
   const router = useRouter();
   const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState("");
+  const { setOpenMobile } = useSidebar();
+
+  const handleNavClick = () => {
+    setOpenMobile(false);
+  };
   return (
-    <SidebarProvider>
+    <>
       <Sidebar>
         <SidebarHeader>
           <Link href="/" className="flex items-center gap-3 p-2">
@@ -91,6 +93,7 @@ export default function AdminLayout({
                       >
                         <Link
                           href={item.href}
+                          onClick={handleNavClick}
                           className={
                             isActive ? "!bg-blue-50 border border-blue-300 !text-blue-600 !h-10" : "!h-10"
                           }
@@ -283,6 +286,18 @@ export default function AdminLayout({
         </header>
         <div className="">{children}</div>
       </SidebarInset>
+    </>
+  );
+}
+
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <SidebarProvider>
+      <AdminLayoutContent>{children}</AdminLayoutContent>
     </SidebarProvider>
   );
 }

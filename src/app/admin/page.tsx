@@ -77,34 +77,34 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* Stats Cards Skeleton */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 rounded-xl bg-gray-200 animate-pulse w-12 h-12"></div>
+              <div key={i} className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6">
+                <div className="flex items-center justify-between mb-2 sm:mb-3 lg:mb-4">
+                  <div className="p-2 sm:p-2.5 lg:p-3 rounded-lg sm:rounded-xl bg-gray-200 animate-pulse w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12"></div>
                 </div>
-                <div className="h-4 bg-gray-200 rounded w-20 mb-1 animate-pulse"></div>
-                <div className="h-8 bg-gray-200 rounded w-16 mb-1 animate-pulse"></div>
-                <div className="h-3 bg-gray-200 rounded w-24 animate-pulse"></div>
+                <div className="h-3 sm:h-4 bg-gray-200 rounded w-16 sm:w-20 mb-1 animate-pulse"></div>
+                <div className="h-6 sm:h-7 lg:h-8 bg-gray-200 rounded w-12 sm:w-14 lg:w-16 mb-1 animate-pulse"></div>
+                <div className="h-2 sm:h-3 bg-gray-200 rounded w-20 sm:w-24 animate-pulse hidden sm:block"></div>
               </div>
             ))}
           </div>
 
           {/* Content Skeleton */}
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-            <div className="xl:col-span-2">
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                <div className="h-6 bg-gray-200 rounded w-40 mb-4 animate-pulse"></div>
-                <div className="h-64 bg-gray-100 rounded-xl animate-pulse"></div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+            <div className="lg:col-span-2">
+              <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6">
+                <div className="h-5 sm:h-6 bg-gray-200 rounded w-32 sm:w-40 mb-3 sm:mb-4 animate-pulse"></div>
+                <div className="h-48 sm:h-56 lg:h-64 bg-gray-100 rounded-lg sm:rounded-xl animate-pulse"></div>
               </div>
             </div>
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-              <div className="h-6 bg-gray-200 rounded w-32 mb-4 animate-pulse"></div>
-              <div className="space-y-4">
+            <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6">
+              <div className="h-5 sm:h-6 bg-gray-200 rounded w-24 sm:w-32 mb-3 sm:mb-4 animate-pulse"></div>
+              <div className="space-y-3 sm:space-y-4">
                 {[...Array(3)].map((_, i) => (
                   <div key={i} className="flex justify-between items-center">
-                    <div className="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
-                    <div className="h-4 bg-gray-200 rounded w-8 animate-pulse"></div>
+                    <div className="h-3 sm:h-4 bg-gray-200 rounded w-20 sm:w-24 animate-pulse"></div>
+                    <div className="h-3 sm:h-4 bg-gray-200 rounded w-6 sm:w-8 animate-pulse"></div>
                   </div>
                 ))}
               </div>
@@ -164,29 +164,29 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Dashboard</h1>
-          <p className="text-lg text-gray-600">Welcome back, {session.user?.name} 👋</p>
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-1 sm:mb-2">Dashboard</h1>
+          <p className="text-sm sm:text-base lg:text-lg text-gray-600">Welcome back, {session.user?.name} 👋</p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8">
           {cards.map((card, index) => {
             const Icon = card.icon
             return (
               <Link key={index} href={card.href}>
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className={`p-3 rounded-xl bg-gradient-to-r ${card.color} shadow-lg group-hover:scale-110 transition-transform`}>
-                      <Icon className="h-6 w-6 text-white" />
+                <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
+                  <div className="flex items-center justify-between mb-2 sm:mb-3 lg:mb-4">
+                    <div className={`p-2 sm:p-2.5 lg:p-3 rounded-lg sm:rounded-xl bg-gradient-to-r ${card.color} shadow-lg group-hover:scale-110 transition-transform`}>
+                      <Icon className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" />
                     </div>
-                    <span className="text-blue-600 hover:text-blue-800 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">View →</span>
+                    <span className="hidden sm:inline text-blue-600 hover:text-blue-800 text-xs sm:text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">View →</span>
                   </div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-1">{card.title}</h3>
-                  <p className="text-3xl font-bold text-gray-900 mb-1">{card.count}</p>
-                  <p className="text-xs text-gray-600">{card.description}</p>
+                  <h3 className="text-xs sm:text-sm font-medium text-gray-500 mb-1">{card.title}</h3>
+                  <p className="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-1">{card.count}</p>
+                  <p className="text-xs text-gray-600 hidden sm:block">{card.description}</p>
                 </div>
               </Link>
             )
@@ -194,33 +194,33 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Analytics and Tables Grid */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {/* Analytics Section */}
-          <div className="xl:col-span-2">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Analytics Overview</h2>
-              <div className="h-64 flex items-center justify-center text-gray-400 bg-gray-50 rounded-xl">
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 mb-6 sm:mb-8">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">Analytics Overview</h2>
+              <div className="h-48 sm:h-56 lg:h-64 flex items-center justify-center text-gray-400 bg-gray-50 rounded-lg sm:rounded-xl text-sm sm:text-base">
                 📊 Chart Placeholder (use Recharts / Chart.js)
               </div>
             </div>
           </div>
           
           {/* Quick Stats */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Stats</h3>
-              <div className="space-y-4">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Quick Stats</h3>
+              <div className="space-y-3 sm:space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Today&apos;s Orders</span>
-                  <span className="font-semibold text-gray-900">{orders.length}</span>
+                  <span className="text-sm sm:text-base text-gray-600">Today&apos;s Orders</span>
+                  <span className="text-sm sm:text-base font-semibold text-gray-900">{orders.length}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Active Products</span>
-                  <span className="font-semibold text-gray-900">{products.length}</span>
+                  <span className="text-sm sm:text-base text-gray-600">Active Products</span>
+                  <span className="text-sm sm:text-base font-semibold text-gray-900">{products.length}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">New Users</span>
-                  <span className="font-semibold text-gray-900">{users.length}</span>
+                  <span className="text-sm sm:text-base text-gray-600">New Users</span>
+                  <span className="text-sm sm:text-base font-semibold text-gray-900">{users.length}</span>
                 </div>
               </div>
             </div>
@@ -228,28 +228,30 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Tables Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-2 mt-8">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mt-6 sm:mt-8">
           {/* Products */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-              <h2 className="text-lg font-semibold text-gray-900">Recent Products</h2>
-              <Link href="/admin/products" className="text-blue-600 hover:text-blue-800 text-sm font-medium hover:underline">View All →</Link>
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="p-4 sm:p-6 border-b border-gray-200 flex justify-between items-center">
+              <h2 className="text-base sm:text-lg font-semibold text-gray-900">Recent Products</h2>
+              <Link href="/admin/products" className="text-blue-600 hover:text-blue-800 text-xs sm:text-sm font-medium hover:underline">View All →</Link>
             </div>
             <div className="overflow-x-auto">
               <table className="min-w-full">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock</th>
+                    <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                    <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
+                    <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">Stock</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {products.map((product, index) => (
                     <tr key={index} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 text-sm text-gray-900 font-medium">{product.name}</td>
-                      <td className="px-4 py-3 text-sm text-gray-900">₹{product.price?.toLocaleString()}</td>
-                      <td className="px-4 py-3 text-sm text-gray-900">{product.stock || product.quantity}</td>
+                      <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900 font-medium">
+                        <div className="truncate max-w-[120px] sm:max-w-none">{product.name}</div>
+                      </td>
+                      <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900">₹{product.price?.toLocaleString()}</td>
+                      <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900 hidden sm:table-cell">{product.stock || product.quantity}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -258,29 +260,31 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* Orders */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-              <h2 className="text-lg font-semibold text-gray-900">Recent Orders</h2>
-              <Link href="/admin/orders" className="text-blue-600 hover:text-blue-800 text-sm font-medium hover:underline">View All →</Link>
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="p-4 sm:p-6 border-b border-gray-200 flex justify-between items-center">
+              <h2 className="text-base sm:text-lg font-semibold text-gray-900">Recent Orders</h2>
+              <Link href="/admin/orders" className="text-blue-600 hover:text-blue-800 text-xs sm:text-sm font-medium hover:underline">View All →</Link>
             </div>
             <div className="overflow-x-auto">
               <table className="min-w-full">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Order ID</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                    <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">Order ID</th>
+                    <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">Customer</th>
+                    <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
+                    <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {orders.map((order, index) => (
                     <tr key={index} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 text-sm text-gray-900 font-medium">#{order.id?.slice(-6)}</td>
-                      <td className="px-4 py-3 text-sm text-gray-900">{order.user?.name || order.user?.email}</td>
-                      <td className="px-4 py-3 text-sm text-gray-900">₹{order.total?.toLocaleString()}</td>
-                      <td className="px-4 py-3">
-                        <span className={`px-2 py-1 text-xs rounded-full ${
+                      <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900 font-medium">#{order.id?.slice(-6)}</td>
+                      <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900 hidden sm:table-cell">
+                        <div className="truncate max-w-[100px]">{order.user?.name || order.user?.email}</div>
+                      </td>
+                      <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900">₹{order.total?.toLocaleString()}</td>
+                      <td className="px-3 sm:px-4 py-2 sm:py-3">
+                        <span className={`px-1.5 sm:px-2 py-0.5 sm:py-1 text-xs rounded-full ${
                           order.status === 'delivered' ? 'bg-green-100 text-green-800' :
                           order.status === 'shipped' ? 'bg-blue-100 text-blue-800' :
                           'bg-yellow-100 text-yellow-800'
@@ -296,27 +300,31 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* Users */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-              <h2 className="text-lg font-semibold text-gray-900">Recent Users</h2>
-              <Link href="/admin/users" className="text-blue-600 hover:text-blue-800 text-sm font-medium hover:underline">View All →</Link>
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="p-4 sm:p-6 border-b border-gray-200 flex justify-between items-center">
+              <h2 className="text-base sm:text-lg font-semibold text-gray-900">Recent Users</h2>
+              <Link href="/admin/users" className="text-blue-600 hover:text-blue-800 text-xs sm:text-sm font-medium hover:underline">View All →</Link>
             </div>
             <div className="overflow-x-auto">
               <table className="min-w-full">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
+                    <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                    <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">Email</th>
+                    <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {users.map((user, index) => (
                     <tr key={index} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 text-sm text-gray-900 font-medium">{user.name}</td>
-                      <td className="px-4 py-3 text-sm text-gray-900">{user.email.slice(0, 15)}...</td>
-                      <td className="px-4 py-3">
-                        <span className={`px-2 py-1 text-xs rounded-full ${
+                      <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900 font-medium">
+                        <div className="truncate max-w-[120px] sm:max-w-none">{user.name}</div>
+                      </td>
+                      <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900 hidden sm:table-cell">
+                        <div className="truncate max-w-[150px]">{user.email}</div>
+                      </td>
+                      <td className="px-3 sm:px-4 py-2 sm:py-3">
+                        <span className={`px-1.5 sm:px-2 py-0.5 sm:py-1 text-xs rounded-full ${
                           user.role === 'admin' ? 'bg-orange-100 text-orange-800' : 'bg-green-100 text-green-800'
                         }`}>
                           {user.role}
