@@ -105,6 +105,8 @@ export default function OrdersPage() {
         return <Truck className="h-5 w-5 text-blue-600" />
       case 'processing':
         return <Clock className="h-5 w-5 text-yellow-600" />
+      case 'pending':
+        return <Clock className="h-5 w-5 text-yellow-600" />
       case 'paid':
         return <CheckCircle className="h-5 w-5 text-blue-600" />
       default:
@@ -121,6 +123,8 @@ export default function OrdersPage() {
       case 'shipped':
         return 'bg-blue-100 text-blue-800'
       case 'processing':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'pending':
         return 'bg-yellow-100 text-yellow-800'
       case 'paid':
         return 'bg-blue-100 text-blue-800'
@@ -487,49 +491,20 @@ export default function OrdersPage() {
                   </Dialog>
                   
                   {order.status === 'delivered' && order.billUrl && (
-                    <Dialog open={showBillDialog} onOpenChange={setShowBillDialog}>
-                      <DialogTrigger asChild>
-                        <button 
-                          onClick={() => setSelectedOrder(order)}
-                          className="flex items-center gap-2 px-4 py-2 text-sm cursor-pointer font-medium text-green-600 bg-green-50 rounded-md hover:bg-green-100"
-                        >
-                          <Download className="h-4 w-4" />
-                        Download Bill
-                        </button>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
-                        <DialogHeader>
-                          <DialogTitle>Bill - Order #{selectedOrder?.id.slice(-8)}</DialogTitle>
-                        </DialogHeader>
-                        <div className="py-4">
-                          {selectedOrder?.billUrl && (
-                            <div className="text-center">
-                              <img 
-                                src={selectedOrder.billUrl} 
-                                alt="Bill" 
-                                className="max-w-full max-h-[80vh] overflow-y-hidden rounded border mx-auto"
-                              />
-                              <div className="mt-4">
-                                <Button 
-                                  onClick={() => {
-                                    const link = document.createElement('a')
-                                    link.href = selectedOrder.billUrl!
-                                    link.download = `bill-${selectedOrder.id.slice(-8)}.${selectedOrder.billUrl!.includes('data:image/') ? 'jpg' : 'pdf'}`
-                                    document.body.appendChild(link)
-                                    link.click()
-                                    document.body.removeChild(link)
-                                  }}
-                                  className="flex items-center justify-center cursor-pointer mx-auto gap-2 px-4 py-2 text-sm font-medium text-green-600 border border-green-500 bg-green-50 rounded-md hover:bg-green-100"
-                                >
-                                  <Download className="h-4 w-4" />
-                                  Download Bill
-                                </Button>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </DialogContent>
-                    </Dialog>
+                    <button 
+                      onClick={() => {
+                        const link = document.createElement('a')
+                        link.href = order.billUrl!
+                        link.download = `bill-${order.id.slice(-8)}.${order.billUrl!.includes('data:image/') ? 'jpg' : 'pdf'}`
+                        document.body.appendChild(link)
+                        link.click()
+                        document.body.removeChild(link)
+                      }}
+                      className="flex items-center gap-2 px-4 py-2 text-sm cursor-pointer font-medium text-green-600 bg-green-50 rounded-md hover:bg-green-100"
+                    >
+                      <Download className="h-4 w-4" />
+                      Download Bill
+                    </button>
                   )}
                 </div>
               </div>
