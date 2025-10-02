@@ -145,42 +145,43 @@ export default function AdminUsersPage() {
   const userCount = users.filter((u) => u.role === "user").length;
 
   return (
-    <div className="bg-gray-50 min-h-screen py-10">
-      <div className="max-w-7xl mx-auto px-6">
+    <div className="bg-gray-50 min-h-screen py-4 sm:py-10">
+      <div className="max-w-7xl mx-auto">
         {/* Page Header */}
-        <div className="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <div className="mb-6 sm:mb-10 flex flex-col gap-4 px-4 sm:px-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-              <Users className="h-9 w-9 text-blue-600" />
-              User Management
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-2 sm:gap-3">
+              <Users className="h-6 w-6 sm:h-9 sm:w-9 text-blue-600" />
+              <span className="hidden sm:inline">User Management</span>
+              <span className="sm:hidden">Users</span>
             </h1>
-            <p className="text-gray-600 mt-2">
+            <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
               Manage accounts, roles and permissions
             </p>
           </div>
-          <div className="mt-4 sm:mt-0 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
             <Input
               type="text"
               placeholder="Search users..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 w-72 sm:w-96 rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 bg-white"
+              className="pl-9 sm:pl-10 w-full sm:w-96 rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 bg-white text-sm sm:text-base"
             />
           </div>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-10 px-4 sm:px-6">
           {loading ? (
             [...Array(3)].map((_, i) => (
-              <div key={i} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+              <div key={i} className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="h-4 bg-gray-200 rounded w-20 mb-2 animate-pulse"></div>
-                    <div className="h-8 bg-gray-200 rounded w-12 animate-pulse"></div>
+                    <div className="h-3 sm:h-4 bg-gray-200 rounded w-16 sm:w-20 mb-2 animate-pulse"></div>
+                    <div className="h-6 sm:h-8 bg-gray-200 rounded w-10 sm:w-12 animate-pulse"></div>
                   </div>
-                  <div className="h-12 w-12 bg-gray-200 rounded-full animate-pulse"></div>
+                  <div className="h-10 w-10 sm:h-12 sm:w-12 bg-gray-200 rounded-full animate-pulse"></div>
                 </div>
               </div>
             ))
@@ -209,38 +210,52 @@ export default function AdminUsersPage() {
         </div>
 
         {/* Users Table */}
-        <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+        <div className="bg-white overflow-hidden">
           {loading ? (
             <div className="overflow-x-auto">
               <Table className="min-w-full">
-                <TableHeader className="bg-gray-50 sticky top-0 z-10">
-                  <TableRow>
-                    <TableHead className="px-6">User</TableHead>
-                    <TableHead className="px-6">Role</TableHead>
-                    <TableHead className="px-6">Joined</TableHead>
-                    <TableHead className="px-6">Actions</TableHead>
+                  <TableHeader className="bg-gray-50 sticky top-0 z-10 border-t">
+                  <TableRow className="hover:bg-transparent">
+                    <TableHead className="px-3 py-4 sm:px-6">
+                      <div className="h-3 sm:h-4 bg-gray-200 rounded w-8 sm:w-12 animate-pulse"></div>
+                    </TableHead>
+                    <TableHead className="px-3 sm:px-6 hidden sm:table-cell">
+                      <div className="h-3 sm:h-4 bg-gray-200 rounded w-8 sm:w-12 animate-pulse"></div>
+                    </TableHead>
+                    <TableHead className="px-3 sm:px-6 hidden md:table-cell">
+                      <div className="h-3 sm:h-4 bg-gray-200 rounded w-12 sm:w-16 animate-pulse"></div>
+                    </TableHead>
+                    <TableHead className="px-3 sm:px-6 text-xs sm:text-sm">
+                      <div className="h-3 sm:h-4 bg-gray-200 rounded w-12 sm:w-16 animate-pulse"></div>
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {[...Array(5)].map((_, i) => (
-                    <TableRow key={i} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                      <TableCell className="px-6 py-4">
+                  {Array.from({ length: 5 }).map((_, idx) => (
+                    <TableRow
+                      key={idx}
+                      className={idx % 2 === 0 ? "bg-white" : "bg-gray-50"}
+                    >
+                      <TableCell className="px-3 sm:px-6 py-3 sm:py-4">
                         <div className="flex items-center">
-                          <div className="h-10 w-10 bg-gray-200 rounded-full animate-pulse"></div>
-                          <div className="ml-4">
-                            <div className="h-4 bg-gray-200 rounded w-24 mb-1 animate-pulse"></div>
-                            <div className="h-3 bg-gray-200 rounded w-32 animate-pulse"></div>
+                          <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-gray-200 animate-pulse flex-shrink-0"></div>
+                          <div className="ml-2 sm:ml-4 min-w-0 flex-1">
+                            <div className="h-3 sm:h-4 bg-gray-200 rounded w-20 sm:w-32 animate-pulse mb-1"></div>
+                            <div className="h-2 sm:h-3 bg-gray-200 rounded w-24 sm:w-32 animate-pulse"></div>
+                            <div className="sm:hidden mt-1">
+                              <div className="h-5 bg-gray-200 rounded-full w-12 animate-pulse"></div>
+                            </div>
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="px-6 py-4">
-                        <div className="h-6 bg-gray-200 rounded-full w-16 animate-pulse"></div>
+                      <TableCell className="px-3 sm:px-6 py-3 sm:py-4 hidden sm:table-cell">
+                        <div className="h-5 sm:h-6 bg-gray-200 rounded-full w-12 sm:w-16 animate-pulse"></div>
                       </TableCell>
-                      <TableCell className="px-6 py-4">
-                        <div className="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
+                      <TableCell className="px-3 sm:px-6 py-3 sm:py-4 text-sm text-gray-500 hidden md:table-cell">
+                        <div className="h-3 sm:h-4 bg-gray-200 rounded w-16 sm:w-20 animate-pulse"></div>
                       </TableCell>
-                      <TableCell className="px-6 py-4">
-                        <div className="h-8 bg-gray-200 rounded w-24 animate-pulse"></div>
+                      <TableCell className="px-3 sm:px-6 py-3 sm:py-4">
+                        <div className="h-6 sm:h-8 bg-gray-200 rounded w-16 sm:w-24 animate-pulse"></div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -248,45 +263,45 @@ export default function AdminUsersPage() {
               </Table>
             </div>
           ) : filteredAndSortedUsers.length === 0 ? (
-            <div className="p-12 text-center">
-              <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <div className="p-8 sm:p-12 text-center">
+              <Users className="h-10 w-10 sm:h-12 sm:w-12 text-gray-400 mx-auto mb-3 sm:mb-4" />
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
                 No users found
               </h3>
-              <p className="text-gray-600">
+              <p className="text-gray-600 text-sm sm:text-base">
                 Try adjusting your search criteria.
               </p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <Table className="min-w-full">
-                <TableHeader className="bg-gray-50 sticky top-0 z-10">
-                  <TableRow>
-                    <TableHead className="px-6">
+                <TableHeader className="bg-gray-50 sticky top-0 z-10 border-t">
+                  <TableRow className="hover:bg-transparent">
+                    <TableHead className="px-3 py-4 sm:px-6">
                       <button
                         onClick={() => handleSort("name")}
-                        className="flex items-center gap-2"
+                        className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm cursor-pointer"
                       >
-                        User {getSortIcon("name")}
+                        User <span className="hidden sm:inline">{getSortIcon("name")}</span>
                       </button>
                     </TableHead>
-                    <TableHead className="px-6">
+                    <TableHead className="px-3 sm:px-6 hidden sm:table-cell">
                       <button
                         onClick={() => handleSort("role")}
-                        className="flex items-center gap-2"
+                        className="flex items-center gap-2 text-sm cursor-pointer"
                       >
                         Role {getSortIcon("role")}
                       </button>
                     </TableHead>
-                    <TableHead className="px-6">
+                    <TableHead className="px-3 sm:px-6 hidden md:table-cell">
                       <button
                         onClick={() => handleSort("createdAt")}
-                        className="flex items-center gap-2"
+                        className="flex items-center gap-2 text-sm cursor-pointer"
                       >
                         Joined {getSortIcon("createdAt")}
                       </button>
                     </TableHead>
-                    <TableHead className="px-6">Actions</TableHead>
+                    <TableHead className="px-3 sm:px-6 text-xs sm:text-sm">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -295,30 +310,47 @@ export default function AdminUsersPage() {
                       key={user.id}
                       className={idx % 2 === 0 ? "bg-white" : "bg-gray-50"}
                     >
-                      <TableCell className="px-6 py-4">
+                      <TableCell className="px-3 sm:px-6 py-3 sm:py-4">
                         <div className="flex items-center">
                           {user.image ? (
                             <img
                               src={user.image}
                               alt={user.name}
-                              className="h-10 w-10 rounded-full object-cover border-2 border-white shadow-md"
+                              className="h-8 w-8 sm:h-10 sm:w-10 rounded-full object-cover border-2 border-white shadow-md flex-shrink-0"
                             />
                           ) : (
-                            <div className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-medium">
+                            <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-medium text-sm sm:text-base flex-shrink-0">
                               {user.name.charAt(0).toUpperCase()}
                             </div>
                           )}
-                          <div className="ml-4">
-                            <div className="font-medium text-gray-900">
+                          <div className="ml-2 sm:ml-4 min-w-0 flex-1">
+                            <div className="font-medium text-gray-900 text-sm sm:text-base truncate">
                               {user.name}
                             </div>
-                            <div className="text-sm text-gray-500">
+                            <div className="text-xs sm:text-sm text-gray-500 truncate">
                               {user.email}
+                            </div>
+                            {/* Mobile role display */}
+                            <div className="sm:hidden mt-1">
+                              <span
+                                className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                                  user.role === "admin"
+                                    ? "bg-orange-100 text-orange-800"
+                                    : "bg-green-100 text-green-800"
+                                }`}
+                              >
+                                {user.role === "admin" ? (
+                                  <Crown className="h-2.5 w-2.5 mr-1" />
+                                ) : (
+                                  <User className="h-2.5 w-2.5 mr-1" />
+                                )}
+                                {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                              </span>
                             </div>
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="px-6 py-4">
+                      <TableCell className="px-3 sm:px-6 py-3 sm:py-4 hidden sm:table-cell">
                         <span
                           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                             user.role === "admin"
@@ -331,16 +363,15 @@ export default function AdminUsersPage() {
                           ) : (
                             <User className="h-3 w-3 mr-1" />
                           )}
-                          {user.role.charAt(0).toUpperCase() +
-                            user.role.slice(1)}
+                          {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
                         </span>
                       </TableCell>
-                      <TableCell className="px-6 py-4 text-sm text-gray-500">
+                      <TableCell className="px-3 sm:px-6 py-3 sm:py-4 text-sm text-gray-500 hidden md:table-cell">
                         {new Date(user.createdAt).toLocaleDateString()}
                       </TableCell>
-                      <TableCell className="px-6 py-4">
+                      <TableCell className="px-3 sm:px-6 py-3 sm:py-4">
                         {updatingUser === user.id ? (
-                          <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
+                          <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin text-gray-500" />
                         ) : (
                           <button
                             onClick={() =>
@@ -349,15 +380,18 @@ export default function AdminUsersPage() {
                                 user.role === "admin" ? "user" : "admin"
                               )
                             }
-                            className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
+                            className={`px-2 sm:px-3 py-1 rounded-md text-xs font-medium transition-colors ${
                               user.role === "admin"
                                 ? "bg-red-100 text-red-700 hover:bg-red-200"
                                 : "bg-blue-100 text-blue-700 hover:bg-blue-200"
                             }`}
                           >
-                            {user.role === "admin"
-                              ? "Remove Admin"
-                              : "Make Admin"}
+                            <span className="hidden sm:inline">
+                              {user.role === "admin" ? "Remove Admin" : "Make Admin"}
+                            </span>
+                            <span className="sm:hidden">
+                              {user.role === "admin" ? "Remove" : "Admin"}
+                            </span>
                           </button>
                         )}
                       </TableCell>
@@ -385,13 +419,13 @@ function StatCard({
   color: string;
 }) {
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center justify-between hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 flex items-center justify-between hover:shadow-md transition-shadow">
       <div>
-        <p className="text-sm font-medium text-gray-500">{label}</p>
-        <p className="text-3xl font-bold text-gray-900 mt-1">{value}</p>
+        <p className="text-xs sm:text-sm font-medium text-gray-500">{label}</p>
+        <p className="text-2xl sm:text-3xl font-bold text-gray-900 mt-1">{value}</p>
       </div>
       <div
-        className={`h-12 w-12 flex items-center justify-center rounded-full ${color}`}
+        className={`h-10 w-10 sm:h-12 sm:w-12 flex items-center justify-center rounded-full ${color}`}
       >
         {icon}
       </div>

@@ -403,7 +403,7 @@ export default function AdminOrdersPage() {
               {filteredAndSortedOrders.length} of {orders.length} orders
             </p>
           </div>
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <div className="flex items-stretch sm:items-center gap-3">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <Input
@@ -411,12 +411,12 @@ export default function AdminOrdersPage() {
                 placeholder="Search orders..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 w-full sm:w-64"
+                className="pl-10 w-full "
               />
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-full sm:w-auto">
+                <Button variant="outline" className="w-fit sm:w-auto">
                   <ArrowUpDown className="h-4 w-4 mr-2" />
                   Sort
                 </Button>
@@ -447,7 +447,7 @@ export default function AdminOrdersPage() {
       </header>
 
       {/* Tabs */}
-      <div className="flex overflow-x-auto gap-4 sm:gap-8 px-4 sm:px-6 lg:px-8 py-4 border-b border-gray-200">
+      <div className="flex text-sm overflow-x-auto gap-3 sm:gap-8 px-4 sm:px-6 lg:px-8 py-4 border-b border-gray-200">
         {["all", "shipped", "pending", "delivered"].map((tab) => (
           <button
             key={tab}
@@ -455,7 +455,7 @@ export default function AdminOrdersPage() {
             className={`pb-0 font-medium border-b-2 transition whitespace-nowrap ${
               statusFilter === tab
                 ? "border-blue-600 text-blue-700"
-                : "border-transparent text-gray-400 cursor-pointer"
+                : "border-transparent text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
             }`}
           >
             {tab === "all" && "All orders"}
@@ -467,12 +467,12 @@ export default function AdminOrdersPage() {
       </div>
 
       {/* Orders Table */}
-      <div className="flex-1 p-4 sm:p-6 lg:p-8 overflow-auto">
+      <div className="flex-1 p-0 overflow-auto">
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <Table>
-              <TableHeader>
-                <TableRow>
+              <TableHeader className="bg-gray-50">
+                <TableRow className="hover:bg-transparent">
                   <TableHead className="px-3 sm:px-6 py-4 text-left text-sm font-semibold text-gray-600">
                     Id
                   </TableHead>

@@ -395,7 +395,7 @@ export default function ProductTable() {
   return (
     <div className="flex flex-col gap-4">
       {/* Search + Add button */}
-      <div className="sm:flex items-center justify-between gap-3">
+      <div className="sm:flex px-4 items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <Input
           className="w-96"
@@ -776,15 +776,15 @@ export default function ProductTable() {
         <TableCaption>
           Inventory overview. Low-stock items (≤5) are highlighted.
         </TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Item</TableHead>
+        <TableHeader className="bg-gray-50">
+          <TableRow className="border-t hover:bg-transparent">
+            <TableHead className="px-3 sm:px-6 py-4 text-left text-sm font-semibold text-gray-600">Item</TableHead>
             <TableHead>Category</TableHead>
             <TableHead>Description</TableHead>
             <TableHead>Price</TableHead>
-            <TableHead>Quantity</TableHead>
+            <TableHead >Quantity</TableHead>
             <TableHead>Updated</TableHead>
-            <TableHead>Actions</TableHead>
+            <TableHead className="px-3 sm:px-6 py-4 text-left text-sm font-semibold text-gray-600">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
