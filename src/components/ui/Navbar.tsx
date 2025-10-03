@@ -25,8 +25,7 @@ export function Navbar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [prevScrollPos, setPrevScrollPos] = useState(0);
+
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [authMode, setAuthMode] = useState<"signin" | "signup">("signin");
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -95,34 +94,10 @@ export function Navbar() {
     setSelectedIndex(-1);
   }, [suggestions]);
 
-  // Scroll detection for navbar visibility
-  useEffect(() => {
-    let ticking = false;
 
-    const handleScroll = () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          const currentScrollPos = window.scrollY;
-          const isScrollingDown = currentScrollPos > prevScrollPos;
-
-          setIsVisible(currentScrollPos < 100 ? true : !isScrollingDown);
-          setPrevScrollPos(currentScrollPos);
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [prevScrollPos]);
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 border-b bg-background/95 backdrop-blur-lg transition-transform duration-300 md:shadow-sm ${
-        isVisible ? "translate-y-0" : "-translate-y-full"
-      }`}
-    >
+    <header className="fixed top-0 left-0 right-0 z-50 border-b bg-background/95 backdrop-blur-lg md:shadow-sm">
       <nav className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-4 py-2 md:py-3">
         <div className="flex items-center gap-1 md:gap-6">
           <Link
