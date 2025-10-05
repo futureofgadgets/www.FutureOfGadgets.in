@@ -455,7 +455,8 @@ export default function AdminOrdersPage() {
   const filteredAndSortedOrders = orders
     .filter((order) => {
       const matchesStatus =
-        statusFilter === "all" || order.status === statusFilter;
+        statusFilter === "all" || 
+        (statusFilter === "out" ? order.status === "out-for-delivery" : order.status === statusFilter);
       const matchesSearch =
         searchQuery === "" ||
         order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -551,7 +552,7 @@ export default function AdminOrdersPage() {
 
       {/* Tabs */}
       <div className="flex text-sm overflow-x-auto gap-3 sm:gap-8 px-4 sm:px-6 lg:px-8 py-4 border-b border-gray-200">
-        {["all", "shipped", "pending", "delivered"].map((tab) => (
+        {["all", "pending", "shipped", "out", "delivered"].map((tab) => (
           <button
             key={tab}
             onClick={() => setStatusFilter(tab)}
@@ -562,8 +563,9 @@ export default function AdminOrdersPage() {
             }`}
           >
             {tab === "all" && "All orders"}
-            {tab === "shipped" && "Dispatch"}
             {tab === "pending" && "Pending"}
+            {tab === "shipped" && "Shipped"}
+            {tab === "out" && "Out of Delivery"}
             {tab === "delivered" && "Completed"}
           </button>
         ))}
@@ -633,7 +635,7 @@ export default function AdminOrdersPage() {
                     </TableRow>
                   ))
                 ) : filteredAndSortedOrders.length === 0 ? (
-                  <TableRow>
+                  <TableRow className="hover:!bg-transparent">
                     <TableCell colSpan={7} className="py-16 text-center">
                       <div className="flex flex-col items-center">
                         <ShoppingCart className="h-16 w-16 text-gray-300 mb-4" />
@@ -765,42 +767,6 @@ export default function AdminOrdersPage() {
                               <Eye className="h-4 w-4 mr-2" />
                               View Details
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() =>
-                                handleStatusChange(order.id, "pending")
-                              }
-                              disabled={updatingOrder === order.id}
-                            >
-                              <Clock className="h-4 w-4 mr-2" />
-                              Pending
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() =>
-                                handleStatusChange(order.id, "shipped")
-                              }
-                              disabled={updatingOrder === order.id}
-                            >
-                              <Package className="h-4 w-4 mr-2" />
-                              Shipped
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() =>
-                                handleStatusChange(order.id, "out-for-delivery")
-                              }
-                              disabled={updatingOrder === order.id}
-                            >
-                              <Truck className="h-4 w-4 mr-2" />
-                              Out for Delivery
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() =>
-                                handleStatusChange(order.id, "delivered")
-                              }
-                              disabled={updatingOrder === order.id}
-                            >
-                              <CheckCircle className="h-4 w-4 mr-2" />
-                              Delivered
-                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
@@ -822,7 +788,7 @@ export default function AdminOrdersPage() {
           {selectedOrder && (
             <div className="py-0">
               {/* Order Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-gray-600 pt-0 pb-3 pl-1">
+              <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-sm text-gray-600 pt-0 pb-3 pl-1">
                 <span>
                   Placed on{" "}
                   {new Date(selectedOrder.createdAt).toLocaleDateString(
@@ -835,7 +801,7 @@ export default function AdminOrdersPage() {
                   )}
                 </span>
                 <span
-                  className={`px-3 py-1 rounded-full text-xs font-medium ${
+                  className={`px-3 py-1 rounded-full text-xs font-medium w-fit ${
                     selectedOrder.status === "delivered"
                       ? "bg-green-100 text-green-800"
                       : selectedOrder.status === "shipped"
@@ -1021,7 +987,9 @@ export default function AdminOrdersPage() {
                             <DialogTrigger asChild>
                               <button className="border border-blue-600 bg-blue-100 text-xs text-blue-700 px-2 py-1 hover:bg-blue-200 rounded cursor-pointer flex items-center gap-1">
                                 <Eye className="h-4 w-4" />
+                                <span className="hidden sm:block">
                                 View
+                                </span>
                               </button>
                             </DialogTrigger>
                             <DialogContent className="sm:max-w-6xl max-h-[95vh] overflow-hidden">
@@ -1067,7 +1035,9 @@ export default function AdminOrdersPage() {
                                     className="border border-green-600 bg-green-100 text-green-700 px-6 py-2 hover:bg-green-200 rounded-md text-xs cursor-pointer flex items-center gap-2"
                                   >
                                     <Download className="h-4 w-4" />
+                                    <span>
                                     Download Bill
+                                    </span>
                                   </button>
                                 </div>
                               </div>
@@ -1086,7 +1056,9 @@ export default function AdminOrdersPage() {
                             className="border border-green-600 bg-green-100 text-green-700 px-2 py-1 hover:bg-green-200 rounded text-xs cursor-pointer flex items-center gap-1"
                           >
                             <Download className="h-4 w-4" />
+                            <span className="hidden sm:block">
                             Download
+                            </span>
                           </button>
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
@@ -1095,7 +1067,9 @@ export default function AdminOrdersPage() {
                                 className="border border-red-600 bg-red-100 text-red-700 px-2 py-1 hover:bg-red-200 rounded text-xs cursor-pointer flex items-center gap-1 disabled:opacity-50"
                               >
                                 <Trash2 className="h-4 w-4" />
+                                <span className="hidden sm:block">
                                 {removingBill ? "Removing..." : "Remove"}
+                                </span>
                               </button>
                             </AlertDialogTrigger>
                             <AlertDialogContent>
@@ -1110,8 +1084,9 @@ export default function AdminOrdersPage() {
                                 <AlertDialogAction
                                   onClick={handleBillRemove}
                                   className="bg-red-600 hover:bg-red-700"
-                                >
+                                ><span>
                                   Remove Bill
+                                </span>
                                 </AlertDialogAction>
                               </AlertDialogFooter>
                             </AlertDialogContent>
