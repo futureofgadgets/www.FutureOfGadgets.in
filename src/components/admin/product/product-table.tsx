@@ -538,7 +538,7 @@ export default function ProductTable() {
                         <AlertDialogHeader>
                           <AlertDialogTitle>Delete Category</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Are you sure you want to delete "{category}"? This action cannot be undone.
+                            Are you sure you want to delete {category}? This action cannot be undone.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
