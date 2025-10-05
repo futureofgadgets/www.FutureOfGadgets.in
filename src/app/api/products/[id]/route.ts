@@ -27,7 +27,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         offers: data.offers || '',
         status: data.status || 'active',
         sku: data.sku || ''
-      }
+      } as any
     });
     return NextResponse.json(product);
   } catch (error) {
