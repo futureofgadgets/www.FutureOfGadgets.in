@@ -1040,7 +1040,7 @@ export default function ProductTable() {
               </TableRow>
             ))}
           {!isLoading && filtered.length === 0 && (
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableCell colSpan={7} className="text-center py-8">No items found.</TableCell>
             </TableRow>
           )}
