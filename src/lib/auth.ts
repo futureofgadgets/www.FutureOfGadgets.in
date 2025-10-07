@@ -41,7 +41,7 @@ export const authOptions: NextAuthOptions = {
           }
 
           if (admin.password && await bcrypt.compare(credentials.password, admin.password)) {
-            return { id: admin.id, email: admin.email, name: admin.name || 'Admin', role: admin.role }
+            return { id: admin.id, email: admin.email, name: admin.name || 'Admin', role: admin.role, emailVerified: true }
           }
           return null
         }
