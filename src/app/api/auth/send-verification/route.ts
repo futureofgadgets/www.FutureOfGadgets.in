@@ -1,32 +1,22 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
 import { generateVerificationCode, generateCodeExpiry, sendEmail, getVerificationEmailTemplate } from '@/lib/email'
-import bcrypt from 'bcryptjs'
+import { pendingUsers } from '../signup/route'
 
 export async function POST(req: Request) {
   try {
     const { email } = await req.json()
 
-    const user = await prisma.user.findFirst({ where: { email, provider: 'credentials' } })
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
-
-    if (user.emailVerified) {
-      return NextResponse.json({ error: 'Email already verified' }, { status: 400 })
+    const pendingUser = pendingUsers.get(email)
+    if (!pendingUser) {
+      return NextResponse.json({ error: 'Verification session expired. Please sign up again.' }, { status: 404 })
     }
 
     const code = generateVerificationCode()
     const expires = generateCodeExpiry()
-    const hashedCode = await bcrypt.hash(code, 4)
 
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        emailVerificationToken: hashedCode,
-        emailVerificationExpires: expires
-      }
-    })
+    pendingUser.code = code
+    pendingUser.expires = expires
+    pendingUsers.set(email, pendingUser)
 
     try {
       await sendEmail(

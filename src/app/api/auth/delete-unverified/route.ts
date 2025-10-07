@@ -1,18 +1,10 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { pendingUsers } from '../signup/route'
 
 export async function POST(req: Request) {
   try {
     const { email } = await req.json()
-    
-    await prisma.user.deleteMany({
-      where: {
-        email,
-        provider: 'credentials',
-        emailVerified: false
-      }
-    })
-    
+    pendingUsers.delete(email)
     return NextResponse.json({ success: true })
   } catch (error) {
     return NextResponse.json({ error: 'Failed to delete user' }, { status: 500 })

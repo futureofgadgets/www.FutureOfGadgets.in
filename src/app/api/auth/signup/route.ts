@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 import { generateVerificationCode, generateCodeExpiry, sendEmail, getVerificationEmailTemplate } from '@/lib/email'
 
+const pendingUsers = new Map<string, { email: string; password: string; name: string; phone: string | null; code: string; expires: Date }>()
+
 export async function POST(req: Request) {
   try {
     const { email, password, name, phone } = await req.json()
@@ -46,23 +48,17 @@ export async function POST(req: Request) {
 
     const code = generateVerificationCode()
     const expires = generateCodeExpiry()
-    const hashedCode = await bcrypt.hash(code, 4)
 
-    const newUser = await prisma.user.create({
-      data: {
-        email,
-        name: name || email.split('@')[0],
-        phone: phone || null,
-        password: hashedPassword,
-        role: 'user',
-        provider: 'credentials',
-        emailVerified: false,
-        emailVerificationToken: hashedCode,
-        emailVerificationExpires: expires
-      }
+    pendingUsers.set(email, {
+      email,
+      password: hashedPassword,
+      name: name || email.split('@')[0],
+      phone: phone || null,
+      code,
+      expires
     })
 
-    console.log('✅ User created:', newUser.email)
+    console.log('✅ Pending user stored:', email)
 
     try {
       await sendEmail(
@@ -81,3 +77,5 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: error.message || 'Failed to create account' }, { status: 500 })
   }
 }
+
+export { pendingUsers }

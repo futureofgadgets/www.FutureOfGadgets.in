@@ -1,43 +1,41 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import bcrypt from 'bcryptjs'
+import { pendingUsers } from '../signup/route'
 
 export async function POST(req: Request) {
   try {
     const { code, email } = await req.json()
 
-    const user = await prisma.user.findFirst({ where: { email, provider: 'credentials' } })
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    const pendingUser = pendingUsers.get(email)
+    if (!pendingUser) {
+      return NextResponse.json({ error: 'Verification session expired. Please sign up again.' }, { status: 404 })
     }
 
-    if (user.emailVerified) {
-      return NextResponse.json({ error: 'Email already verified' }, { status: 400 })
-    }
-
-    if (!user.emailVerificationToken) {
+    if (pendingUser.code !== code) {
       return NextResponse.json({ error: 'Verificaton code invalid' }, { status: 400 })
     }
 
-    const isValidCode = await bcrypt.compare(code, user.emailVerificationToken)
-    if (!isValidCode) {
-      return NextResponse.json({ error: 'Verificaton code invalid' }, { status: 400 })
+    if (pendingUser.expires < new Date()) {
+      pendingUsers.delete(email)
+      return NextResponse.json({ error: 'Code expired. Please sign up again.' }, { status: 400 })
     }
 
-    if (user.emailVerificationExpires && user.emailVerificationExpires < new Date()) {
-      return NextResponse.json({ error: 'Code expired' }, { status: 400 })
-    }
-
-    await prisma.user.update({
-      where: { id: user.id },
+    const newUser = await prisma.user.create({
       data: {
-        emailVerified: true,
-        emailVerificationToken: null,
-        emailVerificationExpires: null
+        email: pendingUser.email,
+        name: pendingUser.name,
+        phone: pendingUser.phone,
+        password: pendingUser.password,
+        role: 'user',
+        provider: 'credentials',
+        emailVerified: true
       }
     })
 
-    return NextResponse.json({ success: true })
+    pendingUsers.delete(email)
+    console.log('✅ User created and verified:', newUser.email)
+
+    return NextResponse.json({ success: true, user: { email: newUser.email, name: newUser.name } })
   } catch (error) {
     return NextResponse.json({ error: 'Failed to verify code' }, { status: 500 })
   }

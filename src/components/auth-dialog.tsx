@@ -177,7 +177,18 @@ export function AuthDialog({ open, onOpenChange, mode }: AuthDialogProps) {
       });
       const data = await res.json();
       if (data.success) {
-        toast.success('Email verified! You can now sign in.');
+        toast.success('Account created successfully! Signing you in...');
+        const result = await signIn("credentials", {
+          email,
+          password,
+          redirect: false,
+        });
+        if (result?.ok) {
+          toast.success('Welcome to Electronic!');
+          onOpenChange(false);
+        } else {
+          toast.error('Account created but sign in failed. Please sign in manually.');
+        }
         setIsVerifyEmail(false);
         setVerificationCode('');
         setResendTimer(0);
