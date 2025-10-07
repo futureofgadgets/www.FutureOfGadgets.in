@@ -182,7 +182,7 @@ export function AuthDialog({ open, onOpenChange, mode }: AuthDialogProps) {
         setVerificationCode('');
         setResendTimer(0);
       } else {
-        toast.error(data.error || 'Invalid code');
+        toast.error(data.error || 'Verificaton code invalid');
       }
     } catch (error) {
       toast.error('Failed to verify code');
@@ -233,7 +233,7 @@ export function AuthDialog({ open, onOpenChange, mode }: AuthDialogProps) {
         setConfirmNewPassword('');
         setResendTimer(0);
       } else {
-        toast.error(data.error || 'Invalid code');
+        toast.error(data.error || 'Verificaton code invalid');
       }
     } catch (error) {
       toast.error('Failed to reset password');
@@ -364,7 +364,7 @@ export function AuthDialog({ open, onOpenChange, mode }: AuthDialogProps) {
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ email })
                               });
-                              toast.success('Code resent!');
+                              toast.success('Verificaton code resend successfully!');
                               setResendTimer(60);
                             } catch (error) {
                               toast.error('Failed to resend code');
@@ -410,7 +410,7 @@ export function AuthDialog({ open, onOpenChange, mode }: AuthDialogProps) {
                                   headers: { 'Content-Type': 'application/json' },
                                   body: JSON.stringify({ email })
                                 });
-                                toast.success('Code resent!');
+                                toast.success('Verificaton code resend successfully!');
                                 setResendTimer(60);
                               } catch (error) {
                                 toast.error('Failed to resend code');

@@ -12,12 +12,12 @@ export async function POST(req: Request) {
     }
 
     if (!user.resetPasswordToken) {
-      return NextResponse.json({ error: 'Invalid code' }, { status: 400 })
+      return NextResponse.json({ error: 'Verificaton code invalid' }, { status: 400 })
     }
 
     const isValidCode = await bcrypt.compare(code, user.resetPasswordToken)
     if (!isValidCode) {
-      return NextResponse.json({ error: 'Invalid code' }, { status: 400 })
+      return NextResponse.json({ error: 'Verificaton code invalid' }, { status: 400 })
     }
 
     if (user.resetPasswordExpires && user.resetPasswordExpires < new Date()) {

@@ -16,12 +16,12 @@ export async function POST(req: Request) {
     }
 
     if (!user.emailVerificationToken) {
-      return NextResponse.json({ error: 'Invalid code' }, { status: 400 })
+      return NextResponse.json({ error: 'Verificaton code invalid' }, { status: 400 })
     }
 
     const isValidCode = await bcrypt.compare(code, user.emailVerificationToken)
     if (!isValidCode) {
-      return NextResponse.json({ error: 'Invalid code' }, { status: 400 })
+      return NextResponse.json({ error: 'Verificaton code invalid' }, { status: 400 })
     }
 
     if (user.emailVerificationExpires && user.emailVerificationExpires < new Date()) {
