@@ -76,7 +76,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id
         token.role = user.role || (user.email === 'admin@electronic.com' ? 'admin' : 'user')
-        token.emailVerified = account?.provider === 'google' ? true : (user.emailVerified ?? false)
+        token.emailVerified = account?.provider === 'google' ? true : Boolean(user.emailVerified)
       }
       return token
     },
