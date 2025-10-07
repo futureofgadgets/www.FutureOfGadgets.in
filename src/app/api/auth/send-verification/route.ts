@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { generateToken, generateTokenExpiry, sendEmail, getVerificationEmailTemplate } from '@/lib/email'
+import { generateVerificationCode, generateCodeExpiry, sendEmail, getVerificationEmailTemplate } from '@/lib/email'
+import bcrypt from 'bcryptjs'
 
 export async function POST(req: Request) {
   try {
@@ -15,13 +16,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Email already verified' }, { status: 400 })
     }
 
-    const token = generateToken()
-    const expires = generateTokenExpiry()
+    const code = generateVerificationCode()
+    const expires = generateCodeExpiry()
+    const hashedCode = await bcrypt.hash(code, 10)
 
     await prisma.user.update({
       where: { id: user.id },
       data: {
-        emailVerificationToken: token,
+        emailVerificationToken: hashedCode,
         emailVerificationExpires: expires
       }
     })
@@ -29,7 +31,7 @@ export async function POST(req: Request) {
     await sendEmail(
       email,
       'Verify your email - Electronic Web',
-      getVerificationEmailTemplate(token, email)
+      getVerificationEmailTemplate(code, email)
     )
 
     return NextResponse.json({ success: true })
