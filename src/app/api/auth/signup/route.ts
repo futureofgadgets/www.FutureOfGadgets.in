@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10)
-    const isAdmin = email === 'admin@electronic.com'
+    const isAdmin = email === process.env.PROTECTED_ADMIN_EMAIL_ID
 
     if (isAdmin) {
       await prisma.user.create({

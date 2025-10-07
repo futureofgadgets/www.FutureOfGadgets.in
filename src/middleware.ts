@@ -9,7 +9,7 @@ export default withAuth(
     // If accessing admin pages
     if (pathname.startsWith('/admin')) {
       // If not logged in or not admin
-      if (!token || (token.role !== 'admin' && token.email !== 'admin@electronic.com')) {
+      if (!token || (token.role !== 'admin' && token.email !== process.env.PROTECTED_ADMIN_EMAIL_ID)) {
         return NextResponse.rewrite(new URL('/not-found', req.url))
       }
     }

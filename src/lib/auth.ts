@@ -20,7 +20,7 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials?.password) return null
 
         // Default admin
-        if (credentials.email === 'admin@electronic.com') {
+        if (credentials.email === process.env.PROTECTED_ADMIN_EMAIL_ID) {
           let admin = await prisma.user.findFirst({ where: { email: credentials.email } })
           if (!admin) {
             admin = await prisma.user.create({
@@ -72,12 +72,29 @@ export const authOptions: NextAuthOptions = {
   pages: { signIn: '/auth/signin' },
 
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger }) {
       if (user) {
         token.id = user.id
-        token.role = user.role || (user.email === 'admin@electronic.com' ? 'admin' : 'user')
         token.emailVerified = account?.provider === 'google' ? true : Boolean(user.emailVerified)
+        
+        // Fetch role from database for all sign-ins
+        const dbUser = await prisma.user.findFirst({ 
+          where: { 
+            email: user.email!,
+            provider: account?.provider || 'credentials'
+          } 
+        })
+        token.role = dbUser?.role || 'user'
       }
+      
+      // Refresh role from database on update trigger or session refresh
+      if ((trigger === 'update' || !token.role) && token.id) {
+        const dbUser = await prisma.user.findUnique({ where: { id: token.id as string } })
+        if (dbUser) {
+          token.role = dbUser.role
+        }
+      }
+      
       return token
     },
 
@@ -104,8 +121,8 @@ export const authOptions: NextAuthOptions = {
               email: user.email,
               name: user.name,
               image: user.image,
-              phone: user.email === 'admin@electronic.com' ? '9905757864' : null,
-              role: user.email === 'admin@electronic.com' ? 'admin' : 'user',
+              phone: user.email === process.env.PROTECTED_ADMIN_EMAIL_ID ? '9905757864' : null,
+              role: user.email === process.env.PROTECTED_ADMIN_EMAIL_ID ? 'admin' : 'user',
               provider: 'google',
               emailVerified: true
             }
@@ -115,9 +132,9 @@ export const authOptions: NextAuthOptions = {
             where: { id: existingUser.id },
             data: {
               emailVerified: true,
-              role: user.email === 'admin@electronic.com' ? 'admin' : existingUser.role,
+              role: user.email === process.env.PROTECTED_ADMIN_EMAIL_ID ? 'admin' : existingUser.role,
               name: user.name || existingUser.name,
-              phone: user.email === 'admin@electronic.com' ? '9905757864' : existingUser.phone
+              phone: user.email === process.env.PROTECTED_ADMIN_EMAIL_ID ? '9905757864' : existingUser.phone
             }
           })
         }

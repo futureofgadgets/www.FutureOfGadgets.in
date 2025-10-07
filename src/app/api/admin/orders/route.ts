@@ -7,7 +7,7 @@ export async function GET() {
   try {
     const session = await getServerSession(authOptions)
     
-    if (!session || (session.user?.role !== "admin" && session.user?.email !== "admin@electronic.com")) {
+    if (!session || (session.user?.role !== "admin" && session.user?.email !== process.env.PROTECTED_ADMIN_EMAIL_ID)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
     
@@ -89,7 +89,7 @@ export async function PATCH(request: Request) {
   try {
     const session = await getServerSession(authOptions)
     
-    if (!session || (session.user?.role !== "admin" && session.user?.email !== "admin@electronic.com")) {
+    if (!session || (session.user?.role !== "admin" && session.user?.email !== process.env.PROTECTED_ADMIN_EMAIL_ID)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
     

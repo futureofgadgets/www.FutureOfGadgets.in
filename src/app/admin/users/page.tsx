@@ -50,7 +50,7 @@ export default function AdminUsersPage() {
       status === "loading" ||
       !session ||
       (session.user?.role !== "admin" &&
-        session.user?.email !== "admin@electronic.com")
+        session.user?.email !== process.env.NEXT_PUBLIC_PROTECTED_ADMIN_EMAIL_ID)
     ) {
       return;
     }
@@ -77,7 +77,7 @@ export default function AdminUsersPage() {
   if (
     !session ||
     (session.user?.role !== "admin" &&
-      session.user?.email !== "admin@electronic.com")
+      session.user?.email !== process.env.NEXT_PUBLIC_PROTECTED_ADMIN_EMAIL_ID)
   )
     notFound();
 
@@ -99,7 +99,9 @@ export default function AdminUsersPage() {
             user.id === userId ? { ...user, role: newRole } : user
           )
         );
-        toast.success(`User role updated to ${newRole}`);
+        toast.success(
+          `User role updated to ${newRole}. ${newRole === "admin" ? "User now has admin access." : "Admin access removed."}`
+        );
       } else {
         const errorData = await response.json();
         toast.error(errorData.error || "Failed to update user role");
@@ -377,7 +379,12 @@ export default function AdminUsersPage() {
                         {new Date(user.createdAt).toLocaleDateString()}
                       </TableCell>
                       <TableCell className="px-3 sm:px-6 py-3 sm:py-4">
-                        {updatingUser === user.id ? (
+                        {user.email === process.env.NEXT_PUBLIC_PROTECTED_ADMIN_EMAIL_ID ? (
+                          <span className="px-2 sm:px-3 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-500 cursor-not-allowed">
+                            <span className="hidden sm:inline">Protected</span>
+                            <span className="sm:hidden">🔒</span>
+                          </span>
+                        ) : updatingUser === user.id ? (
                           <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin text-gray-500" />
                         ) : (
                           <button

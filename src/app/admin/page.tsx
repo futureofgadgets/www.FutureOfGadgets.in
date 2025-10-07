@@ -82,7 +82,7 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     if (status === 'loading') return
-    if (!session || (session.user?.role !== 'admin' && session.user?.email !== 'admin@electronic.com')) {
+    if (!session || (session.user?.role !== 'admin' && session.user?.email !== process.env.NEXT_PUBLIC_PROTECTED_ADMIN_EMAIL_ID)) {
       router.push('/auth/signin?callbackUrl=/admin')
     }
   }, [session, status, router])
@@ -136,7 +136,7 @@ export default function AdminDashboardPage() {
     )
   }
 
-  if (!session || (session.user?.role !== 'admin' && session.user?.email !== 'admin@electronic.com')) {
+  if (!session || (session.user?.role !== 'admin' && session.user?.email !== process.env.NEXT_PUBLIC_PROTECTED_ADMIN_EMAIL_ID)) {
     return null
   }
 

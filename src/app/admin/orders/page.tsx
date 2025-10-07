@@ -169,7 +169,7 @@ export default function AdminOrdersPage() {
       status === "loading" ||
       !session ||
       (session.user?.role !== "admin" &&
-        session.user?.email !== "admin@electronic.com")
+        session.user?.email !== process.env.NEXT_PUBLIC_PROTECTED_ADMIN_EMAIL_ID)
     ) {
       return;
     }
@@ -205,7 +205,7 @@ export default function AdminOrdersPage() {
   if (
     !session ||
     (session.user?.role !== "admin" &&
-      session.user?.email !== "admin@electronic.com")
+      session.user?.email !== process.env.NEXT_PUBLIC_PROTECTED_ADMIN_EMAIL_ID)
   ) {
     notFound();
   }

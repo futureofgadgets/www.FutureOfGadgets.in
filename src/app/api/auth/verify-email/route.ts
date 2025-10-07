@@ -5,7 +5,7 @@ export async function POST(req: Request) {
   try {
     const { token, email } = await req.json()
 
-    if (email === 'admin@electronic.com') {
+    if (email === process.env.PROTECTED_ADMIN_EMAIL_ID) {
       return NextResponse.json({ error: 'Admin account does not require verification' }, { status: 400 })
     }
 
