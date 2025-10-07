@@ -431,6 +431,7 @@ export function AuthDialog({ open, onOpenChange, mode }: AuthDialogProps) {
                       </Label>
                       <div className="relative">
                         <Input
+                        autoComplete="off"
                           id="newPassword"
                           type={showNewPassword ? "text" : "password"}
                           placeholder="8+ chars, letters, numbers, symbols"
