@@ -5,12 +5,10 @@ export async function POST(req: Request) {
   try {
     const { email } = await req.json()
     
-    const user = await prisma.user.findUnique({
+    const user = await prisma.user.findFirst({
       where: {
-        email_provider: {
-          email,
-          provider: 'credentials'
-        }
+        email,
+        provider: 'credentials'
       }
     })
     

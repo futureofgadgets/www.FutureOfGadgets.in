@@ -6,7 +6,7 @@ export async function POST(req: Request) {
   try {
     const { code, email, password } = await req.json()
 
-    const user = await prisma.user.findUnique({ where: { email_provider: { email, provider: 'credentials' } } })
+    const user = await prisma.user.findFirst({ where: { email, provider: 'credentials' } })
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
@@ -27,7 +27,7 @@ export async function POST(req: Request) {
     const hashedPassword = await bcrypt.hash(password, 12)
 
     await prisma.user.update({
-      where: { email_provider: { email, provider: 'credentials' } },
+      where: { id: user.id },
       data: {
         password: hashedPassword,
         resetPasswordToken: null,

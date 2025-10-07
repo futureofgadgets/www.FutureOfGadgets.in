@@ -7,12 +7,10 @@ export async function POST(req: Request) {
   try {
     const { email } = await req.json()
 
-    const user = await prisma.user.findUnique({ 
+    const user = await prisma.user.findFirst({ 
       where: { 
-        email_provider: { 
-          email, 
-          provider: 'credentials' 
-        } 
+        email, 
+        provider: 'credentials' 
       } 
     })
     if (!user) {
@@ -24,12 +22,7 @@ export async function POST(req: Request) {
     const hashedCode = await bcrypt.hash(code, 10)
 
     await prisma.user.update({
-      where: { 
-        email_provider: { 
-          email, 
-          provider: 'credentials' 
-        } 
-      },
+      where: { id: user.id },
       data: {
         resetPasswordToken: hashedCode,
         resetPasswordExpires: expires

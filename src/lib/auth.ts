@@ -48,12 +48,10 @@ export const authOptions: NextAuthOptions = {
 
 
         // Sign in existing user
-        const user = await prisma.user.findUnique({ 
+        const user = await prisma.user.findFirst({ 
           where: { 
-            email_provider: { 
-              email: credentials.email, 
-              provider: 'credentials' 
-            } 
+            email: credentials.email, 
+            provider: 'credentials' 
           } 
         })
         if (!user || !user.password) throw new Error('USER_NOT_FOUND')
@@ -93,12 +91,10 @@ export const authOptions: NextAuthOptions = {
 
     async signIn({ user, account }) {
       if (account?.provider === 'google' && user.email) {
-        const existingUser = await prisma.user.findUnique({ 
+        const existingUser = await prisma.user.findFirst({ 
           where: { 
-            email_provider: { 
-              email: user.email, 
-              provider: 'google' 
-            } 
+            email: user.email, 
+            provider: 'google' 
           } 
         })
         if (!existingUser) {
@@ -115,12 +111,7 @@ export const authOptions: NextAuthOptions = {
           })
         } else {
           await prisma.user.update({
-            where: { 
-              email_provider: { 
-                email: user.email, 
-                provider: 'google' 
-              } 
-            },
+            where: { id: existingUser.id },
             data: {
               emailVerified: true,
               role: user.email === 'admin@electronic.com' ? 'admin' : existingUser.role,

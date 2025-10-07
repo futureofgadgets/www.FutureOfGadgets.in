@@ -16,12 +16,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid email address' }, { status: 400 })
     }
 
-    const existingUser = await prisma.user.findUnique({ 
+    const existingUser = await prisma.user.findFirst({ 
       where: { 
-        email_provider: { 
-          email, 
-          provider: 'credentials' 
-        } 
+        email, 
+        provider: 'credentials' 
       } 
     })
     if (existingUser) {
