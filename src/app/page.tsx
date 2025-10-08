@@ -1,16 +1,28 @@
+"use client"
+
 import type { Metadata } from "next";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 import { popularProducts } from "@/lib/data/popular-products";
 import HeaderSlider from "@/components/home/HomeSlider";
 import ProductCard from "@/components/product-card";
 import { Footer } from "@/components/Footer";
-
-export const metadata: Metadata = {
-  title: "Electronic Store - Best Electronics Online Shopping",
-  alternates: { canonical: "/" },
-};
+import Loading from "./loading";
 
 export default function HomePage() {
+//   const [loading, setLoading] = useState(true);
+
+//   useEffect(() => {
+//     const timer = setTimeout(() => setLoading(false), 2000);
+//     return () => clearTimeout(timer);
+//   }, []);
+
+//   if (loading) {
+//     return (
+// <Loading/>
+//     );
+//   }
+
   return (
     <main className="min-h-screen bg-white dark:bg-gray-900">
       {/* Hero Slider */}
@@ -60,21 +72,21 @@ export default function HomePage() {
       {/* Promotional Banners */}
       <section className="py-10 bg-white dark:bg-gray-800">
         <div className="mx-auto max-w-[1400px] px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <Link href="/category/laptops" className="relative overflow-hidden rounded bg-slate-900 p-12 hover:opacity-95 transition-opacity">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <Link href="/category/laptops" className="relative overflow-hidden rounded bg-slate-900 p-6 sm:p-8 md:p-12 hover:opacity-95 transition-opacity">
               <div className="relative z-10">
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">LAPTOPS</p>
-                <h3 className="text-4xl font-bold text-white mb-2">Up to 40% Off</h3>
-                <p className="text-gray-300 text-sm mb-6">Premium brands at best prices</p>
-                <span className="inline-flex items-center text-white font-semibold text-sm border-b-2 border-white pb-1">Shop Now →</span>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1 sm:mb-2">LAPTOPS</p>
+                <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-1 sm:mb-2">Up to 40% Off</h3>
+                <p className="text-gray-300 text-xs sm:text-sm mb-4 sm:mb-6">Premium brands at best prices</p>
+                <span className="hidden sm:inline-flex items-center text-white font-semibold text-xs sm:text-sm border-b-2 border-white pb-1">Shop Now →</span>
               </div>
             </Link>
-            <Link href="/category/monitors" className="relative overflow-hidden rounded bg-blue-600 p-12 hover:opacity-95 transition-opacity">
+            <Link href="/category/monitors" className="relative overflow-hidden rounded bg-blue-600 p-6 sm:p-8 md:p-12 hover:opacity-95 transition-opacity">
               <div className="relative z-10">
-                <p className="text-xs font-bold text-blue-100 uppercase tracking-widest mb-2">MONITORS</p>
-                <h3 className="text-4xl font-bold text-white mb-2">Starting ₹5,999</h3>
-                <p className="text-blue-50 text-sm mb-6">Full HD & 4K displays</p>
-                <span className="inline-flex items-center text-white font-semibold text-sm border-b-2 border-white pb-1">Explore →</span>
+                <p className="text-xs font-bold text-blue-100 uppercase tracking-widest mb-1 sm:mb-2">MONITORS</p>
+                <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-1 sm:mb-2">Starting ₹5,999</h3>
+                <p className="text-blue-50 text-xs sm:text-sm mb-4 sm:mb-6">Full HD & 4K displays</p>
+                <span className="hidden sm:inline-flex items-center text-white font-semibold text-xs sm:text-sm border-b-2 border-white pb-1">Explore →</span>
               </div>
             </Link>
           </div>
