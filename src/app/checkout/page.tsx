@@ -2,12 +2,35 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { useSession } from "next-auth/react"
+import { useForm, Controller } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
+import { format } from "date-fns"
 import { AuthDialog } from "@/components/auth-dialog"
 import { clearCart } from "@/lib/cart"
-import { CreditCard, Smartphone, Building2, Wallet, Banknote, MapPin, User, Mail, Phone, ShoppingBag, ArrowRight, Package, Lock } from "lucide-react"
+import { Calendar } from "@/components/ui/calendar"
+import { CreditCard, Smartphone, Building2, Wallet, Banknote, MapPin, User, Mail, Phone, ShoppingBag, ArrowRight, Package, Lock, CalendarIcon } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import Loading from "../loading"
 
 type CartItem = { productId: string; qty: number; title?: string; price?: number; image?: string }
+
+const checkoutSchema = z.object({
+  fullName: z.string().min(2, "Name must be at least 2 characters"),
+  phone: z.string().min(10, "Phone must be at least 10 digits"),
+  email: z.string().email("Invalid email").optional().or(z.literal("")),
+  line1: z.string().min(5, "Address is required"),
+  line2: z.string().optional(),
+  city: z.string().min(2, "City is required"),
+  state: z.string().min(2, "State is required"),
+  zip: z.string().min(5, "Valid PIN code required"),
+  deliveryDate: z.date(),
+})
+
+type CheckoutForm = z.infer<typeof checkoutSchema>
 
 export default function CheckoutPage() {
   const { data: session, status } = useSession()
@@ -17,20 +40,22 @@ export default function CheckoutPage() {
   const [error, setError] = useState<string | null>(null)
   const [showAuthDialog, setShowAuthDialog] = useState(false)
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
-
-  const [fullName, setFullName] = useState("")
-  const [phone, setPhone] = useState("")
-  const [line1, setLine1] = useState("")
-  const [line2, setLine2] = useState("")
-  const [city, setCity] = useState("")
-  const [state, setState] = useState("")
-  const [zip, setZip] = useState("")
-  const [email, setEmail] = useState("")
-
   const [paymentMethod, setPaymentMethod] = useState<"card" | "upi" | "netbanking" | "wallet" | "cod">("cod")
-  const [deliveryDate, setDeliveryDate] = useState<string>(() => {
-    const d = new Date(Date.now() + 1000 * 60 * 60 * 24 * 3)
-    return d.toISOString().slice(0, 10)
+  const [showCalendar, setShowCalendar] = useState(false)
+
+  const { register, handleSubmit, control, formState: { errors } } = useForm<CheckoutForm>({
+    resolver: zodResolver(checkoutSchema),
+    defaultValues: {
+      fullName: "",
+      phone: "",
+      email: "",
+      line1: "",
+      line2: "",
+      city: "",
+      state: "",
+      zip: "",
+      deliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    }
   })
 
   const [cardNumber, setCardNumber] = useState("")
@@ -39,6 +64,16 @@ export default function CheckoutPage() {
   const [upiId, setUpiId] = useState("")
   const [selectedBank, setSelectedBank] = useState("")
   const [selectedWallet, setSelectedWallet] = useState("")
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (showCalendar && !(e.target as Element).closest('.calendar-wrapper')) {
+        setShowCalendar(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [showCalendar])
 
   useEffect(() => {
     try {
@@ -61,8 +96,7 @@ export default function CheckoutPage() {
   const shipping = 0
   const total = subtotal + shipping
 
-  async function submitOrder(e: React.FormEvent) {
-    e.preventDefault()
+  async function submitOrder(data: CheckoutForm) {
     setError(null)
     setSubmitting(true)
     try {
@@ -71,10 +105,10 @@ export default function CheckoutPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           items: items.map((it) => ({ productId: String(it.productId), qty: Number(it.qty || 1) })),
-          address: { fullName, phone, line1, line2, city, state, zip },
+          address: { fullName: data.fullName, phone: data.phone, line1: data.line1, line2: data.line2, city: data.city, state: data.state, zip: data.zip },
           paymentMethod,
-          deliveryDate: new Date(deliveryDate).toISOString(),
-          userEmail: email || undefined,
+          deliveryDate: new Date(data.deliveryDate).toISOString(),
+          userEmail: data.email || undefined,
         }),
       })
       if (!res.ok) {
@@ -92,9 +126,9 @@ export default function CheckoutPage() {
 
   if (status === 'loading') {
     return (
-      <main className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </main>
+      // <main className="min-h-screen bg-gray-50 flex items-center justify-center">
+<Loading/>
+      // </main>
     )
   }
 
@@ -203,7 +237,7 @@ export default function CheckoutPage() {
           <p className="text-gray-600 text-sm mt-1">Complete your purchase</p>
         </div>
 
-        <form onSubmit={submitOrder}>
+        <form onSubmit={handleSubmit(submitOrder)}>
           <div className="grid lg:grid-cols-3 gap-6">
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
@@ -216,93 +250,114 @@ export default function CheckoutPage() {
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                    <input
+                    <Input
+                      {...register("fullName")}
                       placeholder="John Doe"
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      required
                     />
+                    {errors.fullName && <p className="text-xs text-red-600 mt-1">{errors.fullName.message}</p>}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                    <input
-                      placeholder="1234567890"
+                    <Input
+                      {...register("phone")}
+                      placeholder="+91 99XXXXXXXX"
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      required
                     />
+                    {errors.phone && <p className="text-xs text-red-600 mt-1">{errors.phone.message}</p>}
                   </div>
                   <div className="sm:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                    <input
+                    <Input
+                      {...register("email")}
                       type="email"
                       placeholder="john@example.com"
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
                     />
+                    {errors.email && <p className="text-xs text-red-600 mt-1">{errors.email.message}</p>}
                   </div>
                   <div className="sm:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Address Line 1</label>
-                    <input
+                    <Input
+                      {...register("line1")}
                       placeholder="Street address"
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      value={line1}
-                      onChange={(e) => setLine1(e.target.value)}
-                      required
                     />
+                    {errors.line1 && <p className="text-xs text-red-600 mt-1">{errors.line1.message}</p>}
                   </div>
                   <div className="sm:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Address Line 2 (Optional)</label>
-                    <input
+                    <Input
+                      {...register("line2")}
                       placeholder="Apartment, suite, etc."
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      value={line2}
-                      onChange={(e) => setLine2(e.target.value)}
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
-                    <input
+                    <Input
+                      {...register("city")}
                       placeholder="City"
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      value={city}
-                      onChange={(e) => setCity(e.target.value)}
-                      required
                     />
+                    {errors.city && <p className="text-xs text-red-600 mt-1">{errors.city.message}</p>}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
-                    <input
+                    <Input
+                      {...register("state")}
                       placeholder="State"
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      value={state}
-                      onChange={(e) => setState(e.target.value)}
-                      required
                     />
+                    {errors.state && <p className="text-xs text-red-600 mt-1">{errors.state.message}</p>}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">PIN Code</label>
-                    <input
+                    <Input
+                      {...register("zip")}
                       placeholder="123456"
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      value={zip}
-                      onChange={(e) => setZip(e.target.value)}
-                      required
                     />
+                    {errors.zip && <p className="text-xs text-red-600 mt-1">{errors.zip.message}</p>}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Delivery Date</label>
-                    <input
-                      type="date"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      value={deliveryDate}
-                      min={new Date().toISOString().slice(0, 10)}
-                      onChange={(e) => setDeliveryDate(e.target.value)}
-                      required
+                    <Controller
+                      control={control}
+                      name="deliveryDate"
+                      render={({ field }) => (
+                        <div className="relative calendar-wrapper">
+                          <button
+                            type="button"
+                            onClick={() => setShowCalendar(!showCalendar)}
+                            className="w-full px-3 py-2 bg-transparent hover:bg-transparent focus-visible:ring-0 text-black border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 flex items-center justify-between text-left"
+                          >
+                            <span>{field.value ? format(field.value, "PPP") : "Pick a date"}</span>
+                            <CalendarIcon className="w-4 h-4 text-gray-500" />
+                          </button>
+                          {showCalendar && (
+                            <div className="absolute z-50 bottom-full mb-2 bg-white border border-gray-300 rounded-md shadow-lg calendar-wrapper">
+                              <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={(date) => {
+                                  if (date) field.onChange(date)
+                                  setShowCalendar(false)
+                                }}
+                                disabled={(date) => {
+                                  const sevenDaysFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+                                  sevenDaysFromNow.setHours(0, 0, 0, 0)
+                                  date.setHours(0, 0, 0, 0)
+                                  return date.getTime() < sevenDaysFromNow.getTime()
+                                }}
+                                initialFocus
+                              />
+                            </div>
+                          )}
+                        </div>
+                      )}
                     />
+                    {errors.deliveryDate && <p className="text-xs text-red-600 mt-1">{errors.deliveryDate.message}</p>}
                   </div>
                 </div>
               </div>
@@ -347,7 +402,7 @@ export default function CheckoutPage() {
                 {paymentMethod === 'upi' && (
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">UPI ID</label>
-                    <input
+                    <Input
                       placeholder="yourname@upi"
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       value={upiId}
@@ -360,7 +415,7 @@ export default function CheckoutPage() {
                   <div className="space-y-3">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
-                      <input
+                      <Input
                         placeholder="1234 5678 9012 3456"
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         value={cardNumber}
@@ -371,7 +426,7 @@ export default function CheckoutPage() {
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Expiry</label>
-                        <input
+                        <Input
                           placeholder="MM/YY"
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                           value={cardExpiry}
@@ -381,7 +436,7 @@ export default function CheckoutPage() {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">CVV</label>
-                        <input
+                        <Input
                           placeholder="123"
                           type="password"
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -443,9 +498,9 @@ export default function CheckoutPage() {
                         className="w-14 h-14 rounded object-cover"
                       />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{it.title}</p>
+                        <Link href={`/products/${it.productId}`} className="text-sm font-medium truncate hover:text-blue-600 block">{it.title}</Link>
                         <p className="text-xs text-gray-500">Qty: {it.qty}</p>
-                        <p className="text-sm font-semibold text-blue-600">₹{((it.price || 0) / 100).toFixed(2)}</p>
+                        <p className="text-sm font-semibold text-blue-600">₹{(it.price || 0).toLocaleString()}</p>
                       </div>
                     </div>
                   ))}
@@ -454,7 +509,7 @@ export default function CheckoutPage() {
                 <div className="border-t pt-4 space-y-2 mb-4">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Subtotal</span>
-                    <span className="font-medium">₹{(subtotal / 100).toFixed(2)}</span>
+                    <span className="font-medium">₹{subtotal.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Shipping</span>
@@ -462,7 +517,7 @@ export default function CheckoutPage() {
                   </div>
                   <div className="flex justify-between text-base font-bold pt-2 border-t">
                     <span>Total</span>
-                    <span className="text-blue-600">₹{(total / 100).toFixed(2)}</span>
+                    <span className="text-blue-600">₹{total.toLocaleString()}</span>
                   </div>
                 </div>
 
