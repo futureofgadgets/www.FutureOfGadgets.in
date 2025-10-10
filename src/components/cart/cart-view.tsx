@@ -2,23 +2,30 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
-
+import { toast } from "sonner"
 import { getCart, updateQty, removeFromCart, clearCart } from "@/lib/cart"
 import { useSession } from "next-auth/react"
 import { AuthDialog } from "@/components/auth-dialog"
 import Link from "next/link"
 import Image from "next/image"
+import { ShoppingBag, Trash2, Plus, Minus, Tag, Lock, Truck, ArrowRight } from "lucide-react"
 
 type CartItem = ReturnType<typeof getCart>[number]
+type Product = { id: string; quantity: number }
 
 export default function CartView() {
   const { data: session } = useSession()
   const [items, setItems] = useState<CartItem[]>([])
+  const [products, setProducts] = useState<Product[]>([])
   const [showAuthDialog, setShowAuthDialog] = useState(false)
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
 
   useEffect(() => {
     setItems(getCart())
+    fetch('/api/products')
+      .then(res => res.json())
+      .then(data => setProducts(data.map((p: any) => ({ id: p.id, quantity: p.quantity }))))
+      .catch(() => {})
     const onStorage = () => setItems(getCart())
     const onCartUpdated = () => setItems(getCart())
     window.addEventListener("storage", onStorage)
@@ -94,96 +101,158 @@ export default function CartView() {
           </div>
         </div>
       ) : (
-        <>
-          <ul className="flex flex-col gap-4">
-            {items.map((i) => (
-              <li key={i.id} className="flex items-center gap-4 rounded-lg border p-3">
-                <Link href={`/products/${i.slug}`} className="flex-shrink-0">
-                  <Image
-                    src={i.image}
-                    alt={`${i.name} image`}
-                    width={64}
-                    height={64}
-                    className="h-16 w-16 rounded-md border object-cover hover:opacity-80 transition-opacity"
-                  />
-                </Link>
-                <div className="flex-1">
-                  <Link href={`/products/${i.slug}`} className="hover:underline">
-                    <div className="font-medium text-foreground">{i.name}</div>
-                  </Link>
-                  <div className="text-sm text-muted-foreground">₹{i.price.toFixed(2)}</div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center border rounded-md">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        const newQty = Math.max(1, (i.qty || 1) - 1)
-                        updateQty(i.id, newQty)
-                        setItems(getCart())
-                      }}
-                      className="h-8 w-8 p-0 hover:bg-gray-100"
-                    >
-                      -
-                    </Button>
-                    <span className="px-3 py-1 text-sm font-medium min-w-[2rem] text-center">
-                      {i.qty || 1}
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        const newQty = (i.qty || 1) + 1
-                        updateQty(i.id, newQty)
-                        setItems(getCart())
-                      }}
-                      className="h-8 w-8 p-0 hover:bg-gray-100"
-                    >
-                      +
-                    </Button>
-                  </div>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => {
-                      removeFromCart(i.id)
-                      setItems(getCart())
-                    }}
-                    aria-label={`Remove ${i.name}`}
-                  >
-                    Remove
-                  </Button>
-                </div>
-              </li>
-            ))}
-          </ul>
-          <div className="flex items-center justify-between rounded-lg border p-4">
-            <div className="text-foreground">
-              Total: <span className="font-semibold">₹{total.toFixed(2)}</span>
+        <div className="grid lg:grid-cols-3 gap-6">
+          {/* Cart Items */}
+          <div className="lg:col-span-2 space-y-4">
+            <div className="bg-white rounded-lg shadow-sm border">
+              <div className="p-4 border-b">
+                <h2 className="text-lg font-semibold flex items-center gap-2">
+                  <ShoppingBag className="w-5 h-5" />
+                  Shopping Cart ({items.length} {items.length === 1 ? 'item' : 'items'})
+                </h2>
+              </div>
+              <ul className="divide-y">
+                {items.map((i) => (
+                  <li key={i.id} className="p-4 hover:bg-gray-50 transition-colors">
+                    <div className="flex gap-4">
+                      <Link href={`/products/${i.slug}`} className="flex-shrink-0">
+                        <Image
+                          src={i.image}
+                          alt={i.name}
+                          width={100}
+                          height={100}
+                          className="w-24 h-24 rounded-lg border object-cover hover:opacity-80 transition-opacity"
+                        />
+                      </Link>
+                      <div className="flex-1 min-w-0">
+                        <Link href={`/products/${i.slug}`} className="hover:text-blue-600 transition-colors">
+                          <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">{i.name}</h3>
+                        </Link>
+                        <p className="text-sm text-gray-500 mb-3">In Stock</p>
+                        <div className="flex items-center gap-4 flex-wrap">
+                          <div className="flex items-center border rounded-lg">
+                            <button
+                              onClick={() => {
+                                const newQty = Math.max(1, (i.qty || 1) - 1)
+                                updateQty(i.id, newQty)
+                                setItems(getCart())
+                              }}
+                              className="p-2 hover:bg-gray-100 transition-colors"
+                            >
+                              <Minus className="w-4 h-4" />
+                            </button>
+                            <span className="px-4 py-2 text-sm font-medium min-w-[3rem] text-center">
+                              {i.qty || 1}
+                            </span>
+                            <button
+                              onClick={() => {
+                                const product = products.find(p => p.id === i.id)
+                                const currentQty = i.qty || 1
+                                const availableQty = product?.quantity || 0
+                                if (currentQty >= availableQty) {
+                                  toast.error('Cannot add more', { description: `Only ${availableQty} items available in stock.` })
+                                  return
+                                }
+                                updateQty(i.id, currentQty + 1)
+                                setItems(getCart())
+                              }}
+                              className="p-2 hover:bg-gray-100 transition-colors"
+                            >
+                              <Plus className="w-4 h-4" />
+                            </button>
+                          </div>
+                          <button
+                            onClick={() => {
+                              removeFromCart(i.id)
+                              setItems(getCart())
+                              toast.success('Removed from cart')
+                            }}
+                            className="flex items-center gap-1 text-sm text-red-600 hover:text-red-700 font-medium"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-lg font-bold text-gray-900">₹{(i.price * (i.qty || 1)).toLocaleString()}</p>
+                        <p className="text-sm text-gray-500 mt-1">₹{i.price.toLocaleString()} each</p>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
+          </div>
+
+          {/* Order Summary */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-lg shadow-sm border p-6 sticky top-24 space-y-4">
+              <h2 className="text-lg font-semibold border-b pb-3">Order Summary</h2>
+              
+              <div className="space-y-3">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Subtotal ({items.reduce((sum, i) => sum + (i.qty || 1), 0)} items)</span>
+                  <span className="font-medium">₹{total.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Shipping</span>
+                  <span className="font-medium text-green-600">FREE</span>
+                </div>
+              </div>
+
+              <div className="border-t pt-3">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-lg font-semibold">Total</span>
+                  <span className="text-2xl font-bold text-gray-900">₹{total.toLocaleString()}</span>
+                </div>
+                
+                {session ? (
+                  <Link href="/checkout" className="block">
+                    <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white py-6 text-base font-semibold">
+                      Proceed to Checkout
+                      <ArrowRight className="w-5 h-5 ml-2" />
+                    </Button>
+                  </Link>
+                ) : (
+                  <Button 
+                    onClick={() => { setAuthMode('signin'); setShowAuthDialog(true) }}
+                    className="w-full bg-orange-600 hover:bg-orange-700 text-white py-6 text-base font-semibold"
+                  >
+                    Sign in to Checkout
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Button>
+                )}
+              </div>
+
+              <div className="space-y-3 pt-4 border-t">
+                <div className="flex items-center gap-3 text-sm text-gray-600">
+                  <Lock className="w-5 h-5 text-green-600" />
+                  <span>Secure checkout</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm text-gray-600">
+                  <Truck className="w-5 h-5 text-blue-600" />
+                  <span>Free shipping on orders above ₹500</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm text-gray-600">
+                  <Tag className="w-5 h-5 text-purple-600" />
+                  <span>Best price guaranteed</span>
+                </div>
+              </div>
+
+              <button
                 onClick={() => {
                   clearCart()
                   setItems([])
+                  toast.success('Cart cleared')
                 }}
+                className="w-full mt-4 py-2 text-sm text-red-600 hover:text-red-700 font-medium border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
               >
                 Clear Cart
-              </Button>
-              {session ? (
-                <Link href="/checkout">
-                  <Button>Checkout</Button>
-                </Link>
-              ) : (
-                <Button onClick={() => { setAuthMode('signin'); setShowAuthDialog(true) }}>
-                  Checkout
-                </Button>
-              )}
+              </button>
             </div>
           </div>
-        </>
+        </div>
       )}
       <AuthDialog open={showAuthDialog} onOpenChange={setShowAuthDialog} mode={authMode} />
     </div>

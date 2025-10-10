@@ -29,12 +29,12 @@ export function CategoryBar({
   return (
     <>
       {/* MOBILE BUTTON - fixed so it DOES NOT scroll */}
-      <div className="md:hidden md:fixed md:top-4 left-4 z-50 sm:px-4">
+      <div className="md:hidden md:fixed md:top-4 left-4 z-50 sm:px-2 md:px-4">
         <Button
           variant="outline"
-          size="sm"
+
           onClick={() => onSidebarToggle(true)}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 h-9"
         >
           <Menu className="w-4 h-4" />
           Categories
@@ -44,7 +44,7 @@ export function CategoryBar({
       {/* DESKTOP SIDEBAR (scrollable) */}
       <div className="hidden md:block w-72 sm:w-50 md:w-50 xl:w-72 flex-shrink-0">
         {/* Use top offset (e.g. 4rem) if you have a top header — adjust top-16 if your header differs */}
-        <div className="fixed top-16 left-0 h-[calc(100vh-4rem)] w-72 sm:w-50 md:w-50 xl:w-72 overflow-y-auto scrollbar-hidden border-r bg-white flex flex-col">
+        <div className="fixed top-16 left-0 h-[calc(100vh-4rem)] w-72 sm:w-50 md:w-50 xl:w-72 overflow-y-auto scrollbar-hidden bg-white flex flex-col">
           {/* Sticky header inside sidebar */}
           <div className="sticky top-0 z-10 bg-white p-6 border-b border-gray-100">
             <h3 className="font-bold text-xl text-gray-900">Categories</h3>
