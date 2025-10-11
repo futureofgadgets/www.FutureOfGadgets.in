@@ -20,6 +20,7 @@ export default function CartView() {
   const [showAuthDialog, setShowAuthDialog] = useState(false)
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
   const [hasStockIssue, setHasStockIssue] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     setItems(getCart())
@@ -27,6 +28,7 @@ export default function CartView() {
       .then(res => res.json())
       .then(data => setProducts(data.map((p: any) => ({ id: p.id, quantity: p.quantity }))))
       .catch(() => {})
+      .finally(() => setLoading(false))
     const onStorage = () => setItems(getCart())
     const onCartUpdated = () => setItems(getCart())
     window.addEventListener("storage", onStorage)
@@ -52,6 +54,45 @@ export default function CartView() {
   }, [items, products])
 
   const total = useMemo(() => items.reduce((sum, i) => sum + i.price * (i.qty || 1), 0), [items])
+
+  if (loading) {
+    return (
+      <div className="grid lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-4">
+          <div className="bg-white rounded-lg shadow-sm border">
+            <div className="p-4 border-b">
+              <div className="h-6 bg-gray-200 rounded w-48 animate-pulse"></div>
+            </div>
+            <ul className="divide-y">
+              {[1, 2, 3].map((i) => (
+                <li key={i} className="p-4">
+                  <div className="flex gap-4">
+                    <div className="w-24 h-24 bg-gray-200 rounded-lg animate-pulse"></div>
+                    <div className="flex-1 space-y-3">
+                      <div className="h-5 bg-gray-200 rounded w-3/4 animate-pulse"></div>
+                      <div className="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
+                      <div className="h-10 bg-gray-200 rounded w-32 animate-pulse"></div>
+                    </div>
+                    <div className="h-6 bg-gray-200 rounded w-20 animate-pulse"></div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <div className="lg:col-span-1">
+          <div className="bg-white rounded-lg shadow-sm border p-6 space-y-4">
+            <div className="h-6 bg-gray-200 rounded w-32 animate-pulse"></div>
+            <div className="space-y-3">
+              <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+              <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+            </div>
+            <div className="h-12 bg-gray-200 rounded animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -129,8 +170,8 @@ export default function CartView() {
               <ul className="divide-y">
                 {items.map((i) => {
                   const product = products.find(p => p.id === i.id)
-                  const availableStock = product?.quantity || 0
-                  const isOutOfStock = availableStock < (i.qty || 1)
+                  const availableStock = product?.quantity ?? 0
+                  const isOutOfStock = product ? availableStock < (i.qty || 1) : false
                   
                   return (
                     <li key={i.id} className={`p-4 hover:bg-gray-50 transition-colors ${isOutOfStock ? 'bg-gray-50' : ''}`}>
@@ -149,7 +190,7 @@ export default function CartView() {
                             <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">{i.name}</h3>
                           </Link>
                           {isOutOfStock ? (
-                            <p className="text-sm text-red-600 font-semibold mb-3">Out of Stock (Only {availableStock} available)</p>
+                            <p className="text-sm text-red-600 font-semibold mb-3">Out of Stock</p>
                           ) : (
                             <p className="text-sm text-green-600 mb-3">In Stock</p>
                           )}
