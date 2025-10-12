@@ -70,7 +70,7 @@ const HeaderSlider = () => {
         {sliderData.map((slide, index) => (
           <Link href={(slide as any).link || '/products'} key={slide.id} className="min-w-full block">
             <div
-              className="relative py-16 md:py-24 px-5 md:px-14 mt-6 cursor-pointer overflow-hidden min-h-[200px] sm:min-h-[350px] md:min-h-[400px] xl:min-h-[450px] 2xl:min-h-[500px] flex items-center"
+              className="relative py-16 md:py-24 px-5 md:px-14 mt-6 cursor-pointer overflow-hidden flex items-center"
               style={{
                 backgroundImage: (slide as any).image ? `url(${(slide as any).image})` : 'none',
                 backgroundSize: 'cover',
@@ -79,7 +79,7 @@ const HeaderSlider = () => {
               }}
             >
               {(slide as any).image && !loadedImages.has(slide.id) && (
-                <div className="absolute inset-0 bg-gray-300 animate-pulse" />
+                <div className="absolute inset-0 bg-gray-300 animate-pulse " />
               )}
               {(slide as any).image && (
                 <Image
@@ -87,7 +87,7 @@ const HeaderSlider = () => {
                  fill
                   src={(slide as any).image}
                   alt=""
-                  className="absolute inset-0 w-full h-full object-cover opacity-0"
+                  className="absolute inset-0 w-full h-20 object-cover opacity-0"
                   onLoad={() => setLoadedImages(prev => new Set(prev).add(slide.id))}
                 />
               )}
