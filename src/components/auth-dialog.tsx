@@ -283,17 +283,17 @@ export function AuthDialog({ open, onOpenChange, mode }: AuthDialogProps) {
       <DialogContent className="sm:min-w-5xl p-0 overflow-hidden border-none">
         <div className="grid grid-cols-1 md:grid-cols-2">
           <motion.div 
-            className="p-6"
+            className="p-4 sm:p-6"
             key={isVerifyEmail ? 'verify' : isResetPassword ? 'reset' : isForgotPassword ? 'forgot' : isSignUp ? 'signup' : 'signin'}
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
           >
             <DialogHeader className="text-center">
-              <DialogTitle className="text-2xl font-semibold mt-4">
+              <DialogTitle className="text-xl sm:text-2xl font-semibold mt-2 sm:mt-4">
                 {isVerifyEmail ? "Verify Email" : isResetPassword ? "Reset Password" : isForgotPassword ? "Forgot Password" : isSignUp ? "Create Account" : "Welcome Back !"}
               </DialogTitle>
-              <p className="text-sm text-muted-foreground mb-2">
+              <p className="text-xs sm:text-sm text-muted-foreground mb-1 sm:mb-2">
                 {isVerifyEmail
                   ? "Enter the verification code sent to your email"
                   : isResetPassword
@@ -305,11 +305,11 @@ export function AuthDialog({ open, onOpenChange, mode }: AuthDialogProps) {
                   : "Sign in to your Future Of Gadgets account"}
               </p>
             </DialogHeader>
-            <div className="space-y-6 p-2">
-              <form onSubmit={isVerifyEmail ? handleVerifyEmail : isResetPassword ? handleResetPassword : isForgotPassword ? handleForgotPassword : handleCredentialsAuth} className="space-y-4">
+            <div className="space-y-3 sm:space-y-6 p-1 sm:p-2">
+              <form onSubmit={isVerifyEmail ? handleVerifyEmail : isResetPassword ? handleResetPassword : isForgotPassword ? handleForgotPassword : handleCredentialsAuth} className="space-y-3 sm:space-y-4">
                 {isSignUp && (
-                  <div className="space-y-2">
-                    <Label htmlFor="name" className="text-sm font-medium">
+                  <div className="space-y-1 sm:space-y-2">
+                    <Label htmlFor="name" className="text-xs sm:text-sm font-medium">
                       Full Name
                     </Label>
                     <Input
@@ -318,13 +318,13 @@ export function AuthDialog({ open, onOpenChange, mode }: AuthDialogProps) {
                       placeholder="Enter your full name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="h-11"
+                      className="h-9 sm:h-11 text-sm"
                       required
                     />
                   </div>
                 )}
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-medium">
+                <div className="space-y-1 sm:space-y-2">
+                  <Label htmlFor="email" className="text-xs sm:text-sm font-medium">
                     Email address
                   </Label>
                   <Input
@@ -333,14 +333,14 @@ export function AuthDialog({ open, onOpenChange, mode }: AuthDialogProps) {
                     placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="h-11"
+                    className="h-9 sm:h-11 text-sm"
                     disabled={isVerifyEmail || isResetPassword}
                     required
                   />
                 </div>
                 {isSignUp && (
-                  <div className="space-y-2">
-                    <Label htmlFor="phone" className="text-sm font-medium">
+                  <div className="space-y-1 sm:space-y-2">
+                    <Label htmlFor="phone" className="text-xs sm:text-sm font-medium">
                       Phone Number
                     </Label>
                     <Input
@@ -351,14 +351,14 @@ export function AuthDialog({ open, onOpenChange, mode }: AuthDialogProps) {
                       onChange={(e) =>
                         setPhone(e.target.value.replace(/\D/g, ""))
                       }
-                      className="h-11"
+                      className="h-9 sm:h-11 text-sm"
                       required
                     />
                   </div>
                 )}
                 {isVerifyEmail && (
-                  <div className="space-y-2">
-                    <Label htmlFor="verificationCode" className="text-sm font-medium">
+                  <div className="space-y-1 sm:space-y-2">
+                    <Label htmlFor="verificationCode" className="text-xs sm:text-sm font-medium">
                       Verification Code
                     </Label>
                     <div className="flex items-center justify-between gap-3">
@@ -403,8 +403,8 @@ export function AuthDialog({ open, onOpenChange, mode }: AuthDialogProps) {
                 )}
                 {isResetPassword && (
                   <>
-                    <div className="space-y-2">
-                      <Label htmlFor="resetCode" className="text-sm font-medium">
+                    <div className="space-y-1 sm:space-y-2">
+                      <Label htmlFor="resetCode" className="text-xs sm:text-sm font-medium">
                         Verification Code
                       </Label>
                       <div className="flex items-center justify-between  gap-3">
@@ -446,8 +446,8 @@ export function AuthDialog({ open, onOpenChange, mode }: AuthDialogProps) {
                         )}
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="newPassword" className="text-sm font-medium">
+                    <div className="space-y-1 sm:space-y-2">
+                      <Label htmlFor="newPassword" className="text-xs sm:text-sm font-medium">
                         New Password
                       </Label>
                       <div className="relative">
@@ -458,7 +458,7 @@ export function AuthDialog({ open, onOpenChange, mode }: AuthDialogProps) {
                           placeholder="8+ chars, letters, numbers, symbols"
                           value={newPassword}
                           onChange={(e) => setNewPassword(e.target.value)}
-                          className="h-11 pr-10"
+                          className="h-9 sm:h-11 pr-10 text-sm"
                           required
                         />
                         <button
@@ -474,8 +474,8 @@ export function AuthDialog({ open, onOpenChange, mode }: AuthDialogProps) {
                         </button>
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="confirmNewPassword" className="text-sm font-medium">
+                    <div className="space-y-1 sm:space-y-2">
+                      <Label htmlFor="confirmNewPassword" className="text-xs sm:text-sm font-medium">
                         Confirm Password
                       </Label>
                       <div className="relative">
@@ -485,7 +485,7 @@ export function AuthDialog({ open, onOpenChange, mode }: AuthDialogProps) {
                           placeholder="Re-enter password"
                           value={confirmNewPassword}
                           onChange={(e) => setConfirmNewPassword(e.target.value)}
-                          className="h-11 pr-10"
+                          className="h-9 sm:h-11 pr-10 text-sm"
                           required
                         />
                         <button
@@ -504,9 +504,9 @@ export function AuthDialog({ open, onOpenChange, mode }: AuthDialogProps) {
                   </>
                 )}
                 {!isForgotPassword && !isVerifyEmail && !isResetPassword && (
-                <div className="space-y-2">
+                <div className="space-y-1 sm:space-y-2">
                   <div className="flex justify-between items-center">
-                    <Label htmlFor="password" className="text-sm font-medium">
+                    <Label htmlFor="password" className="text-xs sm:text-sm font-medium">
                       Password
                     </Label>
                     {!isSignUp && (
@@ -531,7 +531,7 @@ export function AuthDialog({ open, onOpenChange, mode }: AuthDialogProps) {
                       }
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="h-11 pr-10"
+                      className="h-9 sm:h-11 pr-10 text-sm"
                       required
                     />
                     <button
@@ -555,7 +555,7 @@ export function AuthDialog({ open, onOpenChange, mode }: AuthDialogProps) {
                 )}
                 <button
                   type="submit"
-                  className="w-full h-11 font-medium text-sm rounded-md cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white flex items-center justify-center"
+                  className="w-full h-9 sm:h-11 font-medium text-xs sm:text-sm rounded-md cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white flex items-center justify-center"
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -597,7 +597,7 @@ export function AuthDialog({ open, onOpenChange, mode }: AuthDialogProps) {
               </form>
 
               {(isForgotPassword || isVerifyEmail || isResetPassword) && (
-                <div className="text-center text-sm">
+                <div className="text-center text-xs sm:text-sm">
                   <Button
                     type="button"
                     onClick={isVerifyEmail ? handleCancelVerification : () => {
@@ -628,7 +628,7 @@ export function AuthDialog({ open, onOpenChange, mode }: AuthDialogProps) {
               <Button
                 onClick={handleGoogleSignIn}
                 variant="outline"
-                className="w-full h-11 font-medium border-2 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
+                className="w-full h-9 sm:h-11 font-medium text-xs sm:text-sm border-2 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
                 disabled={isGoogleLoading}
               >
                 {isGoogleLoading ? (
@@ -679,7 +679,7 @@ export function AuthDialog({ open, onOpenChange, mode }: AuthDialogProps) {
               </Button>
 
               {!isVerifyEmail && (
-              <div className="text-center text-sm text-muted-foreground">
+              <div className="text-center text-xs sm:text-sm text-muted-foreground">
                 {isSignUp
                   ? "Already have an account?"
                   : "Don't have an account?"}{" "}

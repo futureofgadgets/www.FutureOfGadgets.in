@@ -42,11 +42,16 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     const { id } = await params;
     const { quantity } = await req.json();
     
+    const currentProduct = await prisma.product.findUnique({ where: { id } });
+    const wasOutOfStock = currentProduct && currentProduct.quantity === 0;
+    const isRestocking = wasOutOfStock && Number(quantity) > 0;
+    
     const product = await prisma.product.update({
       where: { id },
       data: { 
         quantity: Number(quantity),
-        stock: Number(quantity)
+        stock: Number(quantity),
+        ...(isRestocking && { lastRestockedAt: new Date() })
       } as any
     });
     

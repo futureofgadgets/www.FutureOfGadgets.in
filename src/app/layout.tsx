@@ -66,7 +66,7 @@ export default function RootLayout({
             <ConditionalLayout>
               {children}
             </ConditionalLayout>
-            <Toaster />
+            <Toaster className="!bottom-16 sm:!bottom-5" />
           {/* </ThemeProvider> */}
         </AuthProvider>
       </body>

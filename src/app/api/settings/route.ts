@@ -5,7 +5,6 @@ const defaultSettings = {
   home: {
     heroTitle: 'Welcome to Future Of Gadgets',
     heroSubtitle: 'Find the best electronics at amazing prices',
-    featuredProducts: 6,
     carouselImages: 5,
     todayDealsCount: 8,
     flashSaleEnabled: true,
@@ -50,6 +49,13 @@ const defaultSettings = {
     phone: '',
     address: '',
     hours: ''
+  },
+  sectionProducts: {
+    newArrivals: [],
+    dealOfTheDay: [],
+    bestSeller: [],
+    trendingNow: [],
+    featuredSection: [],
   }
 }
 
@@ -65,7 +71,7 @@ export async function GET() {
     return acc
   }, {} as Record<string, any>)
   
-  return NextResponse.json(result)
+  return NextResponse.json({ ...defaultSettings, ...result })
 }
 
 export async function POST(req: Request) {

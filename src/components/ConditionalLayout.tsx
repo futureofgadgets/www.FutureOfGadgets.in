@@ -1,7 +1,8 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { Navbar } from '@/components/ui/Navbar'
+import { Navbar } from './ui/Navbar'
+import BottomNav from './BottomNav'
 
 export function ConditionalLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -15,9 +16,10 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Navbar />
-      <div className="pt-23 md:pt-14">
+      <div className="pt-10 md:pt-14 pb-12 md:pb-0">
         {children}
       </div>
+      <BottomNav />
     </>
   )
 }

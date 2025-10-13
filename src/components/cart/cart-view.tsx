@@ -9,6 +9,7 @@ import { AuthDialog } from "@/components/auth-dialog"
 import Link from "next/link"
 import Image from "next/image"
 import { ShoppingBag, Trash2, Plus, Minus, Tag, Lock, Truck, ArrowRight } from "lucide-react"
+import CartSkeleton from "@/components/skeletons/CartSkeleton"
 
 type CartItem = ReturnType<typeof getCart>[number]
 type Product = { id: string; quantity: number }
@@ -56,42 +57,7 @@ export default function CartView() {
   const total = useMemo(() => items.reduce((sum, i) => sum + i.price * (i.qty || 1), 0), [items])
 
   if (loading) {
-    return (
-      <div className="grid lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-4">
-          <div className="bg-white rounded-lg shadow-sm border">
-            <div className="p-4 border-b">
-              <div className="h-6 bg-gray-200 rounded w-48 animate-pulse"></div>
-            </div>
-            <ul className="divide-y">
-              {[1, 2, 3].map((i) => (
-                <li key={i} className="p-4">
-                  <div className="flex gap-4">
-                    <div className="w-24 h-24 bg-gray-200 rounded-lg animate-pulse"></div>
-                    <div className="flex-1 space-y-3">
-                      <div className="h-5 bg-gray-200 rounded w-3/4 animate-pulse"></div>
-                      <div className="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
-                      <div className="h-10 bg-gray-200 rounded w-32 animate-pulse"></div>
-                    </div>
-                    <div className="h-6 bg-gray-200 rounded w-20 animate-pulse"></div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-lg shadow-sm border p-6 space-y-4">
-            <div className="h-6 bg-gray-200 rounded w-32 animate-pulse"></div>
-            <div className="space-y-3">
-              <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-              <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-            </div>
-            <div className="h-12 bg-gray-200 rounded animate-pulse"></div>
-          </div>
-        </div>
-      </div>
-    )
+    return <CartSkeleton />
   }
 
   return (
@@ -157,14 +123,14 @@ export default function CartView() {
           </div>
         </div>
       ) : (
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div className="grid lg:grid-cols-3 gap-3 sm:gap-6">
           {/* Cart Items */}
-          <div className="lg:col-span-2 space-y-4">
-            <div className="bg-white rounded-lg shadow-sm border">
-              <div className="p-4 border-b">
-                <h2 className="text-lg font-semibold flex items-center gap-2">
-                  <ShoppingBag className="w-5 h-5" />
-                  Shopping Cart ({items.length} {items.length === 1 ? 'item' : 'items'})
+          <div className="lg:col-span-2 space-y-3 sm:space-y-4">
+            <div className="bg-white sm:rounded-lg sm:shadow-sm sm:border">
+              <div className="p-3 sm:p-4 border-b">
+                <h2 className="text-base sm:text-lg font-semibold flex items-center gap-2">
+                  <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5" />
+                  Cart ({items.length})
                 </h2>
               </div>
               <ul className="divide-y">
@@ -174,27 +140,28 @@ export default function CartView() {
                   const isOutOfStock = product ? availableStock < (i.qty || 1) : false
                   
                   return (
-                    <li key={i.id} className={`p-4 hover:bg-gray-50 transition-colors ${isOutOfStock ? 'bg-gray-50' : ''}`}>
-                      <div className="flex gap-4">
+                    <li key={i.id} className={`p-3 sm:p-4 hover:bg-gray-50 transition-colors ${isOutOfStock ? 'bg-gray-50' : ''}`}>
+                      <div className="flex gap-2 sm:gap-4">
                         <Link href={`/products/${i.slug}`} className="flex-shrink-0">
                           <Image
                             src={i.image}
                             alt={i.name}
-                            width={100}
-                            height={100}
-                            className="w-24 h-24 rounded-lg border object-cover hover:opacity-80 transition-opacity"
+                            width={80}
+                            height={80}
+                            className="w-16 h-16 sm:w-24 sm:h-24 rounded-lg border object-cover"
                           />
                         </Link>
                         <div className="flex-1 min-w-0">
-                          <Link href={`/products/${i.slug}`} className="hover:text-blue-600 transition-colors">
-                            <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">{i.name}</h3>
+                          <Link href={`/products/${i.slug}`}>
+                            <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-1 line-clamp-2">{i.name}</h3>
                           </Link>
                           {isOutOfStock ? (
-                            <p className="text-sm text-red-600 font-semibold mb-3">Out of Stock</p>
+                            <p className="text-xs sm:text-sm text-red-600 font-semibold mb-2">Out of Stock</p>
                           ) : (
-                            <p className="text-sm text-green-600 mb-3">In Stock</p>
+                            <p className="text-xs sm:text-sm text-green-600 mb-2">In Stock</p>
                           )}
-                        <div className="flex items-center gap-4 flex-wrap">
+                          <p className="text-base sm:text-lg font-bold text-gray-900 mb-2">₹{(i.price * (i.qty || 1)).toLocaleString()}</p>
+                        <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
                           <div className="flex items-center border rounded-lg">
                             <button
                               onClick={() => {
@@ -208,11 +175,11 @@ export default function CartView() {
                                   setItems(getCart())
                                 }
                               }}
-                              className="p-2 hover:bg-gray-100 transition-colors"
+                              className="p-1.5 sm:p-2 hover:bg-gray-100 transition-colors"
                             >
-                              <Minus className="w-4 h-4" />
+                              <Minus className="w-3 h-3 sm:w-4 sm:h-4" />
                             </button>
-                            <span className="px-4 py-2 text-sm font-medium min-w-[3rem] text-center">
+                            <span className="px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm font-medium min-w-[2rem] sm:min-w-[3rem] text-center">
                               {i.qty || 1}
                             </span>
                             <button
@@ -227,9 +194,9 @@ export default function CartView() {
                                 updateQty(i.id, currentQty + 1)
                                 setItems(getCart())
                               }}
-                              className="p-2 hover:bg-gray-100 transition-colors"
+                              className="p-1.5 sm:p-2 hover:bg-gray-100 transition-colors"
                             >
-                              <Plus className="w-4 h-4" />
+                              <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
                             </button>
                           </div>
                           <button
@@ -238,17 +205,13 @@ export default function CartView() {
                               setItems(getCart())
                               toast.success('Removed from cart')
                             }}
-                            className="flex items-center gap-1 text-sm text-red-600 hover:text-red-700 font-medium"
+                            className="flex items-center gap-1 text-xs sm:text-sm text-red-600 hover:text-red-700 font-medium"
                           >
-                            <Trash2 className="w-4 h-4" />
-                            Remove
+                            <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                            <span className="hidden sm:inline">Remove</span>
                           </button>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <p className="text-lg font-bold text-gray-900">₹{(i.price * (i.qty || 1)).toLocaleString()}</p>
-                        <p className="text-sm text-gray-500 mt-1">₹{i.price.toLocaleString()} each</p>
-                        </div>
                       </div>
                     </li>
                   )
@@ -259,29 +222,29 @@ export default function CartView() {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm border p-6 sticky top-24 space-y-4">
-              <h2 className="text-lg font-semibold border-b pb-3">Order Summary</h2>
+            <div className="bg-white sm:rounded-lg sm:shadow-sm sm:border p-4 sm:p-6 lg:sticky lg:top-24 space-y-3 sm:space-y-4">
+              <h2 className="text-base sm:text-lg font-semibold border-b pb-2 sm:pb-3">Order Summary</h2>
               
-              <div className="space-y-3">
-                <div className="flex justify-between text-sm">
+              <div className="space-y-2 sm:space-y-3">
+                <div className="flex justify-between text-xs sm:text-sm">
                   <span className="text-gray-600">Subtotal ({items.reduce((sum, i) => sum + (i.qty || 1), 0)} items)</span>
                   <span className="font-medium">₹{total.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-xs sm:text-sm">
                   <span className="text-gray-600">Shipping</span>
                   <span className="font-medium text-green-600">FREE</span>
                 </div>
               </div>
 
-              <div className="border-t pt-3">
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-lg font-semibold">Total</span>
-                  <span className="text-2xl font-bold text-gray-900">₹{total.toLocaleString()}</span>
+              <div className="border-t pt-2 sm:pt-3">
+                <div className="flex justify-between items-center mb-3 sm:mb-4">
+                  <span className="text-base sm:text-lg font-semibold">Total</span>
+                  <span className="text-xl sm:text-2xl font-bold text-gray-900">₹{total.toLocaleString()}</span>
                 </div>
                 
                 {hasStockIssue && (
-                  <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-sm text-red-600 font-semibold">Some items are out of stock. Please remove or update quantities.</p>
+                  <div className="mb-3 sm:mb-4 p-2 sm:p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-xs sm:text-sm text-red-600 font-semibold">Some items are out of stock. Please remove or update quantities.</p>
                   </div>
                 )}
                 
@@ -289,35 +252,35 @@ export default function CartView() {
                   <Link href="/checkout" className={`block ${hasStockIssue ? 'pointer-events-none' : ''}`}>
                     <Button 
                       disabled={hasStockIssue}
-                      className="w-full bg-orange-600 hover:bg-orange-700 text-white py-6 text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 sm:py-6 text-sm sm:text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Proceed to Checkout
-                      <ArrowRight className="w-5 h-5 ml-2" />
+                      <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
                     </Button>
                   </Link>
                 ) : (
                   <Button 
                     onClick={() => { setAuthMode('signin'); setShowAuthDialog(true) }}
                     disabled={hasStockIssue}
-                    className="w-full bg-orange-600 hover:bg-orange-700 text-white py-6 text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 sm:py-6 text-sm sm:text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Sign in to Checkout
-                    <ArrowRight className="w-5 h-5 ml-2" />
+                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
                   </Button>
                 )}
               </div>
 
-              <div className="space-y-3 pt-4 border-t">
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <Lock className="w-5 h-5 text-green-600" />
+              <div className="space-y-2 sm:space-y-3 pt-3 sm:pt-4 border-t">
+                <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-600">
+                  <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
                   <span>Secure checkout</span>
                 </div>
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <Truck className="w-5 h-5 text-blue-600" />
+                <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-600">
+                  <Truck className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
                   <span>Free shipping on orders above ₹500</span>
                 </div>
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <Tag className="w-5 h-5 text-purple-600" />
+                <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-600">
+                  <Tag className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" />
                   <span>Best price guaranteed</span>
                 </div>
               </div>
@@ -328,7 +291,7 @@ export default function CartView() {
                   setItems([])
                   toast.success('Cart cleared')
                 }}
-                className="w-full mt-4 py-2 text-sm text-red-600 hover:text-red-700 font-medium border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
+                className="w-full mt-3 sm:mt-4 py-2 text-xs sm:text-sm text-red-600 hover:text-red-700 font-medium border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
               >
                 Clear Cart
               </button>

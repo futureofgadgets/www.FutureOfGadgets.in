@@ -1,54 +1,68 @@
-import React from "react";
-import { GitCompareArrows, Headset, ShieldCheck, Truck } from "lucide-react";
+'use client'
+import React, { useState, useEffect } from 'react'
+import ProductCard from '../product-card'
+import { toast } from 'sonner'
+import { addToCart } from '@/lib/cart'
+import { useRouter } from 'next/navigation'
 
 export default function FeaturedSection() {
-  const extraData = [
-    {
-      title: "Free Delivery",
-      description: "Free shipping over $100",
-      icon: <Truck className="w-8 h-8 sm:w-10 sm:h-10" />,
-    },
-    {
-      title: "Free Return",
-      description: "30-day return policy",
-      icon: <GitCompareArrows className="w-8 h-8 sm:w-10 sm:h-10" />,
-    },
-    {
-      title: "Customer Support",
-      description: "Friendly 24/7 customer support",
-      icon: <Headset className="w-8 h-8 sm:w-10 sm:h-10" />,
-    },
-    {
-      title: "Money Back Guarantee",
-      description: "Quality checked by our team",
-      icon: <ShieldCheck className="w-8 h-8 sm:w-10 sm:h-10" />,
-    },
-  ];
+  const router = useRouter()
+  const [products, setProducts] = useState<any[]>([])
+
+  const handleAddToCart = (e: React.MouseEvent, product: any) => {
+    e.preventDefault()
+    e.stopPropagation()
+    addToCart({
+      id: product.id,
+      slug: product.slug,
+      name: product.name,
+      price: product.price,
+      image: product.frontImage || product.image
+    })
+    toast.success('Added to cart', { description: product.name })
+  }
+
+  const handleBuyNow = (e: React.MouseEvent, product: any) => {
+    e.preventDefault()
+    e.stopPropagation()
+    addToCart({
+      id: product.id,
+      slug: product.slug,
+      name: product.name,
+      price: product.price,
+      image: product.frontImage || product.image
+    })
+    router.push('/cart')
+  }
+
+  useEffect(() => {
+    Promise.all([
+      fetch('/api/settings').then(res => res.json()),
+      fetch('/api/products').then(res => res.json())
+    ]).then(([settings, allProducts]) => {
+      const ids = settings.sectionProducts?.featuredSection || []
+      if (ids.length > 0) {
+        setProducts(allProducts.filter((p: any) => ids.includes(p.id)).slice(0, 5))
+      } else {
+        setProducts([])
+      }
+    }).catch(() => setProducts([]))
+  }, [])
 
   return (
     <section className="py-6 sm:py-10">
       <div className="mx-auto max-w-[1400px] px-3 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          {extraData?.map((item, index) => (
-            <div
-              key={index}
-              className="flex flex-col sm:flex-row items-center sm:items-start gap-2 sm:gap-3 bg-white dark:bg-gray-800 p-4 sm:p-5 rounded-lg shadow-sm hover:shadow-md transition-shadow text-center sm:text-left"
-            >
-              <div className="text-blue-600 dark:text-blue-400 flex-shrink-0">
-                {item?.icon}
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-900 dark:text-white text-xs sm:text-sm">
-                  {item?.title}
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400 text-[10px] sm:text-xs mt-0.5 sm:mt-1">
-                  {item?.description}
-                </p>
-              </div>
+        {products.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-lg sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-4">Featured Products</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-0 sm:gap-2">
+              {products.map((product) => (
+                <ProductCard key={product.id} product={product} onAddToCart={handleAddToCart} onBuyNow={handleBuyNow} />
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        )}
       </div>
     </section>
-  );
+  )
 }

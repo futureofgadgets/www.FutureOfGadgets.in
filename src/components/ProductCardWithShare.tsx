@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Share2, Copy, X } from "lucide-react";
-import { useState } from "react";
+import { Share2, Copy, X, Heart } from "lucide-react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { toggleWishlist, isInWishlist } from "@/lib/wishlist";
 
 type Product = {
   id: string;
@@ -28,11 +29,19 @@ type ProductCardProps = {
 
 export default function ProductCardWithShare({ product, onAddToCart, onBuyNow }: ProductCardProps) {
   const [shareProduct, setShareProduct] = useState<Product | null>(null);
+  const [isWishlisted, setIsWishlisted] = useState(false);
   const imageUrl = product.coverImage || product.frontImage || product.image || "/placeholder.svg";
-  const currentQty = product.quantity !== undefined ? product.quantity : (product.stock || 0);
+  const currentQty = Number(product.quantity ?? product.stock ?? 0);
   const mrp = Number(product.mrp) || 0;
   const price = Number(product.price) || 0;
   const discountPct = mrp > 0 && mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0;
+
+  useEffect(() => {
+    setIsWishlisted(isInWishlist(product.id));
+    const handleWishlistUpdate = () => setIsWishlisted(isInWishlist(product.id));
+    window.addEventListener('wishlist-updated', handleWishlistUpdate);
+    return () => window.removeEventListener('wishlist-updated', handleWishlistUpdate);
+  }, [product.id]);
 
   const handleCopyLink = () => {
     const url = `${window.location.origin}/products/${shareProduct?.slug}`;
@@ -64,22 +73,47 @@ export default function ProductCardWithShare({ product, onAddToCart, onBuyNow }:
   return (
     <>
       <div className="bg-white rounded-sm transition-shadow duration-200 flex flex-col relative">
+        {discountPct > 0 && (
+          <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10">
+            {discountPct}% OFF
+          </div>
+        )}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const added = toggleWishlist({
+              id: product.id,
+              slug: product.slug,
+              name: product.name,
+              price: product.price,
+              image: imageUrl
+            });
+            setIsWishlisted(added);
+            toast.success(added ? 'Added to wishlist' : 'Removed from wishlist');
+          }}
+          className="absolute top-2 right-2 z-10 p-2 bg-white rounded-full shadow-md hover:scale-110 transition-transform"
+          title={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+        >
+          <Heart className={`h-4 w-4 transition-colors ${
+            isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-600'
+          }`} />
+        </button>
         <Link href={`/products/${product.slug}`} className="block">
-          {discountPct > 0 && (
-            <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10">
-              {discountPct}% OFF
+          <div className="relative aspect-[4/3] bg-white p-8 overflow-hidden">
+            <div className="absolute inset-0 flex items-center justify-center p-2">
+              <Image
+                src={imageUrl}
+                alt={product.name}
+                width={300}
+                height={225}
+                className="object-contain max-w-full max-h-full"
+                loading="lazy"
+                onError={(e) => {
+                  e.currentTarget.src = '/placeholder.svg';
+                }}
+              />
             </div>
-          )}
-          <div className="relative aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 p-8">
-            <Image
-              src={imageUrl}
-              alt={product.name}
-              fill
-              className="object-contain p-2 bg-white"
-              onError={(e) => {
-                e.currentTarget.src = '/placeholder.svg';
-              }}
-            />
             {currentQty === 0 && (
               <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                 <span className="bg-red-600 text-white px-4 py-2 font-bold text-sm">OUT OF STOCK</span>

@@ -1,6 +1,10 @@
+'use client'
 import Link from "next/link";
 import ProductCard from "@/components/product-card";
 import type { Product } from "@/lib/types";
+import { toast } from 'sonner'
+import { addToCart } from '@/lib/cart'
+import { useRouter } from 'next/navigation'
 
 interface ProductSectionProps {
   title: string;
@@ -9,6 +13,33 @@ interface ProductSectionProps {
 }
 
 export default function ProductSection({ title, products, viewAllLink = "/products" }: ProductSectionProps) {
+  const router = useRouter()
+
+  const handleAddToCart = (e: React.MouseEvent, product: any) => {
+    e.preventDefault()
+    e.stopPropagation()
+    addToCart({
+      id: product.id,
+      slug: product.slug,
+      name: product.name,
+      price: product.price,
+      image: product.frontImage || product.image
+    })
+    toast.success('Added to cart', { description: product.name })
+  }
+
+  const handleBuyNow = (e: React.MouseEvent, product: any) => {
+    e.preventDefault()
+    e.stopPropagation()
+    addToCart({
+      id: product.id,
+      slug: product.slug,
+      name: product.name,
+      price: product.price,
+      image: product.frontImage || product.image
+    })
+    router.push('/cart')
+  }
   return (
     <section className="pt-5 bg-gray-50 dark:bg-gray-900">
       <div className="mx-auto max-w-[1400px] sm:px-6">
@@ -18,9 +49,9 @@ export default function ProductSection({ title, products, viewAllLink = "/produc
             View All →
           </Link>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 sm:gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-4 sm:gap-2">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product.id} product={product} onAddToCart={handleAddToCart} onBuyNow={handleBuyNow} />
           ))}
         </div>
       </div>

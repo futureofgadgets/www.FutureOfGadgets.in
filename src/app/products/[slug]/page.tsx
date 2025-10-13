@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { addToCart } from "@/lib/cart";
+import { toggleWishlist, isInWishlist } from "@/lib/wishlist";
 import { toast } from "sonner";
 import { ShoppingCart, Heart, Share2, Star, Truck, Shield, RotateCcw, CreditCard, Check, ChevronRight, Package, Award, Zap, Headphones, Copy, X } from "lucide-react";
 import Loading from "@/app/loading";
@@ -45,6 +46,7 @@ export default function ProductPage() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [showShareDialog, setShowShareDialog] = useState(false);
+  const [isWishlisted, setIsWishlisted] = useState(false);
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -179,6 +181,7 @@ export default function ProductPage() {
             item.id === found.id ? sum + (item.qty || 1) : sum, 0
           )
           found.quantity = Math.max(0, found.quantity - cartQty)
+          setIsWishlisted(isInWishlist(found.id));
         }
         
         setProduct(found || null);
@@ -186,6 +189,16 @@ export default function ProductPage() {
       .catch(() => setProduct(null))
       .finally(() => setLoading(false));
   }, [slug]);
+
+  useEffect(() => {
+    const handleWishlistUpdate = () => {
+      if (product) {
+        setIsWishlisted(isInWishlist(product.id));
+      }
+    };
+    window.addEventListener('wishlist-updated', handleWishlistUpdate);
+    return () => window.removeEventListener('wishlist-updated', handleWishlistUpdate);
+  }, [product]);
 
   if (loading) return (
    <Loading/>
@@ -247,6 +260,26 @@ export default function ProductPage() {
                   {discount}% OFF
                 </div>
               )}
+              <button
+                onClick={() => {
+                  const added = toggleWishlist({
+                    id: product.id,
+                    slug: product.slug,
+                    name: product.name,
+                    price: product.price,
+                    image: product.frontImage || product.image || product.coverImage || "/no-image.svg"
+                  });
+                  setIsWishlisted(added);
+                  toast.success(added ? 'Added to wishlist' : 'Removed from wishlist');
+                }}
+                className="absolute top-2 right-2 sm:top-3 sm:right-3 p-1.5 sm:p-2 bg-white rounded-full shadow-md hover:scale-110 transition-transform z-10"
+              >
+                <Heart
+                  className={`w-4 h-4 sm:w-5 sm:h-5 transition-colors ${
+                    isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-600'
+                  }`}
+                />
+              </button>
             </div>
             
             {images.length > 1 && (
@@ -369,7 +402,7 @@ export default function ProductPage() {
                   </div>
                 </div>
               ) : (
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mb-4 sm:mb-6">
+                <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 mb-4 sm:mb-6">
                   <button 
                     type="button"
                     onClick={handleAddToCart}
