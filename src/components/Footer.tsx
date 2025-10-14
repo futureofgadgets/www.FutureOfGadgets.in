@@ -55,7 +55,7 @@ export function Footer({ className = "" }: FooterProps) {
             <ul className="space-y-2.5 text-sm">
               <li><Link href="/about" className="text-gray-400 hover:text-blue-400 transition-colors">About Us</Link></li>
               <li><Link href="/contact" className="text-gray-400 hover:text-blue-400 transition-colors">Contact Us</Link></li>
-              <li><Link href="/support" className="text-gray-400 hover:text-blue-400 transition-colors">Support</Link></li>
+              {/* <li><Link href="/contact" className="text-gray-400 hover:text-blue-400 transition-colors">Support</Link></li> */}
               <li><Link href="/orders" className="text-gray-400 hover:text-blue-400 transition-colors">Track Orders</Link></li>
               <li><Link href="/faq" className="text-gray-400 hover:text-blue-400 transition-colors">FAQ</Link></li>
             </ul>

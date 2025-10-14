@@ -159,7 +159,7 @@ export function Navbar() {
               {[
                 { href: "/products", label: "Products" },
                 { href: "/about", label: "About" },
-                { href: "/support", label: "Support" },
+                { href: "/contact", label: "Support" },
               ].map((link) => (
                 <Link
                   key={link.href}
@@ -198,7 +198,7 @@ export function Navbar() {
 
   {/* Support Button */}
   <Link
-    href="/support"
+    href="/contact"
     aria-label="Support"
     className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
   >
