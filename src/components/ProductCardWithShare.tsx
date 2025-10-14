@@ -72,7 +72,7 @@ export default function ProductCardWithShare({ product, onAddToCart, onBuyNow }:
 
   return (
     <>
-      <div className="bg-white sm:rounded-sm transition-shadow duration-200 flex flex-col relative border sm:border-none overflow-hidden">
+      <div className="bg-white sm:rounded-sm transition-shadow duration-200 flex flex-col relative border overflow-hidden">
         {discountPct > 0 && (
           <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10">
             {discountPct}% OFF
@@ -123,7 +123,7 @@ export default function ProductCardWithShare({ product, onAddToCart, onBuyNow }:
           </div>
         </Link>
         
-        <div className="p-4 flex-1 flex flex-col">
+        <div className="p-3 sm:p-4 flex-1 flex flex-col">
           <div className="flex justify-between items-start mb-2">
             <Link href={`/products/${product.slug}`} className="flex-1">
               <h3 className="text-base font-semibold text-gray-800 line-clamp-2 hover:text-blue-600 leading-snug">

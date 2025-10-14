@@ -109,7 +109,7 @@ export default function ProductsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-0 sm:px-6 lg:px-8 sm:py-8 pb-2 mt-5">  
+      <div className="max-w-7xl mx-auto px-0 sm:px-6 lg:px-8 sm:py-8 pb-2 mt-5 sm:mt-2">  
 
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

@@ -57,7 +57,7 @@ const HeaderSlider = () => {
       <div className="overflow-hidden relative w-full">
         <div
           className="relative py-12 sm:py-16 md:py-20 px-4 sm:px-8 md:px-12 mt-3 sm:mt-4 bg-gray-200 animate-pulse flex items-center sm:rounded-lg"
-          style={{ height: "280px" }}
+          style={{ height: "200px" }}
         >
           <div className="relative z-10 max-w-2xl space-y-3 sm:space-y-4">
             <div className="h-4 sm:h-5 bg-gray-300 rounded w-32 sm:w-48"></div>
@@ -106,7 +106,7 @@ const HeaderSlider = () => {
             className="min-w-full block sm:rounded-lg overflow-hidden"
           >
             <div
-              className="relative px-4 sm:py-16 md:py-20 sm:px-8 md:px-12 mt-5 sm:mt-10 cursor-pointer overflow-hidden flex items-center sm:rounded-lg"
+              className="relative px-1 sm:py-16 md:py-20 sm:px-8 md:px-12 mt-5 sm:mt-10 cursor-pointer overflow-hidden flex items-center sm:rounded-lg"
               style={{
                 backgroundImage: (slide as any).image
                   ? `url(${(slide as any).image})`
@@ -114,7 +114,7 @@ const HeaderSlider = () => {
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 backgroundColor: "#E6E9F2",
-                minHeight: "280px",
+                minHeight: "180px",
               }}
             >
               {(slide as any).image && !loadedImages.has(slide.id) && (
@@ -140,16 +140,16 @@ const HeaderSlider = () => {
                 <h1 className="text-base sm:text-3xl md:text-4xl font-extrabold mb-2 sm:mb-5 leading-tight">
                   {slide.title}
                 </h1>
-                <div className="flex flex-row items-center gap-2 sm:gap-3">
-                  <Button className="text-[10px] sm:text-sm px-3 sm:px-8 py-1.5 sm:py-2.5 bg-orange-600 hover:bg-orange-700 rounded-full text-white font-semibold shadow-lg hover:shadow-xl transition-all">
+                <div className="flex flex-row items-center gap-2 sm:gap-3 ">
+                  <div className="text-[10px] sm:text-sm px-3 text-center sm:px-8 py-1.5 sm:py-2.5 bg-orange-600 hover:bg-orange-700 rounded-full text-white font-semibold shadow-lg hover:shadow-xl transition-all">
                     {slide.buttonText1}
-                  </Button>
-                  <Button className="group flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-sm px-3 sm:px-7 py-1.5 sm:py-2.5 font-semibold bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 text-white rounded-full transition-all">
+                  </div>
+                  <div className="group flex items-center gap-1 text-center sm:gap-1.5 text-[10px] sm:text-sm px-3 sm:px-7 py-1.5 sm:py-2.5 font-semibold bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 text-white rounded-full transition-all">
                     {slide.buttonText2}
                     <span className="group-hover:translate-x-1 transition-transform">
                       →
                     </span>
-                  </Button>
+                  </div>
                 </div>
               </div>
             </div>
