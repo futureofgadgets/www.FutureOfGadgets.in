@@ -118,7 +118,7 @@ export function Navbar() {
     <>
       <header
         className={`fixed top-0 left-0 right-0 z-50 border-b bg-background/95 backdrop-blur-lg transition-transform duration-300 ${
-          isVisible ? "sm:translate-y-0" : "sm:-translate-y-full"
+          isVisible ? "translate-y-0" : "-translate-y-full"
         }`}
       >
         <nav
