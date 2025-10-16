@@ -170,15 +170,16 @@ export default function ProductCard({ product, onAddToCart, onBuyNow }: ProductC
 
           {onAddToCart && onBuyNow && (
             <>
+            
               {currentQty === 0 ? (
-                <div className="sm:hidden text-sm font-semibold text-red-600 text-left py-2">
+                <Link href={`/products/${product.slug}`} className="sm:hidden text-sm font-semibold text-red-600 text-left py-2">
                   Out of Stock
-                </div>
+                </Link>
               ) : (
-                <div className="sm:hidden flex items-center text-sm text-orange-600">
+                <Link href={`/products/${product.slug}`} className="sm:hidden flex items-center text-sm text-orange-600">
                   <span>Buy now</span>
                   <ChevronRight className="h-4 -left-4"/>
-                </div>
+                </Link>
               )}
               <div className="hidden sm:flex gap-2">
                 <button

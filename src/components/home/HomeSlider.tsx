@@ -3,6 +3,8 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import Image from "next/image";
+import { Chevron } from "react-day-picker";
+import { ChevronRight } from "lucide-react";
 
 const HeaderSlider = () => {
   const [sliderData, setSliderData] = useState<any[]>([]);
@@ -147,7 +149,7 @@ const HeaderSlider = () => {
                   <div className="group flex items-center gap-1 text-center sm:gap-1.5 text-[10px] sm:text-sm px-3 sm:px-7 py-1.5 sm:py-2.5 font-semibold bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 text-white rounded-full transition-all">
                     {slide.buttonText2}
                     <span className="group-hover:translate-x-1 transition-transform">
-                      →
+                      <ChevronRight className="h-4 -left-1" />
                     </span>
                   </div>
                 </div>
