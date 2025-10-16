@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import { addToCart } from '@/lib/cart'
 import { useRouter } from 'next/navigation'
 import { Clock } from 'lucide-react';
+import Link from 'next/link';
 
 export default function DealoftheDay(){
   const router = useRouter()
@@ -73,7 +74,7 @@ export default function DealoftheDay(){
             <h2 className="text-lg sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Deal of the Day</h2>
             <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-0.5 sm:mt-1">Limited time offers</p>
           </div>
-          <a href="/section/deal-of-the-day" className="sm:px-4 sm:p-2 sm:bg-blue-100 rounded-full text-blue-600 hover:text-blue-700 font-semibold text-xs sm:text-sm whitespace-nowrap hover:underline">View All</a>
+          <Link href="/section/deal-of-the-day" className="sm:px-4 sm:p-2 sm:bg-blue-100 rounded-full text-blue-600 hover:text-blue-700 font-semibold text-xs sm:text-sm whitespace-nowrap hover:underline">View All</Link>
         </div>
          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-0 sm:gap-2">
           {loading ? (

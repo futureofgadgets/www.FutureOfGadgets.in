@@ -4,6 +4,7 @@ import ProductCard from '../product-card'
 import { toast } from 'sonner'
 import { addToCart } from '@/lib/cart'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 export default function FeaturedSection() {
   const router = useRouter()
@@ -68,7 +69,7 @@ export default function FeaturedSection() {
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Featured Products</h2>
-              <a href="/section/featured" className="sm:px-4 sm:p-2 sm:bg-blue-100 rounded-full text-blue-600 hover:text-blue-700 font-semibold text-xs sm:text-sm whitespace-nowrap hover:underline">View All</a>
+              <Link href="/section/featured" className="sm:px-4 sm:p-2 sm:bg-blue-100 rounded-full text-blue-600 hover:text-blue-700 font-semibold text-xs sm:text-sm whitespace-nowrap hover:underline">View All</Link>
             </div>
              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-0 sm:gap-2">
               {products.slice(0, displayCount).map((product) => (
