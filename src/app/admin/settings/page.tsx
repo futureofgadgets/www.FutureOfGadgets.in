@@ -43,6 +43,7 @@ export default function SettingsPage() {
   ])
   const [sliderFiles, setSliderFiles] = useState<(File | null)[]>([null, null, null])
   const [sliderPreviews, setSliderPreviews] = useState<string[]>(['', '', ''])
+  const [sliderLoading, setSliderLoading] = useState(false)
 
   const compressImage = (file: File): Promise<File> => {
     return new Promise((resolve) => {
@@ -117,7 +118,11 @@ export default function SettingsPage() {
     email: 'contact@electronic.com',
     phone: '+91 9876543210',
     address: '123 Electronics Street, Tech City, India',
-    hours: 'Mon-Sat: 9AM-8PM, Sun: 10AM-6PM'
+    hours: 'Mon-Sat: 9AM-8PM, Sun: 10AM-6PM',
+    youtube: '',
+    twitter: '',
+    instagram: '',
+    facebook: ''
   })
 
   const handleSave = async (section: string, tag: string, data: any) => {
@@ -240,7 +245,6 @@ export default function SettingsPage() {
             ))}
             
               <LoadingButton onClick={() => handleSave('Section products', 'sectionProducts', sectionProducts)} loading={isLoading} className="flex items-center gap-2">
-                <Save className="h-4 w-4" />
                 Save Section
               </LoadingButton>
             </div>
@@ -420,20 +424,21 @@ export default function SettingsPage() {
             </div>
           ))}
           
-          <Button onClick={async () => {
-            const loadingToast = toast.loading('Uploading images and saving...')
+          <LoadingButton onClick={async () => {
+            setSliderLoading(true)
             try {
               const updated = await uploadSliderImages()
               await handleSave('Slider', 'slider', updated)
               setSliderFiles(updated.map(() => null))
-              toast.dismiss(loadingToast)
+              toast.success('Slider settings saved successfully!')
             } catch (error) {
-              toast.error('Failed to save', { id: loadingToast })
+              toast.error('Failed to save')
+            } finally {
+              setSliderLoading(false)
             }
-          }} className="mt-4 flex items-center gap-2">
-              <Save className="h-4 w-4" />
-              Save Slider Settings
-            </Button>
+          }} loading={sliderLoading} className="mt-4 flex items-center gap-2">
+              Save Slider
+            </LoadingButton>
           </div>
         )
       case 'contact':
@@ -482,12 +487,47 @@ export default function SettingsPage() {
                 placeholder="Mon-Fri: 9AM-6PM"
               />
             </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">YouTube URL</label>
+              <Input
+                value={contactSettings.youtube || ''}
+                onChange={(e) => setContactSettings({...contactSettings, youtube: e.target.value})}
+                placeholder="https://youtube.com/@channel"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Twitter URL</label>
+              <Input
+                value={contactSettings.twitter || ''}
+                onChange={(e) => setContactSettings({...contactSettings, twitter: e.target.value})}
+                placeholder="https://twitter.com/username"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Instagram URL</label>
+              <Input
+                value={contactSettings.instagram || ''}
+                onChange={(e) => setContactSettings({...contactSettings, instagram: e.target.value})}
+                placeholder="https://instagram.com/username"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Facebook URL</label>
+              <Input
+                value={contactSettings.facebook || ''}
+                onChange={(e) => setContactSettings({...contactSettings, facebook: e.target.value})}
+                placeholder="https://facebook.com/page"
+              />
+            </div>
           </div>
             
-              <Button onClick={() => handleSave('Contact page', 'contact', contactSettings)} className="flex items-center gap-2">
-                <Save className="h-4 w-4" />
-                Save Contact Settings
-              </Button>
+              <LoadingButton onClick={() => handleSave('Contact page', 'contact', contactSettings)} loading={isLoading} className="flex items-center gap-2">
+                Save Contact
+              </LoadingButton>
             </div>
           </div>
         )

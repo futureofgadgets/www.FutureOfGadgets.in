@@ -16,7 +16,11 @@ export default function ContactPage() {
     email: '',
     phone: '',
     address: '',
-    hours: ''
+    hours: '',
+    youtube: '',
+    twitter: '',
+    instagram: '',
+    facebook: ''
   });
   const [loading, setLoading] = useState(true);
 
@@ -113,6 +117,34 @@ export default function ContactPage() {
                   <p className="text-sm sm:text-base text-gray-600">{contactSettings.hours}</p>
                 </div>
               </div>
+              </div>
+            )}
+            
+            {!loading && (contactSettings.youtube || contactSettings.twitter || contactSettings.instagram || contactSettings.facebook) && (
+              <div className="mt-6 pt-6 border-t">
+                <h3 className="font-semibold text-base sm:text-lg text-gray-900 mb-4">Follow Us</h3>
+                <div className="flex gap-4">
+                  {contactSettings.youtube && (
+                    <a href={contactSettings.youtube} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
+                      <img src="/share/youtube.png" alt="YouTube" className="w-10 h-10" />
+                    </a>
+                  )}
+                  {contactSettings.twitter && (
+                    <a href={contactSettings.twitter} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
+                      <img src="/share/twitter.png" alt="Twitter" className="w-10 h-10" />
+                    </a>
+                  )}
+                  {contactSettings.instagram && (
+                    <a href={contactSettings.instagram} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
+                      <img src="/share/instagram.png" alt="Instagram" className="w-10 h-10" />
+                    </a>
+                  )}
+                  {contactSettings.facebook && (
+                    <a href={contactSettings.facebook} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
+                      <img src="/share/facebook.png" alt="Facebook" className="w-10 h-10" />
+                    </a>
+                  )}
+                </div>
               </div>
             )}
           </div>
