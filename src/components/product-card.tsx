@@ -95,7 +95,7 @@ export default function ProductCard({ product, onAddToCart, onBuyNow }: ProductC
             }}
             className="absolute top-2 right-2 z-10 p-1.5 bg-white rounded-full shadow-md hover:scale-110 transition-transform"
           >
-            <Heart className={`w-4 h-4 ${isWished ? 'fill-pink-500 text-pink-500' : 'text-gray-600'}`} />
+            <Heart className={`w-4 h-4 ${isWished ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
           </button>
           <div className="relative aspect-[4/3] bg-white p-8 overflow-hidden">
             <div className="absolute inset-0 flex items-center justify-center p-2">

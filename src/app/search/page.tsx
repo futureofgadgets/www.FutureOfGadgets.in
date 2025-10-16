@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { ArrowUpDown } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { addToCart } from "@/lib/cart";
 import { toast } from "sonner";
-import ProductCardWithShare from "@/components/ProductCardWithShare";
+import ProductCard from "@/components/product-card";
 
 type Product = {
   id: string;
@@ -188,8 +188,8 @@ function SearchContent() {
           <div className="mb-8">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Search Results</h1>
-                <p className="text-gray-600">{results.length} products found for <span className="font-semibold">&quot;{query}&quot;</span></p>
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Search Results</h1>
+                <p className="text-gray-600 ">{results.length} products found for <span className="font-semibold">&quot;{query}&quot;</span></p>
               </div>
               {results.length > 0 && (
                 <DropdownMenu>
@@ -229,9 +229,9 @@ function SearchContent() {
         )}
 
         {!loading && results.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-0 sm:gap-2">
             {sortProducts(results, sortBy).map((product) => (
-              <ProductCardWithShare
+              <ProductCard
                 key={product.id}
                 product={product}
                 onAddToCart={handleAddToCart}
@@ -263,9 +263,9 @@ function SearchContent() {
         {query && !loading && suggestions.length > 0 && (
           <div className="mt-12">
             <h3 className="text-2xl font-bold text-gray-900 mb-6">{results.length === 0 ? 'You might also like' : 'Related Products'}</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-0 sm:gap-2">
               {suggestions.map((product) => (
-                <ProductCardWithShare
+                <ProductCard
                   key={product.id}
                   product={product}
                   onAddToCart={handleAddToCart}

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { addToCart } from "@/lib/cart";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import ProductCardWithShare from "@/components/ProductCardWithShare";
+import ProductCard from "@/components/product-card";
 
 type Product = {
   id: string;
@@ -117,9 +117,9 @@ export default function ProductsPage() {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-0 sm:gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-0 sm:gap-2">
             {products.map((product) => (
-              <ProductCardWithShare
+              <ProductCard
                 key={product.id}
                 product={product}
                 onAddToCart={handleAddToCart}

@@ -159,7 +159,7 @@ export default function WishlistPage() {
       <div className="max-w-7xl mx-auto py-4 sm:py-8">
         <div className="flex items-center justify-between mb-4 sm:mb-6 px-3 sm:px-4">
           <h1 className="text-xl sm:text-3xl font-bold text-gray-900 flex items-center gap-2">
-            My Wishlist ({items.length})
+            My Wishlist
           </h1>
           <AlertDialog open={clearDialogOpen} onOpenChange={setClearDialogOpen}>
             <AlertDialogTrigger asChild>
