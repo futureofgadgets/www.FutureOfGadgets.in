@@ -73,20 +73,21 @@ export default function WishlistPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-8 mt-5 sm:mt-2 animate-pulse">
-          <div className="flex items-center gap-2 mb-4 sm:mb-6">
-            {/* <div className="h-6 w-6 sm:h-8 sm:w-8 bg-gray-200 rounded-full" /> */}
-            <div className="h-6 sm:h-8 bg-gray-200 rounded w-48" />
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="bg-white rounded-lg overflow-hidden border">
-                <div className="aspect-square bg-gray-200" />
-                <div className="p-2 sm:p-3 space-y-2">
+      <div className='bg-gray-50'>
+        <div className="max-w-7xl mx-auto min-h-screen mt-5 sm:mt-2 p-4">
+          <header className="mb-8 text-left">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">My Wishlist</h1>
+            <p className="text-gray-600 sm:mt-1">Save your favorite items for later</p>
+          </header>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-0 sm:gap-2">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
+              <div key={i} className="bg-white border sm:rounded-sm animate-pulse">
+                <div className="aspect-[4/3] bg-gray-200" />
+                <div className="p-4 space-y-3">
                   <div className="h-4 bg-gray-200 rounded" />
                   <div className="h-4 bg-gray-200 rounded w-3/4" />
-                  <div className="h-8 bg-gray-200 rounded" />
+                  <div className="h-6 bg-gray-200 rounded w-1/2" />
+                  <div className="h-10 bg-gray-200 rounded" />
                 </div>
               </div>
             ))}
