@@ -100,7 +100,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No items provided" }, { status: 400 })
     }
 
-    const orderItems = []
+    const orderItems: Array<{ productId: string; name: string; price: number; qty: number; color?: string }> = []
     let total = 0
 
     // First, validate stock for all items
