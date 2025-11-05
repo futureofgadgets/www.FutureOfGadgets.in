@@ -50,6 +50,8 @@ export default function ProductPage() {
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [reviews, setReviews] = useState<any[]>([]);
+  const [showZoom, setShowZoom] = useState(false);
+  const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -265,19 +267,46 @@ export default function ProductPage() {
 
         <div className="grid lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-6">
           {/* Left: Images */}
-          <div className="lg:col-span-2 bg-white rounded-lg p-3 sm:p-4 lg:p-6 h-fit lg:sticky top-24">
-            <div className="aspect-square bg-white-50 rounded-lg mb-3 sm:mb-4 overflow-hidden relative group">
+          <div className="lg:col-span-2 bg-white rounded-lg p-3 sm:p-4 lg:p-6 h-fit lg:sticky top-24 relative!mt-0">
+            <div 
+              className="aspect-square bg-white-50 rounded-lg mb-3 sm:mb-4 overflow-visible relative group"
+              onMouseEnter={() => setShowZoom(true)}
+              onMouseLeave={() => setShowZoom(false)}
+              onMouseMove={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width) * 100;
+                const y = ((e.clientY - rect.top) / rect.height) * 100;
+                setZoomPosition({ x, y });
+              }}
+            >
               <img
                 src={images[selectedImage]}
                 alt={product.name}
-                className="w-full h-full object-contain p-2 sm:p-4"
+                className="w-full h-full object-contain p-2 sm:p-4 cursor-crosshair"
               />
+              {showZoom && (
+                <div 
+                  className="hidden lg:block fixed w-[60vw] h-[85vh] bg-white border-2 shadow-2xl rounded-sm pointer-events-none"
+                  style={{
+                    backgroundImage: `url(${images[selectedImage]})`,
+                    backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                    backgroundSize: '170%',
+                    backgroundRepeat: 'no-repeat',
+                    right: '20px',
+                    top: '52%',
+                    bottom: '0% !important',
+                    transform: 'translateY(-50%)',
+                    zIndex: 9999,
+                    imageRendering: '-webkit-optimize-contrast',
+                  }}
+                />
+              )}
               {discount > 0 && (
                 <div className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-red-500 text-white px-2 py-0.5 sm:px-3 sm:py-1 rounded-md text-xs sm:text-sm font-bold">
                   {discount}% OFF
                 </div>
               )}
-              <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex gap-2 z-10">
+              <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex gap-2 z-[100]" onMouseEnter={() => setShowZoom(false)} onMouseLeave={() => setShowZoom(true)}>
                 <button
                   onClick={() => {
                     const added = toggleWishlist({
