@@ -24,6 +24,7 @@ export default function Review() {
   const [centerIndex, setCenterIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const autoScrollRef = useRef<NodeJS.Timeout | null>(null);
+  const isScrollingRef = useRef(false);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 640);
@@ -32,7 +33,8 @@ export default function Review() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  const getItemWidth = () => (isMobile ? 240 + 16 : 350 + 24);
+  const getItemWidth = () => (isMobile ? 256 : 374);
+  const getCardWidth = () => (isMobile ? 240 : 350);
 
   const startAutoScroll = () => {
     if (autoScrollRef.current) clearInterval(autoScrollRef.current);
@@ -58,14 +60,16 @@ export default function Review() {
       const { scrollLeft, clientWidth } = container;
       const itemWidth = getItemWidth();
       const singleSetWidth = reviews.length * itemWidth;
-      const center = scrollLeft + clientWidth / 2;
-      const index = Math.floor(center / itemWidth) % reviews.length;
+      const centerPosition = scrollLeft + clientWidth / 2;
+      const index = Math.round(centerPosition / itemWidth) % reviews.length;
       setCenterIndex(index);
 
-      if (scrollLeft >= singleSetWidth * 2) {
-        container.scrollLeft = singleSetWidth;
-      } else if (scrollLeft <= 0) {
-        container.scrollLeft = singleSetWidth;
+      if (!isScrollingRef.current) {
+        if (scrollLeft >= singleSetWidth * 2 - 50) {
+          container.scrollLeft = singleSetWidth;
+        } else if (scrollLeft <= 50) {
+          container.scrollLeft = singleSetWidth;
+        }
       }
     };
 
@@ -81,6 +85,7 @@ export default function Review() {
 
   const scroll = (direction: "left" | "right") => {
     stopAutoScroll();
+    isScrollingRef.current = true;
     if (scrollRef.current) {
       const itemWidth = getItemWidth();
       scrollRef.current.scrollBy({
@@ -88,18 +93,30 @@ export default function Review() {
         behavior: "smooth",
       });
     }
-    setTimeout(startAutoScroll, 3000);
+    setTimeout(() => {
+      isScrollingRef.current = false;
+    }, 600);
+    setTimeout(() => {
+      startAutoScroll();
+    }, 3000);
   };
 
   const scrollToCenter = (index: number) => {
     stopAutoScroll();
+    isScrollingRef.current = true;
     if (scrollRef.current) {
       const itemWidth = getItemWidth();
-      const cardWidth = isMobile ? 240 : 350;
-      const targetScroll = index * itemWidth - scrollRef.current.clientWidth / 2 + cardWidth / 2;
+      const cardWidth = getCardWidth();
+      const gap = isMobile ? 16 : 24;
+      const targetScroll = index * itemWidth - scrollRef.current.clientWidth / 2 + (cardWidth + gap) / 2;
       scrollRef.current.scrollTo({ left: targetScroll, behavior: "smooth" });
     }
-    setTimeout(startAutoScroll, 3000);
+    setTimeout(() => {
+      isScrollingRef.current = false;
+    }, 600);
+    setTimeout(() => {
+      startAutoScroll();
+    }, 3000);
   };
 
   return (
@@ -127,7 +144,7 @@ export default function Review() {
                 key={i}
                 onClick={() => scrollToCenter(i)}
                 className={`flex-shrink-0 cursor-pointer group transition-all duration-500 ${
-                  isCenter ? "w-[200px] sm:w-[260px] md:w-[360px]" : "w-[240px] sm:w-[280px] md:w-[350px]"
+                  isCenter ? "w-[240px] sm:w-[280px] md:w-[360px]" : "w-[240px] sm:w-[280px] md:w-[350px]"
                 }`}
               >
                 <div className={`relative rounded-2xl sm:rounded-3xl overflow-hidden transition-all duration-500 ease-out hover:scale-105 border-2 sm:border-[3px] ${
