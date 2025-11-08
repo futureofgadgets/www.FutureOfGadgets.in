@@ -105,7 +105,7 @@ export default function Review() {
   return (
     <section className="py-6 sm:py-8 md:py-12 bg-gray-50">
       <div className="mx-auto max-w-8xl px-3 sm:px-4 md:px-6 mb-4 sm:mb-6 md:mb-8">
-        <div className="text-left leading-tight mb-4 mx-7">
+        <div className="text-left leading-tight mb-4 sm:mx-2 lgtext:mx-7">
           <h2 className="text-base sm:text-lg md:text-3xl font-bold text-gray-900 leading-snug">
             Customer Reviews
           </h2>
