@@ -30,7 +30,7 @@ export default function AboutPage() {
             <div className="text-gray-600">Products</div>
           </div>
           <div className="bg-white rounded-lg shadow-sm p-6 text-center">
-            <div className="text-3xl font-bold text-purple-600 mb-2">{new Date().getFullYear() - 2019}</div>
+            <div className="text-3xl font-bold text-purple-600 mb-2">{new Date().getFullYear() - 2015}</div>
             <div className="text-gray-600">Years Experience</div>
           </div>
           <div className="bg-white rounded-lg shadow-sm p-6 text-center">
@@ -45,7 +45,7 @@ export default function AboutPage() {
             <div>
               <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Story</h2>
               <p className="text-gray-600 leading-relaxed mb-4">
-                Founded in {new Date().getFullYear() - (new Date().getFullYear() - 2019)} with a simple vision: to make cutting-edge technology accessible 
+                Founded in {new Date().getFullYear() - (new Date().getFullYear() - 2015)} with a simple vision: to make cutting-edge technology accessible 
                 to everyone in India. What started as a small electronics store has grown into a trusted 
                 online destination for tech enthusiasts across the country.
               </p>
@@ -56,14 +56,16 @@ export default function AboutPage() {
               </p>
               <p className="text-gray-600 leading-relaxed">
                 Today, we&apos;re proud to serve thousands of customers across India, offering everything 
-                from laptops and smartphones to smart home devices and gaming accessories.
+                from laptops and smart devices to smart home devices and gaming accessories.
               </p>
             </div>
-            <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg p-8">
-              <div className="text-center">
-                <MapPin className="w-16 h-16 text-blue-600 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Pan-India Delivery</h3>
-                <p className="text-gray-600">Serving customers across all major cities in India</p>
+            <div className="relative h-80 rounded-lg p-8 overflow-hidden">
+              <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: 'url(/Pan-India.jpg)' }} />
+              <div className="absolute inset-0 bg-black/0" />
+              <div className="relative mt-57 text-center text-yellow-800">
+                {/* <MapPin className="w-16 h-16 mx-auto mb-4" /> */}
+                <h3 className="text-xl font-semibold mb-2">Pan-India Delivery</h3>
+                <p className="">Serving customers across all major cities in India</p>
               </div>
             </div>
           </div>
