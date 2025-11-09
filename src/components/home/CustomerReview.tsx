@@ -201,7 +201,7 @@ export default function CustomerReview() {
                         />
                       ))}
                       {infiniteReviews[i]?.ratingCount > 0 && (
-                        <span className="text-xs sm:text-sm ml-1">{infiniteReviews[i]?.ratingCount}</span>
+                        <span className="text-xs sm:text-sm ml-1">({infiniteReviews[i]?.ratingCount})</span>
                       )}
                     </div>
                     <h3 className="text-sm sm:text-base md:text-lg font-bold">{infiniteReviews[i]?.customerName || 'Customer'}</h3>
