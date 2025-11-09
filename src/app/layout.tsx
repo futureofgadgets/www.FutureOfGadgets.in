@@ -1,21 +1,9 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/components/auth-provider";
 import { ConditionalLayout } from "@/components/ConditionalLayout";
 import { Toaster } from "sonner";
-
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
@@ -56,9 +44,7 @@ export default function RootLayout({
       <head>
         <link href='https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap' rel="stylesheet" />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50`}
-      >
+      <body className="antialiased bg-gray-50">
         <AuthProvider>
           {/* <ThemeProvider attribute="class" defaultTheme="light" 
           enableSystem
