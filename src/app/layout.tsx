@@ -44,7 +44,7 @@ export default function RootLayout({
       <head>
         <link href='https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap' rel="stylesheet" />
       </head>
-      <body className="antialiased bg-gray-50">
+      <body className="antialiased bg-transparent">
         <AuthProvider>
           {/* <ThemeProvider attribute="class" defaultTheme="light" 
           enableSystem
