@@ -132,8 +132,8 @@ export default function LaptopCarousel() {
                   if (isPointerDownRef.current) e.preventDefault();
                 }}
               >
-                <div className="relative w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 rounded-full overflow-hidden transition-all duration-300">
-                  <div className="absolute inset-0 flex items-center justify-center p-2 sm:p-3">
+                <div className="relative w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 bg-gray-200/50 border border-gray-200/50 rounded-full overflow-hidden transition-all duration-300">
+                  <div className="absolute inset-0 flex items-center justify-center p-2 sm:p-3 overflow-hidden">
                     <Image
                       src={category.image}
                       alt={category.name}

@@ -72,7 +72,7 @@ export default function CategoryPage() {
                     <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
                       {(expandedSections[idx] ? section.categories : section.categories.slice(0, INITIAL_ITEMS)).map((cat: any) => (
                         <Link key={cat.slug} href={`/search?q=${cat.slug}`} className="group flex justify-center">
-                          <div className="relative w-20 h-20 sm:w-28 sm:h-28 lg:w-32 lg:h-32 rounded-full bg-gray-200/40 overflow-hidden transition-all duration-300">
+                          <div className="relative w-20 h-20 sm:w-28 sm:h-28 lg:w-32 lg:h-32 -ml-8 md:-ml-12 lg:-ml-8 xl:-ml-12 rounded-full bg-gray-200/50 border border-gray-200/50 overflow-hidden transition-all duration-300">
                             <div className="absolute inset-0 flex items-center justify-center p-2 sm:p-3">
                               <Image 
                                 src={cat.image || "/placeholder.svg"} 

@@ -82,7 +82,7 @@ export default function CategorySlugPage({
                 href={`/search?q=${item.slug}`}
                 className="group flex justify-center"
               >
-                <div className="relative w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-34 lg:h-34 rounded-full bg-gray-200/40 overflow-hidden transition-all duration-300">
+                <div className="relative w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-34 lg:h-34 -ml-8 md:-ml-12 lg:-ml-8 xl:-ml-12 rounded-full bg-gray-200/40 border border-gray-200/50 overflow-hidden transition-all duration-300">
                   <div className="absolute inset-0 flex items-center justify-center p-2 sm:p-3">
                     <Image
                       src={item.image || "/placeholder.svg"}
