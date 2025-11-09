@@ -11,8 +11,8 @@ import DealoftheDay from "@/components/home/DealoftheDay";
 import NewArrivals from "@/components/home/NewArrivals";
 import FeaturedSection from "@/components/home/FeaturedSection";
 import { GitCompareArrows, Headset, ShieldCheck, Truck } from "lucide-react";
-import Review from "@/components/home/review";
 import Laptopcarousal from "@/components/home/laptop-carousal";
+import CustomerReview from "@/components/home/CustomerReview";
 
 export default function HomePage() {
 
@@ -48,7 +48,7 @@ export default function HomePage() {
           <HeaderSlider />
         </div>
       </section>
-      <div className="space-y-4 sm:space-y-8">
+      <div className="space-t-4 sm:space-t-8">
         <Laptopcarousal />
         <DealoftheDay />
         <NewArrivals />
@@ -58,7 +58,7 @@ export default function HomePage() {
         <BestSeller />
         <ShopByBrands />
         <TrendingNow />
-        <Review/>
+        <CustomerReview/>
       </div>
           {/* <section className="py-6 sm:py-10">
       <div className="mx-auto max-w-[1400px] px-3 sm:px-6 lg:px-8">

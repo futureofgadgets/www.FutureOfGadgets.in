@@ -4,12 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 
 const laptopCategories = [
-  { name: "Slim Laptops", image: "/category/ultra_thin_laptop.jpg", href: "/category/slim-laptop" },
-  { name: "Apple Macbook", image: "/category/regular_laptop.jpg", href: "/category/apple-macbook" },
-  { name: "Touch Laptops", image: "/category/touchscreen.png", href: "/category/touch-laptop" },
-  { name: "Pro Laptops", image: "/category/pro_laptop.jpg", href: "/category/pro-laptop" },
-  { name: "Gaming Laptops", image: "/category/best-gaming-laptop.jpg", href: "/category/gaming-laptop" },
-  { name: "Office Laptops", image: "/category/office_laptop.jpg", href: "/category/office-laptop" },
+  { name: "Slim Laptops", image: "/category/ultra_thin_laptop.jpg", href: "/search?q=slim-laptop" },
+  { name: "Apple Macbook", image: "/category/regular_laptop.jpg", href: "/search?q=apple-macbook" },
+  { name: "Touch Laptops", image: "/category/touchscreen.png", href: "/search?q=touch-laptop" },
+  { name: "Pro Laptops", image: "/category/pro_laptop.jpg", href: "/search?q=pro-laptop" },
+  { name: "Gaming Laptops", image: "/category/best-gaming-laptop.jpg", href: "/search?q=gaming-laptop" },
+  { name: "Office Laptops", image: "/category/office_laptop.jpg", href: "/search?q=office-laptop" },
 ];
 
 export default function LaptopCarousel() {
@@ -105,7 +105,7 @@ export default function LaptopCarousel() {
   };
 
   return (
-    <section className="py-3 sm:py-6">
+    <section className="py-3 sm:pt-6 sm:pb-10 bg-white">
       <div className="mx-auto max-w-7xl px-2 sm:px-4">
         <div className="relative">
           <div

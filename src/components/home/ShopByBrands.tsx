@@ -6,7 +6,7 @@ const brands = [
   { name: "Apple", image: "/brand/Apple.png",},
   { name: "Asus", image: "/brand/Asus.png" },
   { name: "Dell", image: "/brand/dell.png" },
-  { name: "HP", image: "/brand/hp.webp" },
+  { name: "HP", image: "/brand/hp.png" },
   { name: "Lenovo", image: "/brand/lenovo.png" },
   { name: "Samsung", image: "/brand/samsung.png" },
   { name: "Sony", image: "/brand/acer.png" },

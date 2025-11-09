@@ -220,7 +220,7 @@ export default function OrdersPage() {
               <div className="px-4 sm:px-6 py-4 sm:py-5">
                 <div className="flex gap-3 sm:gap-4 mb-4">
                   <img 
-                    src={imageUrl} 
+                    src={imageUrl|| "/placeholder.svg"} 
                     alt={firstItem?.name}
                     className="w-16 h-16 sm:w-24 sm:h-24 object-cover border border-gray-200"
                   />
@@ -305,7 +305,7 @@ export default function OrdersPage() {
                                     return (
                                       <div key={idx} className="flex gap-3 sm:gap-4 pb-3 sm:pb-4 border-b last:border-b-0">
                                         <img 
-                                          src={imageUrl} 
+                                          src={imageUrl || "/placeholder.svg"} 
                                           alt={item.name}
                                           className="w-16 h-16 sm:w-20 sm:h-20 object-cover border rounded"
                                         />

@@ -781,13 +781,6 @@ export default function ProductTable() {
                               <Textarea
                                 placeholder="Item description..."
                                 {...field}
-                                onChange={(e) => {
-                                  const value = e.target.value.replace(
-                                    /\./g,
-                                    "\n"
-                                  );
-                                  field.onChange(value);
-                                }}
                                 rows={4}
                               />
                             </FormControl>
