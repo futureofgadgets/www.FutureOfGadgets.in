@@ -13,8 +13,24 @@ import { ShoppingBag, Trash2, Plus, Minus, Tag, Lock, Truck, ArrowRight } from "
 import CartSkeleton from "@/components/skeletons/CartSkeleton"
 import { useRouter } from "next/navigation"
 
-type CartItem = ReturnType<typeof getCart>[number]
-type Product = { id: string; quantity: number }
+type CartItem = {
+  id: string
+  slug: string
+  name: string
+  price: number
+  image: string
+  qty?: number
+  color?: string
+  selectedRam?: string
+  selectedStorage?: string
+  warranty?: { duration: string; price: number }
+}
+type Product = { 
+  id: string; 
+  quantity: number;
+  ramOptions?: { size: string; price: number; quantity: number }[];
+  storageOptions?: { size: string; price: number; quantity: number }[];
+}
 
 export default function CartView() {
   const { data: session } = useSession()
@@ -31,7 +47,12 @@ export default function CartView() {
     setItems(getCart())
     fetch('/api/products')
       .then(res => res.json())
-      .then(data => setProducts(data.map((p: any) => ({ id: p.id, quantity: p.quantity }))))
+      .then(data => setProducts(data.map((p: any) => ({ 
+        id: p.id, 
+        quantity: p.quantity,
+        ramOptions: p.ramOptions || [],
+        storageOptions: p.storageOptions || []
+      }))))
       .catch(() => {})
       .finally(() => setLoading(false))
     const onStorage = () => setItems(getCart())
@@ -52,7 +73,21 @@ export default function CartView() {
     
     const hasIssue = items.some(item => {
       const product = products.find(p => p.id === item.id)
-      return product && product.quantity < (item.qty || 1)
+      if (!product) return true
+      
+      // For products with RAM/Storage options, check specific configuration stock
+      if (item.selectedRam && item.selectedStorage) {
+        const ramOption = (product as any).ramOptions?.find((r: any) => r.size === item.selectedRam)
+        const storageOption = (product as any).storageOptions?.find((s: any) => s.size === item.selectedStorage)
+        
+        if (!ramOption || !storageOption) return true
+        
+        const availableStock = Math.min(ramOption.quantity, storageOption.quantity)
+        return availableStock < (item.qty || 1)
+      }
+      
+      // For regular products
+      return product.quantity < (item.qty || 1)
     })
     
     setHasStockIssue(hasIssue)
@@ -148,13 +183,25 @@ export default function CartView() {
                 </h2>
               </div>
               <ul className="divide-y">
-                {items.map((i) => {
+                {items.map((i, idx) => {
                   const product = products.find(p => p.id === i.id)
-                  const availableStock = product?.quantity ?? 0
-                  const isOutOfStock = product ? availableStock < (i.qty || 1) : false
+                  
+                  let availableStock = 0
+                  if (product) {
+                    if (i.selectedRam && i.selectedStorage) {
+                      const ramOption = product.ramOptions?.find(r => r.size === i.selectedRam)
+                      const storageOption = product.storageOptions?.find(s => s.size === i.selectedStorage)
+                      availableStock = ramOption && storageOption ? Math.min(ramOption.quantity, storageOption.quantity) : 0
+                    } else {
+                      availableStock = product.quantity
+                    }
+                  }
+                  
+                  const isOutOfStock = availableStock < (i.qty || 1)
+                  const uniqueKey = `${i.id}-${i.color || ''}-${i.selectedRam || ''}-${i.selectedStorage || ''}-${i.warranty?.duration || ''}`
                   
                   return (
-                    <li key={i.id} className={`p-3 sm:p-4 hover:bg-white transition-colors ${isOutOfStock ? 'bg-gray-50' : ''}`}>
+                    <li key={uniqueKey} className={`p-3 sm:p-4 hover:bg-white transition-colors ${isOutOfStock ? 'bg-gray-50' : ''}`}>
                       <div className="flex gap-2 sm:gap-4">
                         <Link href={`/products/${i.slug}`} className="flex-shrink-0">
                           <Image
@@ -169,8 +216,29 @@ export default function CartView() {
                           <Link href={`/products/${i.slug}`}>
                             <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-1 line-clamp-2">{i.name}</h3>
                           </Link>
-                          {(i as any).color && (
-                            <p className="text-xs text-gray-600 mb-1">Color: {(i as any).color}</p>
+                          {i.color && (
+                            <p className="text-xs text-gray-600 mb-1">Color: {i.color}</p>
+                          )}
+                          {i.selectedRam && (() => {
+                            const ramOption = product?.ramOptions?.find(r => r.size === i.selectedRam)
+                            const ramPrice = ramOption?.price || 0
+                            return (
+                              <p className="text-xs text-gray-600 mb-1">
+                                RAM: {i.selectedRam}{ramPrice !== 0 && ` (+₹${ramPrice.toLocaleString()})`}
+                              </p>
+                            )
+                          })()}
+                          {i.selectedStorage && (() => {
+                            const storageOption = product?.storageOptions?.find(s => s.size === i.selectedStorage)
+                            const storagePrice = storageOption?.price || 0
+                            return (
+                              <p className="text-xs text-gray-600 mb-1">
+                                Storage: {i.selectedStorage}{storagePrice !== 0 && ` (+₹${storagePrice.toLocaleString()})`}
+                              </p>
+                            )
+                          })()}
+                          {i.warranty && (
+                            <p className="text-xs text-gray-600 mb-1">Warranty: {i.warranty.duration} (+₹{i.warranty.price.toLocaleString()})</p>
                           )}
                           {isOutOfStock ? (
                             <p className="text-xs sm:text-sm text-red-600 font-semibold mb-2">Out of Stock</p>
@@ -184,11 +252,11 @@ export default function CartView() {
                               onClick={() => {
                                 const currentQty = i.qty || 1
                                 if (currentQty === 1) {
-                                  removeFromCart(i.id)
+                                  removeFromCart(i.id, i.color ?? undefined, i.selectedRam ?? undefined, i.selectedStorage ?? undefined, i.warranty ?? undefined)
                                   setItems(getCart())
                                   toast.success('Removed from cart')
                                 } else {
-                                  updateQty(i.id, currentQty - 1)
+                                  updateQty(i.id, currentQty - 1, i.color ?? undefined, i.selectedRam ?? undefined, i.selectedStorage ?? undefined, i.warranty ?? undefined)
                                   setItems(getCart())
                                 }
                               }}
@@ -208,7 +276,7 @@ export default function CartView() {
                                   toast.error('Cannot add more', { description: `Only ${availableQty} items available in stock.` })
                                   return
                                 }
-                                updateQty(i.id, currentQty + 1)
+                                updateQty(i.id, currentQty + 1, i.color ?? undefined, i.selectedRam ?? undefined, i.selectedStorage ?? undefined, i.warranty ?? undefined)
                                 setItems(getCart())
                               }}
                               className="p-1.5 sm:p-2 hover:bg-gray-100 transition-colors rounded-full border hover:cursor-pointer"
@@ -218,7 +286,7 @@ export default function CartView() {
                           </div>
                           <button
                             onClick={() => {
-                              removeFromCart(i.id)
+                              removeFromCart(i.id, i.color ?? undefined, i.selectedRam ?? undefined, i.selectedStorage ?? undefined, i.warranty ?? undefined)
                               setItems(getCart())
                               toast.success('Removed from cart')
                             }}

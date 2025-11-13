@@ -62,6 +62,7 @@ export default function OrdersPage() {
   const [reviewComment, setReviewComment] = useState('')
   const [reviewLoading, setReviewLoading] = useState(false)
   const [reviews, setReviews] = useState<any[]>([])
+  const [allProducts, setAllProducts] = useState<any[]>([])
 
   useEffect(() => {
     if (status === 'loading') return
@@ -86,6 +87,7 @@ export default function OrdersPage() {
         if (productsResponse.ok) {
           const productsData = await productsResponse.json()
           setProducts(productsData)
+          setAllProducts(productsData)
         }
         
         if (reviewsResponse.ok) {
@@ -312,6 +314,19 @@ export default function OrdersPage() {
                                         <div className="flex-1 min-w-0">
                                           <Link href={`/products/${item.name?.toLowerCase().replace(/\s+/g, '-')}`} className="text-sm sm:text-base font-medium text-gray-900 mb-1 line-clamp-2 hover:text-blue-600 block">{item.name}</Link>
                                           <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2">Qty: {item.qty}</p>
+                                          {(item as any).selectedRam && (() => {
+                                            const prod = allProducts.find(p => p.id === item.productId)
+                                            const ramOption = prod?.ramOptions?.find((r: any) => r.size === (item as any).selectedRam)
+                                            const ramPrice = ramOption?.price || 0
+                                            return <p className="text-xs sm:text-sm text-gray-600 mb-1">RAM: {(item as any).selectedRam}{ramPrice !== 0 && ` (+₹${ramPrice.toLocaleString()})`}</p>
+                                          })()}
+                                          {(item as any).selectedStorage && (() => {
+                                            const prod = allProducts.find(p => p.id === item.productId)
+                                            const storageOption = prod?.storageOptions?.find((s: any) => s.size === (item as any).selectedStorage)
+                                            const storagePrice = storageOption?.price || 0
+                                            return <p className="text-xs sm:text-sm text-gray-600 mb-1">Storage: {(item as any).selectedStorage}{storagePrice !== 0 && ` (+₹${storagePrice.toLocaleString()})`}</p>
+                                          })()}
+                                          {(item as any).warranty && <p className="text-xs sm:text-sm text-gray-600 mb-1">Warranty: {(item as any).warranty.duration} (+₹{(item as any).warranty.price.toLocaleString()})</p>}
                                           <p className="text-base sm:text-lg font-semibold mb-2">₹{item.price.toLocaleString()}</p>
                                           {showReview && (
                                             <button

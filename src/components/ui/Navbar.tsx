@@ -683,7 +683,7 @@ export function Navbar() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -100 }}
               transition={{ type: "tween", duration: 0.2, ease: "easeOut" }}
-              className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 shadow-2xl rounded-b-3xl will-change-transform"
+              className="fixed top-0 left-0 right-0 z-1000 bg-white dark:bg-gray-900 shadow-2xl rounded-b-3xl will-change-transform"
             >
               <div className="px-4 pt-4 pb-2">
                 <div className="flex items-center justify-between mb-4">

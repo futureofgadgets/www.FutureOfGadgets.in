@@ -5,6 +5,10 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   try {
     const { id } = await params;
     const data = await req.json();
+    let calculatedQty = Number(data.quantity) || 0;
+    if (data.ramOptions && Array.isArray(data.ramOptions) && data.ramOptions.length > 0) {
+      calculatedQty = data.ramOptions.reduce((sum: number, opt: any) => sum + (opt.quantity || 0), 0);
+    }
     const product = await prisma.product.update({
       where: { id },
       data: {
@@ -16,19 +20,21 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         images: data.images || [],
         price: Number(data.price),
         mrp: Number(data.mrp) || Number(data.price),
-        stock: Number(data.quantity) || Number(data.stock) || 0,
-        quantity: Number(data.quantity) || Number(data.stock) || 0,
+        stock: calculatedQty,
+        quantity: calculatedQty,
         brand: data.brand || '',
+        modelName: data.modelName || '',
         screenSize: data.screenSize || '',
-        hardDiskSize: data.hardDiskSize || '',
         cpuModel: data.cpuModel || '',
-        ramMemory: data.ramMemory || '',
         operatingSystem: data.operatingSystem || '',
         graphics: data.graphics || '',
-        offers: data.offers || '',
         color: data.color || '',
+        boxContents: data.boxContents || '',
         status: data.status || 'active',
-        sku: data.sku || ''
+        sku: data.sku || '',
+        ramOptions: data.ramOptions || [],
+        storageOptions: data.storageOptions || [],
+        warrantyOptions: data.warrantyOptions || []
       } as any
     });
     return NextResponse.json(product);

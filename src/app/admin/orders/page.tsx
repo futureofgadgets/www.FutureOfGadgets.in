@@ -123,6 +123,10 @@ type Order = {
     name: string;
     price: number;
     qty: number;
+    color?: string;
+    selectedRam?: string;
+    selectedStorage?: string;
+    warranty?: { duration: string; price: number };
   }[];
   total: number;
   status: string;
@@ -854,6 +858,44 @@ export default function AdminOrdersPage() {
                                 Color:
                                 <span className="inline-block w-3 h-3 rounded-full border" style={{ backgroundColor: (item as any).color.toLowerCase() }}></span>
                                  {(item as any).color}
+                              </p>
+                            )}
+                            {(item as any).selectedRam && (() => {
+                              // Fetch product to get RAM price
+                              const [product, setProduct] = useState<any>(null)
+                              useEffect(() => {
+                                fetch('/api/products').then(res => res.json()).then(products => {
+                                  const p = products.find((pr: any) => pr.id === item.productId)
+                                  setProduct(p)
+                                }).catch(() => {})
+                              }, [])
+                              const ramOption = product?.ramOptions?.find((r: any) => r.size === (item as any).selectedRam)
+                              const ramPrice = ramOption?.price || 0
+                              return (
+                                <p className="text-sm text-gray-600">
+                                  RAM: {(item as any).selectedRam}{ramPrice !== 0 && ` (+₹${ramPrice.toLocaleString()})`}
+                                </p>
+                              )
+                            })()}
+                            {(item as any).selectedStorage && (() => {
+                              const [product, setProduct] = useState<any>(null)
+                              useEffect(() => {
+                                fetch('/api/products').then(res => res.json()).then(products => {
+                                  const p = products.find((pr: any) => pr.id === item.productId)
+                                  setProduct(p)
+                                }).catch(() => {})
+                              }, [])
+                              const storageOption = product?.storageOptions?.find((s: any) => s.size === (item as any).selectedStorage)
+                              const storagePrice = storageOption?.price || 0
+                              return (
+                                <p className="text-sm text-gray-600">
+                                  Storage: {(item as any).selectedStorage}{storagePrice !== 0 && ` (+₹${storagePrice.toLocaleString()})`}
+                                </p>
+                              )
+                            })()}
+                            {(item as any).warranty && (
+                              <p className="text-sm text-gray-600">
+                                Warranty: {(item as any).warranty.duration} (+₹{(item as any).warranty.price.toLocaleString()})
                               </p>
                             )}
                             <p className="text-sm text-gray-600">

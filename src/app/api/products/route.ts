@@ -24,15 +24,18 @@ export async function POST(req: Request) {
   try {
     const data = await req.json();
     
-    // Validate required fields
     if (!data.name || !data.category || !data.price) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
     
-    // Check if slug already exists
     const existing = await prisma.product.findUnique({ where: { slug: data.slug } });
     if (existing) {
       return NextResponse.json({ error: 'Product with this name already exists,' }, { status: 409 });
+    }
+    
+    let calculatedQty = Number(data.quantity) || 0;
+    if (data.ramOptions && Array.isArray(data.ramOptions) && data.ramOptions.length > 0) {
+      calculatedQty = data.ramOptions.reduce((sum: number, opt: any) => sum + (opt.quantity || 0), 0);
     }
     
     const product = await prisma.product.create({
@@ -40,24 +43,26 @@ export async function POST(req: Request) {
         name: data.name,
         slug: data.slug,
         category: data.category,
-        description: data.description?.replace(/\./g, '\n') || '',
+        description: data.description || '',
         frontImage: data.frontImage || '',
         images: Array.isArray(data.images) ? data.images : [],
         price: Number(data.price),
         mrp: Number(data.mrp) || Number(data.price),
-        stock: Number(data.quantity) || 0,
-        quantity: Number(data.quantity) || 0,
+        stock: calculatedQty,
+        quantity: calculatedQty,
         brand: data.brand || '',
+        modelName: data.modelName || '',
         screenSize: data.screenSize || '',
-        hardDiskSize: data.hardDiskSize || '',
         cpuModel: data.cpuModel || '',
-        ramMemory: data.ramMemory || '',
         operatingSystem: data.operatingSystem || '',
         graphics: data.graphics || '',
-        offers: data.offers || '',
         color: data.color || '',
+        boxContents: data.boxContents || '',
         status: data.status || 'active',
-        sku: data.sku || `SKU-${Date.now()}`
+        sku: data.sku || `SKU-${Date.now()}`,
+        ramOptions: data.ramOptions || [],
+        storageOptions: data.storageOptions || [],
+        warrantyOptions: data.warrantyOptions || []
       } as any
     });
     

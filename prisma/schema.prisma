@@ -45,13 +45,15 @@ model Product {
   status        String   @default("active")
   modelName     String?
   screenSize    String?
-  hardDiskSize  String?
   cpuModel      String?
-  ramMemory     String?
   operatingSystem String?
   graphics      String?
   offers        String?
   color         String?
+  ramOptions    Json?
+  storageOptions Json?
+  warrantyOptions Json?
+  boxContents   String?
   lastRestockedAt DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -80,6 +82,8 @@ type OrderItem {
   price     Int
   qty       Int
   color     String?
+  selectedRam String?
+  selectedStorage String?
 }
 
 type Address {

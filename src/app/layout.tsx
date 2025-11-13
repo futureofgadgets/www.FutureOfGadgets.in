@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/components/auth-provider";
 import { ConditionalLayout } from "@/components/ConditionalLayout";
 import { Toaster } from "sonner";
+import WhatsAppFloat from "@/components/WhatsAppFloat";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
@@ -51,6 +52,7 @@ export default function RootLayout({
           > */}
             <ConditionalLayout>
               {children}
+              <WhatsAppFloat/>
             </ConditionalLayout>
             <Toaster className="!bottom-16 sm:!bottom-5" />
           {/* </ThemeProvider> */}

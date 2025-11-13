@@ -10,6 +10,9 @@ type CartItem = {
   image: string
   qty?: number
   color?: string
+  selectedRam?: string
+  selectedStorage?: string
+  warranty?: { duration: string; price: number }
 }
 
 const KEY = "v0_cart"
@@ -40,25 +43,30 @@ export function getCart(): CartItem[] {
 
 export function addToCart(item: CartItem) {
   const items = read()
-  const idx = items.findIndex((i) => i.id === item.id && i.color === item.color)
+  const idx = items.findIndex((i) => 
+    i.id === item.id && 
+    i.color === item.color &&
+    i.selectedRam === item.selectedRam &&
+    i.selectedStorage === item.selectedStorage &&
+    i.warranty?.duration === item.warranty?.duration
+  )
   if (idx >= 0) {
     items[idx].qty = (items[idx].qty || 1) + 1
   } else {
     items.push({ ...item, qty: 1 })
   }
-  // toast.success(`Added to Cart`, {
-  //   description: `${item.name} has been added to your cart.`,
-  //   action: {
-  //     label: "View Cart",
-  //     onClick: () => window.location.href = "/cart"
-  //   }
-  // })
   write(items)
 }
 
-export function updateQty(id: string, qty: number) {
+export function updateQty(id: string, qty: number, color?: string, selectedRam?: string, selectedStorage?: string, warranty?: { duration: string; price: number }) {
   const items = read()
-  const idx = items.findIndex((i) => i.id === id)
+  const idx = items.findIndex((i) => 
+    i.id === id &&
+    i.color === color &&
+    i.selectedRam === selectedRam &&
+    i.selectedStorage === selectedStorage &&
+    i.warranty?.duration === warranty?.duration
+  )
   if (idx >= 0) {
     if (qty <= 0) items.splice(idx, 1)
     else items[idx].qty = qty
@@ -66,8 +74,14 @@ export function updateQty(id: string, qty: number) {
   }
 }
 
-export function removeFromCart(id: string) {
-  const items = read().filter((i) => i.id !== id)
+export function removeFromCart(id: string, color?: string, selectedRam?: string, selectedStorage?: string, warranty?: { duration: string; price: number }) {
+  const items = read().filter((i) => !(
+    i.id === id &&
+    i.color === color &&
+    i.selectedRam === selectedRam &&
+    i.selectedStorage === selectedStorage &&
+    i.warranty?.duration === warranty?.duration
+  ))
   write(items)
 }
 

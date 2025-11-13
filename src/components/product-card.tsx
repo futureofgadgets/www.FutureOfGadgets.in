@@ -20,6 +20,8 @@ type Product = {
   quantity?: number;
   stock?: number;
   color?: string;
+  ramOptions?: { size: string; price: number; quantity: number }[];
+  storageOptions?: { size: string; price: number; quantity: number }[];
 };
 
 type ProductCardProps = {
@@ -41,24 +43,13 @@ export default function ProductCard({ product, onAddToCart, onBuyNow }: ProductC
   }, [product.id]);
 
   useEffect(() => {
-    const calculateAvailableQty = () => {
-      const cart = JSON.parse(localStorage.getItem("v0_cart") || "[]");
-      const cartQty = cart.reduce((sum: number, item: any) => 
-        item.id === product.id ? sum + (item.qty || 1) : sum, 0
-      );
-      const totalQty = Number(product.quantity ?? product.stock ?? 0);
-      setAvailableQty(Math.max(0, totalQty - cartQty));
-    };
-
-    calculateAvailableQty();
-    window.addEventListener('storage', calculateAvailableQty);
-    window.addEventListener('v0-cart-updated', calculateAvailableQty);
-    
-    return () => {
-      window.removeEventListener('storage', calculateAvailableQty);
-      window.removeEventListener('v0-cart-updated', calculateAvailableQty);
-    };
-  }, [product.id, product.quantity, product.stock]);
+    if (product.ramOptions && product.ramOptions.length > 0) {
+      const totalQty = product.ramOptions.reduce((sum, opt) => sum + (opt.quantity || 0), 0);
+      setAvailableQty(totalQty);
+    } else {
+      setAvailableQty(Number(product.quantity ?? product.stock ?? 0));
+    }
+  }, [product.quantity, product.stock, product.ramOptions]);
 
   const imageUrl = product.coverImage || product.frontImage || product.image || "/placeholder.svg";
   const mrp = Number(product.mrp) || 0;

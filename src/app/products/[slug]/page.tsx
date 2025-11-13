@@ -29,12 +29,15 @@ type Product = {
   coverImage?: string;
   updatedAt: string;
   screenSize?: string;
-  hardDiskSize?: string;
   cpuModel?: string;
-  ramMemory?: string;
   operatingSystem?: string;
   graphics?: string;
   color?: string;
+  modelName?:string;
+  ramOptions?: { size: string; price: number; quantity: number }[];
+  storageOptions?: { size: string; price: number; quantity: number }[];
+  warrantyOptions?: { duration: string; price: number }[];
+  boxContents?:string;
 };
 
 export default function ProductPage() {
@@ -47,41 +50,68 @@ export default function ProductPage() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState<string>("");
+  const [selectedRam, setSelectedRam] = useState<{ size: string; price: number; quantity: number } | null>(null);
+  const [selectedStorage, setSelectedStorage] = useState<{ size: string; price: number; quantity: number } | null>(null);
+  const [availableStock, setAvailableStock] = useState(0);
+  const [finalPrice, setFinalPrice] = useState(0);
+  const [basePrice, setBasePrice] = useState(0);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [reviews, setReviews] = useState<any[]>([]);
   const [showZoom, setShowZoom] = useState(false);
   const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
+  const [selectedWarranty, setSelectedWarranty] = useState<{ duration: string; price: number } | null>(null);
 
   const handleAddToCart = () => {
     if (!product) return;
     
-    if (product.quantity === 0) {
+    if (availableStock === 0) {
       toast.error("Out of Stock", {
-        description: "This product is currently unavailable.",
+        description: "This configuration is currently unavailable.",
       });
       return;
     }
     
-    if (quantity > product.quantity) {
+    if (quantity > availableStock) {
       toast.error("Insufficient Stock", {
-        description: `Only ${product.quantity} items available.`,
+        description: `Only ${availableStock} items available for this configuration.`,
       });
       return;
     }
+    
+    const itemPrice = finalPrice + (selectedWarranty?.price || 0);
     
     for (let i = 0; i < quantity; i++) {
       addToCart({
         id: product.id,
         slug: product.slug,
         name: product.name,
-        price: product.price,
+        price: itemPrice,
         image: product.frontImage || product.image || product.coverImage || "/no-image.svg",
-        color: selectedColor || product.color
+        color: selectedColor || product.color,
+        selectedRam: selectedRam?.size || undefined,
+        selectedStorage: selectedStorage?.size || undefined,
+        warranty: selectedWarranty || undefined
       });
     }
     
-    setProduct({ ...product, quantity: product.quantity - quantity });
+    if (selectedRam && selectedStorage) {
+      const updatedRamOptions = product.ramOptions?.map(r => 
+        r.size === selectedRam.size ? { ...r, quantity: r.quantity - quantity } : r
+      );
+      const updatedStorageOptions = product.storageOptions?.map(s => 
+        s.size === selectedStorage.size ? { ...s, quantity: s.quantity - quantity } : s
+      );
+      setProduct({ ...product, ramOptions: updatedRamOptions, storageOptions: updatedStorageOptions });
+      
+      // Update selectedRam reference to reflect new quantity
+      const updatedSelectedRam = updatedRamOptions?.find(r => r.size === selectedRam.size);
+      if (updatedSelectedRam) {
+        setSelectedRam(updatedSelectedRam);
+      }
+      
+      setAvailableStock(availableStock - quantity);
+    }
     setQuantity(1);
     
     toast.success("Added to Cart", {
@@ -92,32 +122,51 @@ export default function ProductPage() {
   const handleBuyNow = () => {
     if (!product) return;
     
-    if (product.quantity === 0) {
+    if (availableStock === 0) {
       toast.error("Out of Stock", {
-        description: "This product is currently unavailable.",
+        description: "This configuration is currently unavailable.",
       });
       return;
     }
     
-    if (quantity > product.quantity) {
+    if (quantity > availableStock) {
       toast.error("Insufficient Stock", {
-        description: `Only ${product.quantity} items available.`,
+        description: `Only ${availableStock} items available for this configuration.`,
       });
       return;
     }
+    
+    const itemPrice = finalPrice + (selectedWarranty?.price || 0);
     
     for (let i = 0; i < quantity; i++) {
       addToCart({
         id: product.id,
         slug: product.slug,
         name: product.name,
-        price: product.price,
+        price: itemPrice,
         image: product.frontImage || product.image || product.coverImage || "/no-image.svg",
-        color: selectedColor || product.color
+        color: selectedColor || product.color,
+        selectedRam: selectedRam?.size || undefined,
+        selectedStorage: selectedStorage?.size || undefined,
+        warranty: selectedWarranty || undefined
       });
     }
     
-    setProduct({ ...product, quantity: product.quantity - quantity });
+    if (selectedRam && selectedStorage) {
+      const updatedRamOptions = product.ramOptions?.map(r => 
+        r.size === selectedRam.size ? { ...r, quantity: r.quantity - quantity } : r
+      );
+      const updatedStorageOptions = product.storageOptions?.map(s => 
+        s.size === selectedStorage.size ? { ...s, quantity: s.quantity - quantity } : s
+      );
+      setProduct({ ...product, ramOptions: updatedRamOptions, storageOptions: updatedStorageOptions });
+      
+      // Update selectedRam reference to reflect new quantity
+      const updatedSelectedRam = updatedRamOptions?.find(r => r.size === selectedRam.size);
+      if (updatedSelectedRam) {
+        setSelectedRam(updatedSelectedRam);
+      }
+    }
     
     router.push("/cart");
   };
@@ -182,8 +231,28 @@ export default function ProductPage() {
         );
         
         if (found) {
-          console.log('Product data:', { name: found.name, price: found.price, mrp: found.mrp, type: typeof found.mrp });
           const cart = JSON.parse(localStorage.getItem("v0_cart") || "[]")
+          
+          // Update RAM options quantities based on cart
+          if (found.ramOptions && found.ramOptions.length > 0) {
+            found.ramOptions = found.ramOptions.map((ram: any) => {
+              const cartQty = cart.reduce((sum: number, item: any) => 
+                item.id === found.id && item.selectedRam === ram.size ? sum + (item.qty || 1) : sum, 0
+              );
+              return { ...ram, quantity: Math.max(0, ram.quantity - cartQty) };
+            });
+          }
+          
+          // Update storage options quantities based on cart
+          if (found.storageOptions && found.storageOptions.length > 0) {
+            found.storageOptions = found.storageOptions.map((storage: any) => {
+              const cartQty = cart.reduce((sum: number, item: any) => 
+                item.id === found.id && item.selectedStorage === storage.size ? sum + (item.qty || 1) : sum, 0
+              );
+              return { ...storage, quantity: Math.max(0, storage.quantity - cartQty) };
+            });
+          }
+          
           const cartQty = cart.reduce((sum: number, item: any) => 
             item.id === found.id ? sum + (item.qty || 1) : sum, 0
           )
@@ -194,6 +263,17 @@ export default function ProductPage() {
             const colors = found.color.split(',').map((c: string) => c.trim());
             setSelectedColor(colors[0]);
           }
+          
+          // Set default RAM and storage (first available option)
+          if (found.ramOptions && found.ramOptions.length > 0) {
+            const availableRam = found.ramOptions.find((r: any) => r.quantity > 0);
+            setSelectedRam(availableRam || found.ramOptions[0]);
+          }
+          if (found.storageOptions && found.storageOptions.length > 0) {
+            setSelectedStorage(found.storageOptions[0]);
+          }
+          
+          setFinalPrice(found.price);
           
           fetch(`/api/reviews?productId=${found.id}`)
             .then(res => res.json())
@@ -219,19 +299,50 @@ export default function ProductPage() {
     return () => window.removeEventListener('wishlist-updated', handleWishlistUpdate);
   }, [product]);
 
+  // Calculate final price and available stock based on selected options
+  useEffect(() => {
+    if (product) {
+      let price = product.price;
+      if (selectedRam) price += selectedRam.price;
+      if (selectedStorage) price += selectedStorage.price;
+      setFinalPrice(price);
+      
+      // Calculate available stock based on selected configuration
+      if (selectedRam && selectedStorage) {
+        const cart = JSON.parse(localStorage.getItem("v0_cart") || "[]")
+        const cartQty = cart.reduce((sum: number, item: any) => 
+          item.id === product.id && 
+          item.selectedRam === selectedRam.size && 
+          item.selectedStorage === selectedStorage.size 
+            ? sum + (item.qty || 1) : sum, 0
+        )
+        const stock = Math.min(selectedRam.quantity, selectedStorage.quantity) - cartQty;
+        setAvailableStock(Math.max(0, stock));
+      }
+      
+      // Auto-select next available RAM if current is out of stock
+      if (selectedRam && selectedRam.quantity === 0 && product.ramOptions) {
+        const nextAvailableRam = product.ramOptions.find((r: any) => r.quantity > 0 && r.size !== selectedRam.size);
+        if (nextAvailableRam) {
+          setSelectedRam(nextAvailableRam);
+        }
+      }
+    }
+  }, [product, selectedRam, selectedStorage]);
+
   if (loading) return (
    <Loading/>
   );
   
   if (!product) return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <div className="text-center -mt-16 py-12 min-h-screen flex flex-col items-center justify-center">
       <div className="text-center">
         <div className="text-6xl mb-4">📦</div>
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Product Not Found</h2>
-        <p className="text-gray-600 mb-6">The product you&apos;re looking for doesn&apos;t exist.</p>
+        <p className="text-gray-600 mb-2">The product you&apos;re looking for doesn&apos;t exist.</p>
         <button 
           onClick={() => router.push('/')}
-          className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          className="text-blue-600 rounded-lg hover:underline font-medium"
         >
           Back to Home
         </button>
@@ -247,12 +358,13 @@ export default function ProductPage() {
   
   const images = allImages.length > 0 ? allImages : ["/no-image.svg"];
   const mrp = Number(product.mrp) || 0;
-  const price = Number(product.price) || 0;
-  const discount = mrp > 0 && mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0;
+  const price = finalPrice;
+  const baseMrp = mrp + (selectedRam?.price || 0) + (selectedStorage?.price || 0);
+  const discount = baseMrp > 0 && baseMrp > price ? Math.round(((baseMrp - price) / baseMrp) * 100) : 0;
 
   return (
     <>
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50/50">
       <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-6">
         {/* Breadcrumb */}
         {/* <div className="bg-white rounded-lg px-2 sm:px-4 py-3 mb-4 my-2 shadow-sm"> */}
@@ -267,7 +379,7 @@ export default function ProductPage() {
 
         <div className="grid lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-6">
           {/* Left: Images */}
-          <div className="lg:col-span-2 bg-white rounded-lg p-3 sm:p-4 lg:p-6 h-fit lg:sticky top-24 relative!mt-0">
+          <div className="lg:col-span-2 bg-white rounded-lg p-3 sm:p-4 lg:p-6 h-fit lg:sticky top-24 relative!mt-0  border border-gray-100">
             <div 
               className="aspect-square bg-white-50 rounded-lg mb-3 sm:mb-4 overflow-visible relative group"
               onMouseEnter={() => setShowZoom(true)}
@@ -286,7 +398,7 @@ export default function ProductPage() {
               />
               {showZoom && (
                 <div 
-                  className="hidden lg:block fixed w-[60vw] h-[85vh] bg-white rounded-xs pointer-events-none"
+                  className="hidden lg:block fixed w-[60vw] h-[85vh] bg-white pointer-events-none border border-gray-200 rounded-lg"
                   style={{
                     backgroundImage: `url(${images[selectedImage]})`,
                     backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
@@ -389,9 +501,9 @@ export default function ProductPage() {
               <div className="mb-4">
                 <div className="flex items-baseline gap-2 sm:gap-3 mb-2 flex-wrap">
                   <span className="text-2xl sm:text-3xl font-bold text-gray-900">₹{price.toLocaleString()}</span>
-                  {mrp > 0 && mrp > price && (
+                  {baseMrp > 0 && baseMrp > price && (
                     <>
-                      <span className="text-gray-500 line-through text-lg sm:text-xl font-semibold">₹{mrp.toLocaleString()}</span>
+                      <span className="text-gray-500 line-through text-lg sm:text-xl font-semibold">₹{baseMrp.toLocaleString()}</span>
                       <span className="text-green-600 font-semibold text-sm sm:text-base">{discount}% off</span>
                     </>
                   )}
@@ -402,15 +514,15 @@ export default function ProductPage() {
               {/* Stock Status & Quantity */}
               <div className="mb-6 space-y-4">
                 <div>
-                  {product.quantity === 0 ? (
+                  {availableStock === 0 ? (
                     <span className="text-red-600 font-semibold flex items-center gap-1">
                       <span className="w-2 h-2 bg-red-600 rounded-full"></span>
                       Out of Stock
                     </span>
-                  ) : product.quantity <= 5 ? (
+                  ) : availableStock <= 5 ? (
                     <span className="text-orange-600 font-semibold flex items-center gap-1">
-                      <span className="w-2 h-2 bg-orange-600 rounded-full animate-pulse"></span>
-                      Only {product.quantity} left in stock - Order soon!
+                      {/* <span className="w-2 h-2 z-0 bg-orange-600 rounded-full animate-pulse"></span> */}
+                      Only {availableStock} left in stock - Order soon!
                     </span>
                   ) : (
                     <span className="text-green-600 font-semibold flex items-center gap-1">
@@ -420,7 +532,7 @@ export default function ProductPage() {
                   )}
                 </div>
                 
-                {product.quantity > 0 && (
+                {availableStock > 0 && (
                   <div className="flex items-center gap-3">
                     <span className="text-sm font-medium text-gray-700">Quantity:</span>
                     <div className="flex items-center border border-gray-300 rounded-lg">
@@ -434,7 +546,7 @@ export default function ProductPage() {
                       <span className="px-4 py-1.5 border-x border-gray-300 min-w-[50px] text-center font-medium">{quantity}</span>
                       <button
                         type="button"
-                        onClick={() => setQuantity(Math.min(product.quantity, quantity + 1))}
+                        onClick={() => setQuantity(Math.min(availableStock, quantity + 1))}
                         className="px-3 py-1.5 hover:bg-gray-100 transition-colors"
                       >
                         +
@@ -454,13 +566,13 @@ export default function ProductPage() {
                             key={trimmedColor}
                             type="button"
                             onClick={() => setSelectedColor(trimmedColor)}
-                            className={`px-4 py-2 rounded-lg font-medium border-2 transition-all flex items-center gap-2 ${
+                            className={`px-4 py-2 rounded-lg font-medium border-2 transition-all flex items-center gap-2 bg-white ${
                               selectedColor === trimmedColor
-                                ? 'bg-blue-600 text-white border-blue-600'
-                                : 'bg-gray-100 text-gray-900 border-gray-300 hover:border-blue-400'
+                                ? 'border-blue-600 text-gray-800'
+                                : 'border-gray-300 hover:border-blue-600 hover:bg-blue-50/40'
                             }`}
                           >
-                            <div className="h-5 w-5 rounded-full border border-gray-300" style={{ backgroundColor: trimmedColor.toLowerCase() }}></div>
+                            <div className="h-5 w-5 rounded-full border border-gray-400" style={{ backgroundColor: trimmedColor.toLowerCase() === 'silver' || trimmedColor.toLowerCase() === 'sliver' ? '#C0C0C0' : trimmedColor.toLowerCase() }}></div>
                             {trimmedColor.charAt(0).toUpperCase() + trimmedColor.slice(1).toLowerCase()}
                           </button>
                         );
@@ -468,16 +580,83 @@ export default function ProductPage() {
                     </div>
                   </div>
                 )}
+                
+                {/* RAM Options */}
+                {product.ramOptions && product.ramOptions.length > 0 && (
+                  <div>
+                    <span className="text-sm font-medium text-gray-700 block mb-2">RAM:</span>
+                    <div className="flex gap-2 flex-wrap">
+                      {product.ramOptions.map((ram, index) => (
+                        <button
+                          key={index}
+                          type="button"
+                          onClick={() => setSelectedRam(ram)}
+                          disabled={ram.quantity === 0}
+                          className={`px-4 py-2.5 rounded-lg border-2 text-sm font-medium transition-all ${
+                            ram.quantity === 0
+                              ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'
+                              : selectedRam?.size === ram.size
+                              ? 'border-blue-600 text-gray-800'
+                              : 'border-gray-300 bg-white hover:border-blue-600 hover:bg-blue-50/40'
+                          }`}
+                        >
+                          <div className="flex flex-col items-center">
+                            <span>{ram.size}</span>
+                            {ram.price !== 0 && (
+                              <span className="text-xs mt-0.5">
+                                {ram.price > 0 ? `+₹${ram.price.toLocaleString()}` : `₹${ram.price.toLocaleString()}`}
+                              </span>
+                            )}
+                            {ram.quantity === 0 && (
+                              <span className="text-xs text-red-500 mt-0.5">Out of Stock</span>
+                            )}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Storage Options */}
+                {product.storageOptions && product.storageOptions.length > 0 && (
+                  <div>
+                    <span className="text-sm font-medium text-gray-700 block mb-2">Storage:</span>
+                    <div className="flex gap-2 flex-wrap">
+                      {product.storageOptions.map((storage, index) => (
+                        <button
+                          key={index}
+                          type="button"
+                          onClick={() => setSelectedStorage(storage)}
+                          disabled={selectedRam?.quantity === 0 || storage.quantity === 0}
+                          className={`px-4 py-2.5 rounded-lg border-2 text-sm font-medium transition-all ${
+                            selectedRam?.quantity === 0 || storage.quantity === 0
+                              ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'
+                              : selectedStorage?.size === storage.size
+                              ? 'border-blue-600 text-gray-800'
+                              : 'border-gray-300 bg-white hover:border-blue-600 hover:bg-blue-50/40'
+                          }`}
+                        >
+                          <div className="flex flex-col items-center">
+                            <span>{storage.size}</span>
+                            {storage.price !== 0 && (
+                              <span className="text-xs mt-0.5">
+                                {storage.price > 0 ? `+₹${storage.price.toLocaleString()}` : `₹${storage.price.toLocaleString()}`}
+                              </span>
+                            )}
+                            {storage.quantity === 0 && (
+                              <span className="text-xs text-red-500 mt-0.5">Out of Stock</span>
+                            )}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Buttons */}
-              {product.quantity === 0 ? (
-                <div className="mb-4 sm:mb-6">
-                  <div className="py-3 sm:py-3.5 bg-gray-100 border-2 border-gray-400 text-gray-600 font-bold rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base">
-                    <X className="w-4 h-4 sm:w-5 sm:h-5" />
-                    OUT OF STOCK
-                  </div>
-                </div>
+              {availableStock === 0 || (selectedRam && selectedRam.quantity === 0) ? (
+                <div></div>
               ) : (
                 <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 mb-4 sm:mb-6">
                   <button 
@@ -531,36 +710,43 @@ export default function ProductPage() {
               </div>
             </div>
 
-            {/* Offers */}
-            <div className="bg-white rounded-lg p-3 sm:p-4 lg:p-6 shadow-sm border-2 border-green-100">
-              <div className="flex items-center gap-2 mb-4">
-                <Zap className="w-5 h-5 text-green-600" />
-                <h3 className="font-bold text-lg text-gray-900">Available Offers</h3>
+            {/* Additional Warranty */}
+            {product.warrantyOptions && product.warrantyOptions.length > 0 && (
+              <div className="bg-white rounded-lg p-3 sm:p-4 lg:p-6 shadow-sm border-2 border-blue-100">
+                <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 mb-4">
+                  <Shield className="w-5 h-5 text-blue-600" />
+                  <h3 className="font-bold text-lg text-gray-900">Extended Warranty</h3>
+                </div>
+               {selectedWarranty && (
+                  <button
+                  onClick={() => setSelectedWarranty(null)}
+                  className="-mt-5 text-red-600 hover:text-red-700 hover:cursor-pointer"
+                  >
+                    Remove
+                      {/* <X className="w-4 h-4 text-red-500 hover:text-red-600 hover:cursor-pointer" /> */}
+                    </button>
+                  )}
+                  </div>
+                <div className="space-y-2">
+                  {product.warrantyOptions.map((warranty, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setSelectedWarranty(selectedWarranty?.duration === warranty.duration ? null : warranty)}
+                      className={`w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all ${
+                        selectedWarranty?.duration === warranty.duration
+                          ? 'border-blue-600 bg-blue-50'
+                          : 'border-gray-200 hover:border-blue-300'
+                      }`}
+                    >
+                      <span className="font-medium">{warranty.duration} Extended Warranty</span>
+                      <span className="font-bold text-blue-600">₹{warranty.price.toLocaleString()}</span>
+                    </button>
+                  ))}
+                  
+                </div>
               </div>
-              <div className="space-y-3">
-                <div className="flex gap-3 p-3 bg-green-50 rounded-lg">
-                  <span className="text-green-600 font-bold text-lg">%</span>
-                  <div className="text-sm">
-                    <div className="font-semibold text-gray-900">Bank Offer</div>
-                    <div className="text-gray-600">10% instant discount on SBI Credit Cards, up to ₹1,500</div>
-                  </div>
-                </div>
-                <div className="flex gap-3 p-3 bg-blue-50 rounded-lg">
-                  <span className="text-blue-600 font-bold text-lg">₹</span>
-                  <div className="text-sm">
-                    <div className="font-semibold text-gray-900">No Cost EMI</div>
-                    <div className="text-gray-600">Starting from ₹{Math.round(product.price / 12)}/month on all major credit cards</div>
-                  </div>
-                </div>
-                <div className="flex gap-3 p-3 bg-orange-50 rounded-lg">
-                  <span className="text-orange-600 font-bold text-lg">🎁</span>
-                  <div className="text-sm">
-                    <div className="font-semibold text-gray-900">Partner Offer</div>
-                    <div className="text-gray-600">Get extra ₹500 off on exchange of old products</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            )}
             
             {/* Why Buy */}
             <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg p-3 sm:p-4 lg:p-6 shadow-sm">
@@ -592,12 +778,16 @@ export default function ProductPage() {
 
        
 
-        {/* Description & Specifications */}
+       {/* Description & Specifications */}
         <div className="mt-4 sm:mt-6 grid lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
           {/* Description */}
           <div className="lg:col-span-2 bg-white rounded-lg p-3 py-4 sm:p-4 lg:p-6 shadow-sm">
             <h2 className="text-lg sm:text-xl font-bold mb-4">Product Description</h2>
-            <p className="text-sm sm:text-lg text-gray-700 leading-relaxed mb-6">{product.description}</p>
+            <div className="text-sm sm:text-lg text-gray-700 leading-relaxed mb-6 space-y-2">
+              {product.description && product.description.split('\n').map((line, index) => (
+                <p key={index} className="break-words">{line}</p>
+              ))}
+            </div>
             
             <h3 className="text-lg font-semibold mb-3">Key Features</h3>
             <ul className="space-y-2 text-gray-700">
@@ -622,10 +812,12 @@ export default function ProductPage() {
                   <span className="font-medium text-right break-words">{product.brand}</span>
                 </div>
               )}
-              <div className="flex justify-between gap-2 py-2 border-b">
-                <span className="text-gray-600 flex-shrink-0">Model Name</span>
-                <span className="font-medium text-right break-words">{product.name}</span>
-              </div>
+              {product.modelName && (
+                <div className="flex justify-between gap-2 py-2 border-b">
+                  <span className="text-gray-600 flex-shrink-0">Model Name</span>
+                  <span className="font-medium text-right break-words">{product.modelName}</span>
+                </div>
+              )}
               {product.screenSize && (
                 <div className="flex justify-between py-2 border-b">
                   <span className="text-gray-600">Screen Size</span>
@@ -638,16 +830,20 @@ export default function ProductPage() {
                   <span className="font-medium text-right">{product.cpuModel}</span>
                 </div>
               )}
-              {product.ramMemory && (
-                <div className="flex justify-between py-2 border-b">
+              {selectedRam && (
+                <div className="flex justify-between py-2 border-b ">
                   <span className="text-gray-600">RAM</span>
-                  <span className="font-medium text-right">{product.ramMemory}</span>
+                  <span className="font-medium text-right">
+                    {selectedRam.size}
+                  </span>
                 </div>
               )}
-              {product.hardDiskSize && (
+              {selectedStorage && (
                 <div className="flex justify-between py-2 border-b">
                   <span className="text-gray-600">Storage</span>
-                  <span className="font-medium text-right">{product.hardDiskSize}</span>
+                  <span className="font-medium text-right">
+                    {selectedStorage.size}
+                  </span>
                 </div>
               )}
               {product.graphics && (
@@ -678,17 +874,17 @@ export default function ProductPage() {
 
             
             <h3 className="text-lg font-semibold mb-3 mt-6">What&apos;s in the Box</h3>
-            <ul className="space-y-2 text-gray-700">
-              <li className="flex gap-2"><span className="text-blue-600">•</span> 1 x {product.name}</li>
-              <li className="flex gap-2"><span className="text-blue-600">•</span> 1 x User Manual</li>
-              <li className="flex gap-2"><span className="text-blue-600">•</span> 1 x Warranty Card</li>
-              <li className="flex gap-2"><span className="text-blue-600">•</span> 1 x Power Cable (if applicable)</li>
-            </ul>
+            <ol className="space-y-2 text-gray-700 list-decimal list-inside">
+              {product.boxContents && product.boxContents.split('\n').map((line, index) => (
+                <li key={index} className="break-words">{line}</li>
+              ))}
+            </ol>
           </div>
           
 
          
         </div>
+
 
         {/* Reviews Section */}
 {reviews.length > 0 && (

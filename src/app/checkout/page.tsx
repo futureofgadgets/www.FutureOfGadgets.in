@@ -11,13 +11,13 @@ import { format } from "date-fns"
 import { AuthDialog } from "@/components/auth-dialog"
 import { clearCart } from "@/lib/cart"
 import { Calendar } from "@/components/ui/calendar"
-import { CreditCard, Smartphone, Building2, Wallet, Banknote, MapPin, User, Mail, Phone, ShoppingBag, ArrowRight, Package, Lock, CalendarIcon } from "lucide-react"
+import { CreditCard, Smartphone, Building2, Wallet, Banknote, MapPin, User, Mail, Phone, ShoppingBag, ArrowRight, Package, Lock, CalendarIcon, ArrowDown } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import LoadingButton from "@/components/ui/loading-button"
 import Loading from "../loading"
 
-type CartItem = { productId: string; qty: number; title?: string; price?: number; image?: string; color?: string }
+type CartItem = { productId: string; qty: number; title?: string; price?: number; image?: string; color?: string; selectedRam?: string; selectedStorage?: string; warranty?: { duration: string; price: number } }
 
 const checkoutSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
@@ -62,6 +62,7 @@ export default function CheckoutPage() {
   const [stockStatus, setStockStatus] = useState<{[key: string]: {available: number, requested: number}}>({})
   const [hasStockIssue, setHasStockIssue] = useState(false)
   const [razorpayLoaded, setRazorpayLoaded] = useState(false)
+  const [products, setProducts] = useState<any[]>([])
 
   useEffect(() => {
     const script = document.createElement('script')
@@ -100,6 +101,9 @@ export default function CheckoutPage() {
             price: Number(it.price || 0),
             image: it.image || '/placeholder.svg',
             color: it.color,
+            selectedRam: it.selectedRam,
+            selectedStorage: it.selectedStorage,
+            warranty: it.warranty,
           }
         })
         console.log('Normalized items:', normalized)
@@ -116,25 +120,9 @@ export default function CheckoutPage() {
     async function checkStock() {
       try {
         const res = await fetch('/api/products')
-        const products = await res.json()
-        const status: {[key: string]: {available: number, requested: number}} = {}
-        let hasIssue = false
-        
-        for (const item of items) {
-          const product = products.find((p: any) => p.id === item.productId)
-          if (product) {
-            status[item.productId] = {
-              available: product.quantity,
-              requested: item.qty
-            }
-            if (product.quantity < item.qty) {
-              hasIssue = true
-            }
-          }
-        }
-        
-        setStockStatus(status)
-        setHasStockIssue(hasIssue)
+        const productsData = await res.json()
+        setProducts(productsData)
+        setHasStockIssue(false)
       } catch {}
     }
     
@@ -224,7 +212,7 @@ export default function CheckoutPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          items: items.map((it) => ({ productId: String(it.productId), qty: Number(it.qty || 1), color: it.color })),
+          items: items.map((it) => ({ productId: String(it.productId), qty: Number(it.qty || 1), color: it.color, selectedRam: it.selectedRam, selectedStorage: it.selectedStorage, warranty: it.warranty })),
           address: { fullName: data.fullName, phone: data.phone, line1: data.line1, line2: data.line2, city: data.city, state: data.state, zip: data.zip },
           paymentMethod,
           deliveryDate: new Date(data.deliveryDate).toISOString(),
@@ -477,25 +465,32 @@ export default function CheckoutPage() {
               <div className="bg-white border-b sm:border sm:rounded-lg px-4 py-4 sm:p-5 lg:sticky lg:top-24">
                 <h2 className="text-sm font-semibold text-gray-900 mb-4 uppercase tracking-wide">Order Summary</h2>
                 
-                <div className="space-y-3 mb-4 max-h-64 overflow-y-auto">
+                <div className="space-y-3 mb-0 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 relative">
+                  {items.length > 2 && (
+                    <div className="absolute top-0 right-0 bg-blue-600 text-white text-xs px-2 py-1 rounded-bl-lg z-10 ">
+                      {items.length} items scroll <ArrowDown className="w-3 h-3 inline-block ml-1" />
+                    </div>
+                  )}
                   {items.map((it, idx) => {
-                    const stock = stockStatus[it.productId]
-                    const isOutOfStock = stock && stock.available < stock.requested
+                    const product = products.find(p => p.id === it.productId)
+                    const ramOption = product?.ramOptions?.find((r: any) => r.size === (it as any).selectedRam)
+                    const storageOption = product?.storageOptions?.find((s: any) => s.size === (it as any).selectedStorage)
+                    const ramPrice = ramOption?.price || 0
+                    const storagePrice = storageOption?.price || 0
                     
                     return (
-                      <div key={`${it.productId}-${idx}`} className={`flex gap-3 pb-3 border-b last:border-0 ${isOutOfStock ? 'opacity-60' : ''}`}>
+                      <div key={`${it.productId}-${idx}`} className="flex gap-3 pb-3 border-b last:border-0">
                         <img src={it.image || "/placeholder.svg"} alt={it.title || "Product"} className="w-16 h-16 rounded object-cover" />
                         <div className="flex-1 min-w-0">
                           <Link href={`/products/${it.productId}`} className="text-sm font-medium text-gray-900 hover:text-blue-600 line-clamp-2">{it.title}</Link>
-                          <div className="flex items-center gap-2 mt-1">
+                          <div className="flex flex-col gap-1 mt-1">
                             <span className="text-xs text-gray-500">Qty: {it.qty}</span>
-                            {it.color && <span className="text-xs text-gray-500">• {it.color}</span>}
+                            {it.color && <span className="text-xs text-gray-500">Color: {it.color}</span>}
+                            {(it as any).selectedRam && <span className="text-xs text-gray-500">RAM: {(it as any).selectedRam}{ramPrice !== 0 && ` (+₹${ramPrice.toLocaleString()})`}</span>}
+                            {(it as any).selectedStorage && <span className="text-xs text-gray-500">Storage: {(it as any).selectedStorage}{storagePrice !== 0 && ` (+₹${storagePrice.toLocaleString()})`}</span>}
+                            {it.warranty && <span className="text-xs text-gray-600">Warranty: {it.warranty.duration} (+₹{it.warranty.price.toLocaleString()})</span>}
                           </div>
-                          {isOutOfStock ? (
-                            <p className="text-xs font-medium text-red-600 mt-1">Out of Stock</p>
-                          ) : (
-                            <p className="text-sm font-semibold text-gray-900 mt-1">₹{(it.price || 0).toLocaleString()}</p>
-                          )}
+                          <p className="text-sm font-semibold text-gray-900 mt-1">₹{(it.price || 0).toLocaleString()}</p>
                         </div>
                       </div>
                     )
@@ -541,13 +536,13 @@ export default function CheckoutPage() {
                 )}
 
                 {/* Desktop Button */}
-                <LoadingButton type="submit" loading={submitting} disabled={hasStockIssue} className="hidden sm:flex w-full h-12 mt-4 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 items-center justify-center">
+                <LoadingButton type="submit" loading={submitting} className="hidden sm:flex w-full h-12 mt-4 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 items-center justify-center">
                   {!submitting && <Package className="w-4 h-4 mr-2" />}
                   {submitting ? 'Processing...' : 'Place Order'}
                 </LoadingButton>
 
                 {/* Mobile Button */}
-                <LoadingButton type="submit" loading={submitting} disabled={hasStockIssue} className="sm:hidden w-full h-12 mt-4 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50">
+                <LoadingButton type="submit" loading={submitting} className="sm:hidden w-full h-12 mt-4 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50">
                   {submitting ? 'Processing...' : `Place Order • ₹${total.toLocaleString()}`}
                 </LoadingButton>
               </div>

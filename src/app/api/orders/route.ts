@@ -132,17 +132,34 @@ export async function POST(request: Request) {
         qty: Math.max(1, Math.floor(it.qty || 1))
       }
       if (it.color) orderItem.color = it.color
+      if (it.selectedRam) orderItem.selectedRam = it.selectedRam
+      if (it.selectedStorage) orderItem.selectedStorage = it.selectedStorage
       orderItems.push(orderItem)
       total += orderItem.price * orderItem.qty
       
-      // Update stock
-      await prisma.product.update({
-        where: { id: product.id },
-        data: { 
-          quantity: Math.max(0, product.quantity - orderItem.qty),
-          stock: Math.max(0, product.stock - orderItem.qty)
-        } as any
-      })
+      // Update RAM/Storage option quantities
+      if (it.selectedRam && product.ramOptions) {
+        const updatedRamOptions = (product.ramOptions as any[]).map((opt: any) => 
+          opt.size === it.selectedRam ? { ...opt, quantity: Math.max(0, (opt.quantity || 0) - orderItem.qty) } : opt
+        )
+        const totalQty = updatedRamOptions.reduce((sum: number, opt: any) => sum + (opt.quantity || 0), 0)
+        await prisma.product.update({
+          where: { id: product.id },
+          data: { 
+            ramOptions: updatedRamOptions,
+            quantity: totalQty,
+            stock: totalQty
+          } as any
+        })
+      } else {
+        await prisma.product.update({
+          where: { id: product.id },
+          data: { 
+            quantity: Math.max(0, product.quantity - orderItem.qty),
+            stock: Math.max(0, product.stock - orderItem.qty)
+          } as any
+        })
+      }
     }
 
     let order
