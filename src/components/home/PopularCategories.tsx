@@ -5,12 +5,12 @@ import { ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const categoryData = [
-  { name: "Touch Laptop", image: "/category/touchscreen.png", href: "/search?q=touch-laptop" },
-  { name: "Gaming Laptop", image: "/category/best-gaming-laptop.jpg", href: "/search?q=gaming-laptop" },
-  { name: "Office Laptop", image: "/category/office_laptop.jpg", href: "/search?q=office-laptop" },
-  { name: "Regular Laptop", image: "/category/regular_laptop.jpg", href: "/search?q=regular-laptop" },
-  { name: "Slim Laptop", image: "/category/ultra_thin_laptop.jpg", href: "/search?q=slim-laptop" },
-  { name: "Pro Laptop", image: "/category/pro_laptop.jpg", href: "/search?q=pro-laptop" },
+  { name: "Regular Use Laptop's", image: "/category/regular_laptop.jpg", href: "/search?q=regular-laptop" },
+  { name: "Office Use Laptop's", image: "/category/office_laptop.jpg", href: "/search?q=office-laptop" },
+  { name: "Premium Laptop's", image: "/category/pro_laptop.jpg", href: "/search?q=pro-laptop" },
+  { name: "Touch 4K Laptop's", image: "/category/touchscreen.png", href: "/search?q=touch-laptop" },
+  { name: "Gaming Laptop's", image: "/category/best-gaming-laptop.jpg", href: "/search?q=gaming-laptop" },
+  { name: "Light & Slim Laptop's", image: "/category/ultra_thin_laptop.jpg", href: "/search?q=slim-laptop" },
 ];
 
 

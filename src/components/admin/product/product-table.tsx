@@ -375,7 +375,7 @@ export default function ProductTable() {
         toast.success('Category added successfully!');
       } else {
         const error = await res.json();
-        toast.error(error.message || 'Failed to add category');
+        toast.error(error.error || 'Failed to add category');
       }
     } catch (err: any) {
       toast.error('Failed to add category');
@@ -398,7 +398,7 @@ export default function ProductTable() {
         toast.success('Category deleted successfully!');
       } else {
         const error = await res.json();
-        toast.error(error.message || 'Failed to delete category');
+        toast.error(error.error || 'Failed to delete category');
       }
     } catch (err: any) {
       toast.error('Failed to delete category');
