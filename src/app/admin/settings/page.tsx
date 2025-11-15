@@ -457,6 +457,12 @@ export default function SettingsPage() {
                          <div className="flex gap-2">
                         <Button onClick={() => {
                           const updated = [...categorySections]
+                          const newSlug = ''
+                          const isDuplicate = updated[sIdx].categories.some(cat => cat.slug === newSlug && newSlug !== '')
+                          if (isDuplicate) {
+                            toast.error('Duplicate slug detected! Please use a unique slug.')
+                            return
+                          }
                           updated[sIdx].categories.push({ name: '', slug: '', image: '', heading: section.title })
                           updated[sIdx].files.push(null)
                           setCategorySections(updated)
@@ -502,7 +508,13 @@ export default function SettingsPage() {
                             }} />
                             <Input placeholder="Slug" value={cat.slug} onChange={(e) => {
                               const updated = [...categorySections]
-                              updated[sIdx].categories[cIdx].slug = e.target.value
+                              const newSlug = e.target.value
+                              const isDuplicate = updated[sIdx].categories.some((c, i) => i !== cIdx && c.slug === newSlug && newSlug !== '')
+                              if (isDuplicate) {
+                                toast.error('Duplicate slug! Please use a unique slug.')
+                                return
+                              }
+                              updated[sIdx].categories[cIdx].slug = newSlug
                               setCategorySections(updated)
                             }} />
                           </div>
