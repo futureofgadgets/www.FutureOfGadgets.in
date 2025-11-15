@@ -75,9 +75,9 @@ export default function ShopByBrands() {
   return (
     <section className="py-6">
       <div className="mx-auto max-w-[1400px] px-3 sm:px-6 lg:px-8">
-        <div className="border border-[#c1e5cf] dark:border-gray-700 rounded-lg p-4 sm:p-6">
+        <div className="border border-[#c1e5cf] rounded-lg p-4 sm:p-6">
           <div className="mb-4 sm:mb-6">
-            <h2 className="text-lg sm:text-2xl md:text-3xl font-semibold text-gray-900 dark:text-white pb-2 sm:pb-3 border-b border-[#c1e5cf] dark:border-gray-700">
+            <h2 className="text-lg sm:text-2xl md:text-3xl font-semibold text-gray-900 pb-2 sm:pb-3 border-b border-[#c1e5cf]">
               Shop By Brands
             </h2>
           </div>
@@ -99,7 +99,7 @@ export default function ShopByBrands() {
                 <a
                   key={`${brand.name}-${idx}`}
                   href={`/search?q=${brand.name.toLowerCase()}`}
-                  className="bg-white dark:bg-gray-800 min-w-[100px] sm:min-w-[120px] h-16 sm:h-20 flex items-center justify-center rounded-lg overflow-hidden hover:shadow-md hover:bg-white dark:hover:bg-gray-700 transition-all duration-300 border border-gray-200 dark:border-gray-600 flex-shrink-0 group"
+                  className="bg-white min-w-[100px] sm:min-w-[120px] h-16 sm:h-20 flex items-center justify-center rounded-lg overflow-hidden hover:shadow-md hover:bg-white transition-all duration-300 border border-gray-200 flex-shrink-0 group"
                   onClick={(e) => isDragging.current && e.preventDefault()}
                 >
                   <Image
