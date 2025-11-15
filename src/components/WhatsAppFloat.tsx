@@ -1,7 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 export default function WhatsAppFloat() {
+  const pathname = usePathname();
   const [contactSettings, setContactSettings] = useState({
     phone: ''
   });
@@ -22,6 +24,8 @@ export default function WhatsAppFloat() {
       window.open(`https://wa.me/${contactSettings.phone}`, "_blank");
     }
   };
+
+  if (pathname.startsWith('/admin')) return null;
 
   if (loading) {
     return (
