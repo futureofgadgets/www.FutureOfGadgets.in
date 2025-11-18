@@ -40,8 +40,8 @@ export default function SettingsPage() {
   })
 
   const [homeSettings, setHomeSettings] = useState({
-    heroTitle: 'Welcome to Electronic Store',
-    heroSubtitle: 'Find the best electronics at amazing prices',
+    heroTitle: '',
+    heroSubtitle: '',
     featuredProducts: 6,
     carouselImages: 5,
     todayDealsCount: 8,
@@ -59,16 +59,16 @@ export default function SettingsPage() {
   const [sliderLoading, setSliderLoading] = useState(false)
 
   const [aboutSettings, setAboutSettings] = useState({
-    title: 'About Electronic Store',
-    description: 'We are a leading electronics retailer providing quality products since 2020.',
-    mission: 'To provide the best electronics at affordable prices with excellent customer service.'
+    title: '',
+    description: '',
+    mission: ''
   })
 
   const [contactSettings, setContactSettings] = useState({
-    email: 'contact@electronic.com',
-    phone: '+91 9876543210',
-    address: '123 Electronics Street, Tech City, India',
-    hours: 'Mon-Sat: 9AM-8PM, Sun: 10AM-6PM',
+    email: '',
+    phone: '',
+    address: '',
+    hours: '',
     youtube: '',
     twitter: '',
     instagram: '',
@@ -101,9 +101,9 @@ export default function SettingsPage() {
   ]
 
   const sectionNames: Record<string, string> = {
-    dealOfTheDay: 'Deal of the Day',
-    featuredSection: 'Featured Section',
-    bestSeller: 'Best Seller',
+    dealOfTheDay: '',
+    featuredSection: '',
+    bestSeller: '',
   }
 
   // ---------- helpers ----------

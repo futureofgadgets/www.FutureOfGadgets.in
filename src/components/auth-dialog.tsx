@@ -628,7 +628,7 @@ export function AuthDialog({ open, onOpenChange, mode }: AuthDialogProps) {
               <Button
                 onClick={handleGoogleSignIn}
                 variant="outline"
-                className="w-full h-9 sm:h-11 font-medium text-xs sm:text-sm border-2 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
+                className="w-full h-9 sm:h-11 font-medium text-xs sm:text-sm border-2 hover:bg-gray-50 cursor-pointer"
                 disabled={isGoogleLoading}
               >
                 {isGoogleLoading ? (

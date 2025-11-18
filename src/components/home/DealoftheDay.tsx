@@ -69,12 +69,12 @@ export default function DealoftheDay(){
   }, [])
 
   return (
-    <section className="py-6 sm:py-10 bg-gradient-to-r from-red-50 to-orange-50 dark:from-gray-800 dark:to-gray-700">
+    <section className="py-6 sm:py-10 bg-gradient-to-r from-red-50 to-orange-50 ">
       <div className="mx-auto max-w-[1440px] sm:px-6 lg:px-11">
         <div className="flex items-center justify-between mb-4 sm:mb-6 px-3 sm:px-0">
           <div>
-            <h2 className="text-lg sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Deal of the Day</h2>
-            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-0.5 sm:mt-1">Limited time offers</p>
+            <h2 className="text-lg sm:text-2xl md:text-3xl font-bold text-gray-900 ">Deal of the Day</h2>
+            <p className="text-xs sm:text-sm text-gray-600 mt-0.5 sm:mt-1">Limited time offers</p>
           </div>
           <Link href="/section/deal-of-the-day" className="sm:px-4 sm:p-2 sm:bg-blue-100 rounded-full text-blue-600 hover:text-blue-700 font-semibold text-xs sm:text-sm whitespace-nowrap hover:underline">View All</Link>
         </div>

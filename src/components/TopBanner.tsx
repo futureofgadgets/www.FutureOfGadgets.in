@@ -3,11 +3,7 @@ import Link from "next/link";
 import React from "react";
 import { X, Package } from "lucide-react";
 
-export default function TopBanner({
-  onClose,
-}: {
-  onClose: () => void;
-}) {
+export default function TopBanner({ onClose }: { onClose: () => void }) {
   return (
     <div
       className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-blue-700 to-indigo-600 text-white shadow-md"
@@ -20,16 +16,17 @@ export default function TopBanner({
           <p className="text-xs sm:text-sm md:text-base font-medium text-white truncate">
             We also accept bulk orders — Contact us for wholesale pricing
           </p>
+
+          <div>
+            <Link
+              href="/contact"
+              className="px-2 sm:px-3 py-1 sm:py-1.5 bg-white text-blue-700 rounded text-xs sm:text-sm font-semibold hover:bg-blue-50 transition-colors whitespace-nowrap"
+            >
+              Contact
+            </Link>
+          </div>
         </div>
-        
         <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-          <Link
-            href="/contact"
-            className="px-2 sm:px-3 py-1 sm:py-1.5 bg-white text-blue-700 rounded-full text-xs sm:text-sm font-semibold hover:bg-blue-50 transition-colors whitespace-nowrap"
-          >
-            Contact
-          </Link>
-          
           <button
             onClick={onClose}
             aria-label="Close banner"

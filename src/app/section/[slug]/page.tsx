@@ -4,7 +4,6 @@ import { useParams, useRouter } from 'next/navigation'
 import ProductCard from '@/components/product-card'
 import { addToCart } from '@/lib/cart'
 import { toast } from 'sonner'
-import { ArrowLeft } from 'lucide-react'
 
 export default function SectionPage() {
   const params = useParams()

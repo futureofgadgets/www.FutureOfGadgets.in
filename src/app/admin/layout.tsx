@@ -3,13 +3,9 @@ import {
   Package,
   ShoppingCart,
   Users,
-  BarChart3,
   LogOut,
-  Search,
   User,
   Home,
-  Settings,
-  UserSquare,
   SettingsIcon,
   Star,
   BadgePercent
@@ -34,7 +30,6 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,

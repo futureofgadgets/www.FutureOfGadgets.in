@@ -70,7 +70,7 @@ export default function FeaturedSection() {
         {products.length > 0 && (
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4 sm:mb-6 px-3 sm:px-0">
-              <h2 className="text-lg sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Featured Products</h2>
+              <h2 className="text-lg sm:text-2xl md:text-3xl font-bold text-gray-900 ">Featured Products</h2>
               <Link href="/section/featured" className="sm:px-4 sm:p-2 sm:bg-blue-100 rounded-full text-blue-600 hover:text-blue-700 font-semibold text-xs sm:text-sm whitespace-nowrap hover:underline">View All</Link>
             </div>
              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-0 sm:gap-2">

@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { Package, ShoppingCart, Users, BarChart3, Settings, Loader2 } from 'lucide-react'
+import { Package, ShoppingCart, Users, BarChart3, Settings } from 'lucide-react'
 
 export default function AdminDashboardPage() {
   const { data: session, status } = useSession()

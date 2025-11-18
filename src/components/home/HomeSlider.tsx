@@ -1,9 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Button } from "../ui/button";
 import Image from "next/image";
-import { Chevron } from "react-day-picker";
 import { ChevronRight } from "lucide-react";
 
 const HeaderSlider = () => {

@@ -170,7 +170,7 @@ export function Navbar({ offsetTop = '0px' }: { offsetTop?: string }) {
       className={`relative text-sm font-medium px-3 py-2 pb-1 transition-colors ${
         pathname === link.href || pathname.startsWith(link.href)
           ? "text-blue-600 underline underline-offset-4 decoration-2 decoration-blue-500"
-          : "text-gray-700 hover:text-blue-600 dark:text-gray-300"
+          : "text-gray-700 hover:text-blue-600"
       }`}
     >
       {link.label}
@@ -200,7 +200,7 @@ export function Navbar({ offsetTop = '0px' }: { offsetTop?: string }) {
     <Heart className={`w-5 h-5 ${
                     pathname === "/wishlist"
                       ? "fill-red-500 text-red-500"
-                      : "text-gray-700 dark:text-gray-300 hover:text-red-600"
+                      : "text-gray-700 hover:text-red-600"
                   }`}
                 />
     {wishlistCount > 0 && (
@@ -341,7 +341,7 @@ export function Navbar({ offsetTop = '0px' }: { offsetTop?: string }) {
                   className={`h-6 w-6 transition-colors cursor-pointer ${
                     pathname === "/wishlist"
                       ? "fill-red-500 text-red-500"
-                      : "text-gray-700 dark:text-gray-300 hover:text-red-600 "
+                      : "text-gray-700 hover:text-red-600"
                   }`}
                 />
                 {wishlistCount > 0 && (
@@ -356,7 +356,7 @@ export function Navbar({ offsetTop = '0px' }: { offsetTop?: string }) {
                   className={`h-6 w-6 transition-colors cursor-pointer ${
                     pathname === "/cart"
                       ? "text-blue-500"
-                      : "text-gray-700 dark:text-gray-300 hover:text-blue-600"
+                      : "text-gray-700 hover:text-blue-600"
                   }`}
                 />
                 {count > 0 && (
@@ -370,10 +370,10 @@ export function Navbar({ offsetTop = '0px' }: { offsetTop?: string }) {
               <DropdownMenuTrigger asChild className="cursor-pointer">
                 <Button
                   variant="ghost"
-                  className="relative p-0 h-8 w-9 md:h-10 md:w-10 rounded-full border-2 border-transparent hover:border-blue-200 dark:hover:border-blue-800 transition-all duration-200"
+                  className="relative p-0 h-8 w-9 md:h-10 md:w-10 rounded-full border-2 border-transparent hover:border-blue-200 transition-all duration-200"
                 >
                   {status === "loading" ? (
-                    <div className="h-8 w-20 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center animate-pulse">
+                    <div className="h-8 w-20 rounded-full bg-gray-200 flex items-center justify-center animate-pulse">
                       <User className="h-4 w-4 text-gray-400" />
                     </div>
                   ) : session?.user?.image ? (
@@ -422,7 +422,7 @@ export function Navbar({ offsetTop = '0px' }: { offsetTop?: string }) {
                   </div>
                 ) : session ? (
                   <>
-                    <div className="relative p-4 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950">
+                    <div className="relative p-4 bg-gradient-to-br from-blue-50 to-indigo-50">
                       <div className="flex items-center gap-3">
                         <div className="relative">
                           {session.user?.image ? (
@@ -431,23 +431,23 @@ export function Navbar({ offsetTop = '0px' }: { offsetTop?: string }) {
                               alt={session.user.name || "User"}
                               width={48}
                               height={48}
-                              className="h-12 w-12 rounded-full object-cover ring-3 ring-white dark:ring-gray-800 shadow-lg"
+                              className="h-12 w-12 rounded-full object-cover ring-3 ring-white shadow-lg"
                             />
                           ) : (
-                            <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center ring-3 ring-white dark:ring-gray-800 shadow-lg">
+                            <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center ring-3 ring-white shadow-lg">
                               <span className="text-lg font-semibold text-white">
                                 {session?.user?.name?.charAt(0).toUpperCase() ||
                                   "U"}
                               </span>
                             </div>
                           )}
-                          <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-green-500 border-2 border-white dark:border-gray-800"></div>
+                          <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-green-500 border-2 border-white"></div>
                         </div>
                         <div className="flex flex-col space-y-1 leading-none min-w-0 flex-1">
-                          <p className="font-semibold text-base text-gray-900 dark:text-white">
+                          <p className="font-semibold text-base text-gray-900">
                             {session.user?.name || "User"}
                           </p>
-                          <p className="text-sm text-gray-600 dark:text-gray-300 truncate">
+                          <p className="text-sm text-gray-600 truncate">
                             {session.user?.email}
                           </p>
                         </div>
@@ -462,11 +462,11 @@ export function Navbar({ offsetTop = '0px' }: { offsetTop?: string }) {
                         >
                           <a
                             href="/admin"
-                            className="flex items-center gap-3 px-3 py-2.5 hover:bg-orange-50 dark:hover:bg-orange-950 transition-colors"
+                            className="flex items-center gap-3 px-3 py-2.5 hover:bg-orange-50 transition-colors"
                           >
-                            <div className="h-8 w-8 rounded-lg bg-orange-100 dark:bg-orange-900 flex items-center justify-center">
+                            <div className="h-8 w-8 rounded-lg bg-orange-100 flex items-center justify-center">
                               <svg
-                                className="h-4 w-4 text-orange-600 dark:text-orange-400"
+                                className="h-4 w-4 text-orange-600"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -500,11 +500,11 @@ export function Navbar({ offsetTop = '0px' }: { offsetTop?: string }) {
                       >
                         <Link
                           href="/orders"
-                          className="flex items-center gap-3 px-3 py-2.5 hover:bg-blue-50 dark:hover:bg-blue-950 transition-colors"
+                          className="flex items-center gap-3 px-3 py-2.5 hover:bg-blue-50 transition-colors"
                         >
-                          <div className="h-8 w-8 rounded-lg bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                          <div className="h-8 w-8 rounded-lg bg-blue-100 flex items-center justify-center">
                             <svg
-                              className="h-4 w-4 text-blue-600 dark:text-blue-400"
+                              className="h-4 w-4 text-blue-600 "
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -531,11 +531,11 @@ export function Navbar({ offsetTop = '0px' }: { offsetTop?: string }) {
                       >
                         <Link
                           href="/profile"
-                          className="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                          className="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 transition-colors"
                         >
-                          <div className="h-8 w-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                          <div className="h-8 w-8 rounded-lg bg-gray-100 flex items-center justify-center">
                             <svg
-                              className="h-4 w-4 text-gray-600 dark:text-gray-400"
+                              className="h-4 w-4 text-gray-600"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -559,11 +559,11 @@ export function Navbar({ offsetTop = '0px' }: { offsetTop?: string }) {
                       <DropdownMenuSeparator className="my-2" />
                       <DropdownMenuItem
                         onClick={() => signOut({ callbackUrl: "/" })}
-                        className="cursor-pointer rounded-lg flex items-center gap-3 px-3 py-2.5 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950 transition-colors"
+                        className="cursor-pointer rounded-lg flex items-center gap-3 px-3 py-2.5 text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors"
                       >
-                        <div className="h-8 w-8 rounded-lg bg-red-100 dark:bg-red-900 flex items-center justify-center">
+                        <div className="h-8 w-8 rounded-lg bg-red-100 flex items-center justify-center">
                           <svg
-                            className="h-4 w-4 text-red-600 dark:text-red-400"
+                            className="h-4 w-4 text-red-600"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -605,9 +605,9 @@ export function Navbar({ offsetTop = '0px' }: { offsetTop?: string }) {
                         className="cursor-pointer rounded-lg"
                       >
                         <div className="flex items-center gap-3 px-2 py-2 w-full">
-                          <div className="h-8 w-8 rounded-lg bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                          <div className="h-8 w-8 rounded-lg bg-blue-100 flex items-center justify-center">
                             <svg
-                              className="h-4 w-4 text-blue-600 dark:text-blue-400"
+                              className="h-4 w-4 text-blue-600"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -636,9 +636,9 @@ export function Navbar({ offsetTop = '0px' }: { offsetTop?: string }) {
                         className="cursor-pointer rounded-lg"
                       >
                         <div className="flex items-center gap-3 px-2 py-2 w-full">
-                          <div className="h-8 w-8 rounded-lg bg-green-100 dark:bg-green-900 flex items-center justify-center">
+                          <div className="h-8 w-8 rounded-lg bg-green-100 flex items-center justify-center">
                             <svg
-                              className="h-4 w-4 text-green-600 dark:text-green-400"
+                              className="h-4 w-4 text-green-600 "
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -684,7 +684,7 @@ export function Navbar({ offsetTop = '0px' }: { offsetTop?: string }) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -100 }}
               transition={{ type: "tween", duration: 0.2, ease: "easeOut" }}
-              className="fixed top-0 left-0 right-0 z-1000 bg-white dark:bg-gray-900 shadow-2xl rounded-b-3xl will-change-transform"
+              className="fixed top-0 left-0 right-0 z-1000 bg-white shadow-2xl rounded-b-3xl will-change-transform"
             >
               <div className="px-4 pt-4 pb-2">
                 <div className="flex items-center justify-between mb-4">
@@ -693,10 +693,10 @@ export function Navbar({ offsetTop = '0px' }: { offsetTop?: string }) {
                   </h2>
                   <button
                     onClick={() => setMobileSearchOpen(false)}
-                    className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                    className="p-2 rounded-full hover:bg-gray-100 transition-colors"
                     aria-label="Close search"
                   >
-                    <X className="h-6 w-6 text-gray-700 dark:text-gray-300" />
+                    <X className="h-6 w-6 text-gray-700 " />
                   </button>
                 </div>
 
@@ -732,7 +732,7 @@ export function Navbar({ offsetTop = '0px' }: { offsetTop?: string }) {
                             router.push(`/products/${p.slug}`);
                             setMobileSearchOpen(false);
                           }}
-                          className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-blue-50 dark:hover:bg-gray-800 active:scale-98 transition-all"
+                          className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-blue-50 active:scale-98 transition-all"
                         >
                           <img
                             src={p.frontImage || p.image || "/placeholder.svg"}
@@ -740,10 +740,10 @@ export function Navbar({ offsetTop = '0px' }: { offsetTop?: string }) {
                             className="w-14 h-14 rounded-lg object-cover shadow-sm"
                           />
                           <div className="flex-1 text-left min-w-0">
-                            <p className="font-semibold text-gray-900 dark:text-white truncate">
+                            <p className="font-semibold text-gray-900 truncate">
                               {p.name}
                             </p>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                            <p className="text-sm text-gray-500 ">
                               {p.category}
                             </p>
                             <p className="text-sm font-bold text-blue-600">

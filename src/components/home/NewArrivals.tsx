@@ -125,8 +125,8 @@ export default function NewArrivals(){
       <div className="mx-auto max-w-[1440px] sm:px-6 lg:px-11">
         <div className="flex items-center justify-between mb-4 sm:mb-6 px-3 xl:px-0">
           <div>
-            <h2 className="text-lg sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">New Arrivals</h2>
-            <p className="hidden sm:block sm:text-sm text-gray-600 dark:text-gray-400 mt-0.5 sm:mt-1">Fresh products just In</p>
+            <h2 className="text-lg sm:text-2xl md:text-3xl font-bold text-gray-900 ">New Arrivals</h2>
+            <p className="hidden sm:block sm:text-sm text-gray-600 mt-0.5 sm:mt-1">Fresh products just In</p>
           </div>
           <Link href="/section/new-arrivals" scroll={true} className="sm:px-4 sm:p-2 sm:bg-blue-100 rounded-full text-blue-600 hover:text-blue-700 font-semibold text-xs sm:text-sm whitespace-nowrap hover:underline">View All </Link>
         </div>

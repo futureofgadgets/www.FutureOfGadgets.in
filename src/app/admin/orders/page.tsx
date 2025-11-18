@@ -5,7 +5,6 @@ import { notFound } from "next/navigation";
 import { useState, useEffect } from "react";
 import {
   ShoppingCart,
-  Package,
   Truck,
   CheckCircle,
   Search,

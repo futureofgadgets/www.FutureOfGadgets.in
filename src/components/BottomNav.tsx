@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Home, ShoppingCart, Grid, ShoppingBag, User, Settings, LayoutGrid } from "lucide-react";
+import { Home, ShoppingCart, ShoppingBag, User, Settings, LayoutGrid } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getCart } from "@/lib/cart";

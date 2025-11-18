@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { Target, Shield, Truck, Users, Award, MapPin, Globe, Laptop, Tag, Lock } from 'lucide-react';
+import { Target, Shield, Truck } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: "About Us",
