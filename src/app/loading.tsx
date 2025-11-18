@@ -23,8 +23,7 @@ export default function Loading() {
           </motion.div>
 
           <span className="text-gray-600 text-sm sm:text-base font-medium">
-            Future of Gadgets is loading
-            <span className="animate-pulse text-blue-500">...</span>
+            Future of Gadgets is loading...
           </span>
         </div>
       </div>

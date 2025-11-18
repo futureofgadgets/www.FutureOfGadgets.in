@@ -298,9 +298,6 @@ function SearchContent() {
         {query && !loading && results.length === 0 && (
           <div className="py-12 sm:py-16 text-center">
             <div className="max-w-md mx-auto">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 sm:mb-6 bg-gray-100 rounded-full flex items-center justify-center">
-                <ArrowUpDown className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400" />
-              </div>
               <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900 mb-2 sm:mb-3">
                 No results found
               </h2>

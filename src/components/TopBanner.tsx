@@ -30,7 +30,7 @@ export default function TopBanner({ onClose }: { onClose: () => void }) {
           <button
             onClick={onClose}
             aria-label="Close banner"
-            className="p-1 sm:p-1.5 hover:bg-white/20 rounded-full transition-colors flex-shrink-0"
+            className="p-1 sm:p-1.5 hover:bg-white/20 rounded-full transition-colors flex-shrink-0 hover:cursor-pointer"
           >
             <X className="h-4 w-4 sm:h-5 sm:w-5" />
           </button>
