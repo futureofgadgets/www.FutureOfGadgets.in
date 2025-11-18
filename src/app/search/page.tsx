@@ -183,9 +183,9 @@ function SearchContent() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-0 sm:px-6 lg:px-8">
         {query && !loading && (
-          <div className="pb-4 pt-8 sm:pb-4 border-b border-gray-200">
+          <div className="px-4 sm:px-0 pb-4 pt-8 sm:pb-4 border-b border-gray-200">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
                 <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-gray-900 tracking-tight">
@@ -229,7 +229,7 @@ function SearchContent() {
         {loading && (
           <div className="py-6 sm:py-8">
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-0 sm:gap-6">
               {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className="bg-gray-50 border sm:rounded-sm transition-shadow duration-200 flex flex-col sm:mt-1 relative overflow-hidden">
                   {/* Image skeleton - matches aspect-[4/3] */}
@@ -282,7 +282,7 @@ function SearchContent() {
 
         {!loading && results.length > 0 && (
           <div className="py-6 sm:py-8">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-0 sm:gap-6">
               {sortProducts(results, sortBy).map((product) => (
                 <ProductCard
                   key={product.id}

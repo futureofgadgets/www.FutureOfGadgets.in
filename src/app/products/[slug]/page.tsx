@@ -1262,7 +1262,7 @@ export default function ProductPage() {
     {/* Share Dialog */}
     {showShareDialog && (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowShareDialog(false)}>
-        <div className="bg-white rounded-lg p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+        <div className="bg-white rounded-lg p-4 sm:p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-semibold">Share Product</h3>
             <button onClick={() => setShowShareDialog(false)} className="p-2 hover:bg-gray-100 rounded-full hover:cursor-pointer">
