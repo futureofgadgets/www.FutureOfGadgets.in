@@ -18,13 +18,10 @@ export default function NotFound() {
 
       <div className="text-center relative z-10 max-w-2xl mx-auto">
         {/* Animated 404 */}
-        <div className="mb-8 relative">
-          <h1 className="text-8xl md:text-9xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 animate-pulse">
+        <div className="mb-8">
+          <h1 className="text-8xl md:text-9xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 animate-glow">
             404
           </h1>
-          <div className="absolute inset-0 text-8xl md:text-9xl font-bold text-blue-100 animate-ping opacity-20">
-            404
-          </div>
         </div>
 
         {/* Search Icon with Animation */}
@@ -92,8 +89,15 @@ export default function NotFound() {
           from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }
         }
+        @keyframes glow {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.7; transform: scale(1.02); }
+        }
         .animate-fade-in {
           animation: fade-in 0.8s ease-out;
+        }
+        .animate-glow {
+          animation: glow 2s ease-in-out infinite;
         }
       `}</style>
     </div>
