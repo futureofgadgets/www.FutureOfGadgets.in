@@ -57,6 +57,8 @@ model Product {
   storageOptions Json?
   warrantyOptions Json?
   boxContents   String?
+  rating        Float?   @default(0)
+  ratingCount   Int?     @default(0)
   lastRestockedAt DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

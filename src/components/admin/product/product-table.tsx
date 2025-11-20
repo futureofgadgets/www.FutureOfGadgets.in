@@ -50,7 +50,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Star } from "lucide-react";
 import { uploadFilesToCloudinary, validateImageFile } from "@/lib/image-utils";
 import LoadingButton from "@/components/ui/loading-button";
 import { cachedFetch, invalidateCache } from "@/lib/api-cache";
@@ -79,6 +79,8 @@ type Item = {
   color?: string;
   warranty?: string;
   warrantyType?: string;
+  rating?: number;
+  ratingCount?: number;
   ramOptions?: { size: string; price: number; quantity?: number }[];
   storageOptions?: { size: string; price: number; quantity?: number }[];
   warrantyOptions?: { duration: string; price: number }[];
@@ -101,6 +103,8 @@ const itemSchema = z.object({
   operatingSystem: z.string().optional(),
   graphics: z.string().optional(),
   color: z.string().optional(),
+  rating: z.number().min(0).max(5).optional(),
+  ratingCount: z.number().min(0).optional(),
   ramOptions: z.array(z.object({ size: z.string(), price: z.number() })).optional(),
   storageOptions: z.array(z.object({ size: z.string(), price: z.number() })).optional(),
   warrantyOptions: z.array(z.object({ duration: z.string(), price: z.number() })).optional(),
@@ -152,6 +156,8 @@ export default function ProductTable() {
     operatingSystem: "",
     graphics: "",
     color: "",
+    rating: 0,
+    ratingCount: 0,
     ramOptions: [],
     storageOptions: [],
     warrantyOptions: [],
@@ -214,6 +220,8 @@ export default function ProductTable() {
             color: p.color ?? "",
             warranty: p.warranty ?? "",
             warrantyType: p.warrantyType ?? "",
+            rating: p.rating ?? 0,
+            ratingCount: p.ratingCount ?? 0,
             ramOptions: p.ramOptions || [],
             storageOptions: p.storageOptions || [],
             warrantyOptions: p.warrantyOptions || [],
@@ -316,6 +324,8 @@ export default function ProductTable() {
       operatingSystem: item.operatingSystem || "",
       graphics: item.graphics || "",
       color: item.color || "",
+      rating: item.rating || 0,
+      ratingCount: item.ratingCount || 0,
       ramOptions: item.ramOptions || [],
       storageOptions: item.storageOptions || [],
     });
@@ -548,6 +558,8 @@ export default function ProductTable() {
         ramOptions: ramOptions,
         storageOptions: storageOptions,
         warrantyOptions: warrantyOptions,
+        rating: values.rating || 0,
+        ratingCount: values.ratingCount || 0,
         status: "active",
         sku: editId
           ? data.find((item) => item.id === editId)?.sku || `SKU-${Date.now()}`
@@ -593,6 +605,8 @@ export default function ProductTable() {
           operatingSystem: productData.operatingSystem || "",
           graphics: productData.graphics || "",
           color: productData.color || "",
+          rating: productData.rating || 0,
+          ratingCount: productData.ratingCount || 0,
           ramOptions: productData.ramOptions || [],
           storageOptions: productData.storageOptions || [],
           warrantyOptions: productData.warrantyOptions || [],
@@ -639,6 +653,8 @@ export default function ProductTable() {
           operatingSystem: created.operatingSystem ?? productData.operatingSystem ?? "",
           graphics: created.graphics ?? productData.graphics ?? "",
           color: created.color ?? productData.color ?? "",
+          rating: created.rating ?? productData.rating ?? 0,
+          ratingCount: created.ratingCount ?? productData.ratingCount ?? 0,
           ramOptions: created.ramOptions ?? productData.ramOptions ?? [],
           storageOptions: created.storageOptions ?? productData.storageOptions ?? [],
           warrantyOptions: created.warrantyOptions ?? productData.warrantyOptions ?? [],
@@ -919,6 +935,32 @@ export default function ProductTable() {
                             </FormItem>
                           )}
                         />
+
+                        {/* Rating */}
+                        <div className="space-y-3">
+                          <FormLabel>Rating</FormLabel>
+                          <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-1">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <button
+                                  key={star}
+                                  onClick={() => form.setValue("rating", star)}
+                                  type="button"
+                                >
+                                  <Star className={`w-6 h-6 ${star <= (form.watch("rating") || 0) ? 'fill-green-400 text-green-400' : 'text-gray-300'}`} />
+                                </button>
+                              ))}
+                            </div>
+                            <Input
+                              type="number"
+                              min="1"
+                              placeholder="Count"
+                              className="w-24"
+                              value={form.watch("ratingCount") || ''}
+                              onChange={(e) => form.setValue("ratingCount", Number(e.target.value) || 0)}
+                            />
+                          </div>
+                        </div>
 
                         {/* Warranty */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

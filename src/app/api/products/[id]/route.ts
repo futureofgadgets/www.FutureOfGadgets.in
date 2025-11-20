@@ -48,6 +48,8 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         boxContents: body.boxContents ?? "",
         status: body.status ?? "active",
         sku: body.sku ?? existing.sku,
+        rating: Number(body.rating) || 0,
+        ratingCount: Number(body.ratingCount) || 0,
         ramOptions: body.ramOptions ?? existing.ramOptions,
         storageOptions: body.storageOptions ?? existing.storageOptions,
         warrantyOptions: body.warrantyOptions ?? existing.warrantyOptions,

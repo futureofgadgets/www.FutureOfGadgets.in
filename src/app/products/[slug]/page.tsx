@@ -6,7 +6,7 @@ import { addToCart } from "@/lib/cart";
 import { toggleWishlist, isInWishlist } from "@/lib/wishlist";
 import { toast } from "sonner";
 import { ShoppingCart, Heart, Share2, Star, Truck, Shield, RotateCcw, CreditCard, Check, ChevronRight, Award, Copy, X } from "lucide-react";
-import Loading from "@/app/loading";
+import ProductCard from "@/components/product-card";
 
 type Product = {
   id: string;
@@ -66,6 +66,48 @@ export default function ProductPage() {
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [related, setRelated] = useState<Product[]>([]);
+const [relatedLoading, setRelatedLoading] = useState(false);
+
+useEffect(() => {
+  if (!product) {
+    setRelated([]);
+    return;
+  }
+
+  let cancelled = false;
+  const fetchRelated = async () => {
+    setRelatedLoading(true);
+    try {
+      const res = await fetch(`/api/products`);
+      const data = await res.json();
+
+      // Show all products except current one
+      const candidates = (data || []).filter((p: any) => p.id !== product.id);
+
+      // Respect cart quantities (reduce stock by cart qty)
+      const cart = JSON.parse(localStorage.getItem("v0_cart") || "[]");
+      const mapped = candidates.map((p: any) => {
+        const cartQty = cart.reduce((sum: number, item: any) => item.id === p.id ? sum + (item.qty || 1) : sum, 0);
+        return {
+          ...p,
+          quantity: Math.max(0, (p.quantity || p.stock || 0) - cartQty)
+        };
+      });
+
+      if (!cancelled) setRelated(mapped);
+    } catch (err) {
+      console.error("related fetch error", err);
+      if (!cancelled) setRelated([]);
+    } finally {
+      if (!cancelled) setRelatedLoading(false);
+    }
+  };
+
+  fetchRelated();
+  return () => { cancelled = true; };
+}, [product]);
+
 
   useEffect(() => {
     if (showMobileZoom) {
@@ -78,6 +120,60 @@ export default function ProductPage() {
     };
   }, [showMobileZoom]);
   const [selectedWarranty, setSelectedWarranty] = useState<{ duration: string; price: number } | null>(null);
+
+  // These handlers are for the ProductCard items (list view) and won't alter the full product page state
+const handleAddToCartFromList = (e: React.MouseEvent, p: Product) => {
+  e.preventDefault();
+  e.stopPropagation();
+  const currentQty = p.quantity !== undefined ? p.quantity : (p.stock || 0);
+  if (currentQty <= 0) {
+    toast.error("Out of Stock", { description: "This product is currently unavailable." });
+    return;
+  }
+
+  addToCart({
+    id: p.id,
+    slug: p.slug,
+    name: p.name,
+    price: p.price,
+    image: p.frontImage || p.image || ""
+  });
+
+  // Update local related list qty so UI reflects cart
+  setRelated(prev => prev.map(item => item.id === p.id ? { ...item, quantity: Math.max(0, (item.quantity ?? item.stock ?? 0) - 1) } : item));
+
+  // trigger any global cart update event if your app uses it
+  window.dispatchEvent(new Event("v0-cart-updated"));
+
+  toast.success("", { description: `${p.name} has been added to your cart.` });
+};
+
+const handleBuyNowFromList = (e: React.MouseEvent, p: Product) => {
+  e.preventDefault();
+  e.stopPropagation();
+  const currentQty = p.quantity !== undefined ? p.quantity : (p.stock || 0);
+  if (currentQty <= 0) {
+    toast.error("Out of Stock", { description: "This product is currently unavailable." });
+    return;
+  }
+
+  addToCart({
+    id: p.id,
+    slug: p.slug,
+    name: p.name,
+    price: p.price,
+    image: p.frontImage || p.image || ""
+  });
+
+  // optionally update the related list UI
+  setRelated(prev => prev.map(item => item.id === p.id ? { ...item, quantity: Math.max(0, (item.quantity ?? item.stock ?? 0) - 1) } : item));
+
+  window.dispatchEvent(new Event("v0-cart-updated"));
+  router.push("/cart");
+};
+
+
+
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -612,6 +708,25 @@ export default function ProductPage() {
             </div>
           </div>
         </div>
+
+        {/* Related products skeleton */}
+        <div className="mt-6 bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+          <div className="h-6 w-32 bg-gray-200 shimmer rounded mb-4"></div>
+          <div className="flex gap-4 overflow-x-auto pb-2">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="flex-shrink-0 w-64">
+                <div className="bg-white border rounded-lg overflow-hidden">
+                  <div className="aspect-square bg-gray-200 shimmer"></div>
+                  <div className="p-3 space-y-2">
+                    <div className="h-4 bg-gray-200 shimmer rounded"></div>
+                    <div className="h-4 bg-gray-200 shimmer rounded w-3/4"></div>
+                    <div className="h-6 bg-gray-200 shimmer rounded w-1/2"></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -817,7 +932,7 @@ export default function ProductPage() {
                     <span>{product.rating}</span>
                     <Star className="w-3 h-3 fill-current" />
                   </div>
-                  <span className="text-sm text-gray-600">2,345 ratings</span>
+                  {/* <span className="text-sm text-gray-600">2,345 ratings</span> */}
                 </div>
               )}
 
@@ -1072,31 +1187,6 @@ export default function ProductPage() {
               </div>
             )}
             
-            {/* Why Buy */}
-            <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg p-3 sm:p-4 lg:p-6 shadow-sm">
-              <div className="flex items-center gap-2 mb-4">
-                <Award className="w-5 h-5 text-blue-600" />
-                <h3 className="font-bold text-lg text-gray-900">Why Buy This?</h3>
-              </div>
-              <div className="grid grid-cols-2 gap-3 text-sm">
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-600" />
-                  <span>Genuine Product</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-600" />
-                  <span>Fast Delivery</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-600" />
-                  <span>Secure Payment</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-600" />
-                  <span>24/7 Support</span>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -1210,8 +1300,30 @@ export default function ProductPage() {
           </div>
           
 
+
          
         </div>
+
+        {/* Related / Suggested products */}
+{related && related.length > 0 && (
+  <div className="mt-6 bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+    <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
+      You may also like
+    </h3>
+
+    <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hidden">
+      {related.map((p) => (
+        <div key={p.id} className="flex-shrink-0 w-70 md:w-86">
+          <ProductCard
+            product={p}
+            onAddToCart={handleAddToCartFromList}
+            onBuyNow={handleBuyNowFromList}
+          />
+        </div>
+      ))}
+    </div>
+  </div>
+)}
 
 
         {/* Reviews Section */}

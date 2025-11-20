@@ -79,6 +79,8 @@ export async function POST(req: Request) {
       boxContents: String(data.boxContents || '').trim(),
       status: String(data.status || 'active').trim(),
       sku: String(data.sku || `SKU-${Date.now()}`).trim(),
+      rating: Number(data.rating) || 0,
+      ratingCount: Number(data.ratingCount) || 0,
       ramOptions: data.ramOptions || [],
       storageOptions: data.storageOptions || [],
       warrantyOptions: data.warrantyOptions || []
