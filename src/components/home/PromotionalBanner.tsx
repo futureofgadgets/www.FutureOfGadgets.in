@@ -1,6 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 
 export default function PromotionalBanner(){
     const [banners, setBanners] = useState([
@@ -48,7 +49,7 @@ export default function PromotionalBanner(){
                   <p className={`text-[10px] sm:text-xs font-bold ${banner.textColor} uppercase tracking-widest mb-1 sm:mb-2`}>{banner.title}</p>
                   <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-1 sm:mb-2">{banner.subtitle}</h3>
                   <p className="text-gray-300 text-xs sm:text-sm mb-4 sm:mb-6">{banner.description}</p>
-                  <span className="inline-flex items-center text-white font-semibold text-xs sm:text-sm group-hover:translate-x-1 transition-transform">{index === 0 ? 'Shop Now' : 'Explore'} →</span>
+                  <span className="inline-flex items-center text-white font-semibold text-xs sm:text-sm group-hover:translate-x-1 transition-transform">{index === 0 ? 'Shop Now' : 'Explore'} <ArrowRight size={14} className="sm:w-4 sm:h-4 ml-1" /></span>
                 </div>
                 <div className="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-bl from-orange-500/20 to-transparent rounded-full transform translate-x-12 sm:translate-x-16 -translate-y-12 sm:-translate-y-16"></div>
               </Link>
