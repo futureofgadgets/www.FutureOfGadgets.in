@@ -20,26 +20,45 @@ export async function POST(
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
     }
 
-    const order = await prisma.order.findFirst({ where: { id: orderId } })
-    if (!order) {
-      return NextResponse.json({ error: 'Order not found' }, { status: 404 })
-    }
-
-    if (order.status !== 'delivered') {
-      return NextResponse.json({ error: 'Only delivered orders can be refunded' }, { status: 400 })
-    }
-
     const { transactionId } = await req.json()
     if (!transactionId?.trim()) {
       return NextResponse.json({ error: 'Transaction ID is required' }, { status: 400 })
     }
 
-    const updatedOrder = await prisma.order.update({
-      where: { id: orderId },
-      data: { refundTransactionId: transactionId.trim(), updatedAt: new Date() }
+    const orderData = await prisma.$runCommandRaw({
+      find: 'Order',
+      filter: { _id: { $oid: orderId } },
+      limit: 1
     })
 
-    return NextResponse.json({ success: true, order: updatedOrder })
+    const orders = (orderData as any).cursor.firstBatch
+    if (!orders.length) {
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+    }
+
+    const order = orders[0]
+    if (order.status !== 'delivered' && order.status !== 'cancelled') {
+      return NextResponse.json({ error: 'Only delivered or cancelled orders can be refunded' }, { status: 400 })
+    }
+
+    if (order.status === 'cancelled' && order.paymentMethod === 'cod') {
+      return NextResponse.json({ error: 'Cancelled COD orders cannot be refunded' }, { status: 400 })
+    }
+
+    await prisma.$runCommandRaw({
+      update: 'Order',
+      updates: [{
+        q: { _id: { $oid: orderId } },
+        u: { 
+          $set: { 
+            refundTransactionId: transactionId.trim(),
+            updatedAt: { $date: new Date().toISOString() }
+          } 
+        }
+      }]
+    })
+
+    return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Refund error:', error)
     return NextResponse.json({ error: 'Failed to process refund' }, { status: 500 })

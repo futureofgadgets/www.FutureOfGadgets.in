@@ -1525,9 +1525,15 @@ export default function AdminOrdersPage() {
                               <span className="text-sm">Updating...</span>
                             </div>
                           )}
+                        </div>
+                      )}
+                      
+                      {/* Cancel Order Button */}
+                      {selectedOrder.status !== 'cancelled' && selectedOrder.status !== 'delivered' && (
+                        <div className="border-t pt-4">
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
-                              <Button variant="destructive" className="w-full mt-3">
+                              <Button variant="destructive" className="w-full">
                                 Cancel Order
                               </Button>
                             </AlertDialogTrigger>
@@ -1570,12 +1576,8 @@ export default function AdminOrdersPage() {
                         </div>
                       )}
                       
-                      {/* Refund Button - Show for 7 days after delivery */}
-                      {selectedOrder.status === 'delivered' && !selectedOrder.refundTransactionId && (() => {
-                        const deliveryTime = new Date(selectedOrder.updatedAt).getTime();
-                        const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
-                        const canRefund = Date.now() - deliveryTime < sevenDaysInMs;
-                        return canRefund ? (
+                      {/* Refund Button */}
+                      {(((selectedOrder.status === 'delivered') || (selectedOrder.status === 'cancelled' && selectedOrder.paymentMethod !== 'cod')) && !selectedOrder.refundTransactionId) && (
                           <div className="border-t pt-4">
                             <Dialog open={showRefundDialog} onOpenChange={setShowRefundDialog}>
                               <DialogTrigger asChild>
@@ -1652,8 +1654,7 @@ export default function AdminOrdersPage() {
                               </DialogContent>
                             </Dialog>
                           </div>
-                        ) : null;
-                      })()}
+                        )}
                     </div>
                   </div>
                 </div>

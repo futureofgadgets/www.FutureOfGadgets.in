@@ -315,7 +315,7 @@ export default function OrdersPage() {
                                           className="w-16 h-16 sm:w-20 sm:h-20 object-cover border rounded"
                                         />
                                         <div className="flex-1 min-w-0">
-                                          <Link href={`/products/${item.name?.toLowerCase().replace(/\s+/g, '-')}`} className="text-sm sm:text-base font-medium text-gray-900 mb-1 line-clamp-2 hover:text-blue-600 block">{item.name}</Link>
+                                          <Link href={`/products/${product?.slug || item.name?.toLowerCase().replace(/\s+/g, '-')}`} className="text-sm sm:text-base font-medium text-gray-900 mb-1 line-clamp-2 hover:text-blue-600 block">{item.name}</Link>
                                           <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2">Qty: {item.qty}</p>
                                            {(item as any).color && (
                               <p className="text-sm text-gray-600 flex items-center gap-1">
@@ -343,7 +343,8 @@ export default function OrdersPage() {
                                             <button
                                               onClick={() => {
                                                 setReviewProduct({ orderId: selectedOrder.id, productId: item.productId, productName: item.name })
-                                                setShowReviewDialog(true)
+                                                setShowModal(false)
+                                                setTimeout(() => setShowReviewDialog(true), 100)
                                               }}
                                               className="text-xs sm:text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1 hover:cursor-pointer transition-colors"
                                             >
@@ -521,134 +522,6 @@ export default function OrdersPage() {
 
                                </div>
                   
-                  {/* Cancel Order Dialog */}
-                  <Dialog open={showCancelDialog} onOpenChange={(open) => {
-                    setShowCancelDialog(open)
-                    if (!open) setCancelReason('')
-                  }}>
-                    <DialogContent className="sm:max-w-md">
-                      <DialogHeader>
-                        <DialogTitle>Cancel Order</DialogTitle>
-                      </DialogHeader>
-                      <div className="space-y-4 py-4">
-                        <p className="text-sm text-gray-600">
-                          Are you sure you want to cancel this order? This action cannot be undone.
-                        </p>
-                        <div>
-                          <label className="text-sm font-medium text-gray-700 mb-2 block">
-                            Reason for cancellation <span className="text-gray-500 font-normal">(optional)</span>
-                          </label>
-                          <textarea
-                            value={cancelReason}
-                            onChange={(e) => setCancelReason(e.target.value)}
-                            placeholder="Please provide a reason for cancellation"
-                            rows={3}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
-                          />
-                        </div>
-                        <div className="flex gap-3 justify-end">
-                          <button
-                            onClick={() => {
-                              setShowCancelDialog(false)
-                              setCancelReason('')
-                            }}
-                            className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded hover:bg-gray-50"
-                          >
-                            Go Back
-                          </button>
-                          <button
-                            onClick={async () => {
-                              setCancelLoading(true)
-                              try {
-                                const res = await fetch(`/api/orders/${selectedOrder?.id}/cancel`, {
-                                  method: 'POST',
-                                  headers: { 'Content-Type': 'application/json' },
-                                  body: JSON.stringify({ reason: cancelReason })
-                                })
-                                if (res.ok) {
-                                  setOrders(orders.map(o => o.id === selectedOrder?.id ? { ...o, status: 'cancelled', updatedAt: new Date().toISOString() } : o))
-                                  setShowCancelDialog(false)
-                                  setCancelReason('')
-                                  setShowModal(false)
-                                }
-                              } catch (error) {
-                                console.error('Error cancelling order:', error)
-                              } finally {
-                                setCancelLoading(false)
-                              }
-                            }}
-                            disabled={cancelLoading}
-                            className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded hover:bg-red-700 disabled:opacity-50 flex items-center gap-2"
-                          >
-                            {cancelLoading && (
-                             <Loader className="animate-spin h-4 w-4" />
-                            )}
-                            Cancel Order
-                          </button>
-                        </div>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                  
-                  {/* Review Dialog */}
-                  <Dialog open={showReviewDialog} onOpenChange={setShowReviewDialog}>
-                    <DialogContent className="sm:max-w-md">
-                      <DialogHeader>
-                        <DialogTitle>Write a Review</DialogTitle>
-                      </DialogHeader>
-                      <div className="space-y-4 py-4">
-                        <div>
-                          <p className="text-sm font-medium text-gray-700 mb-2">{reviewProduct?.productName}</p>
-                          <div className="flex gap-2">
-                            {[1, 2, 3, 4, 5].map((star) => (
-                              <button
-                                key={star}
-                                onClick={() => setRating(star)}
-                                className="focus:outline-none"
-                              >
-                                <Star
-                                  className={`w-8 h-8 ${star <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
-                                />
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                        <div>
-                          <label className="text-sm font-medium text-gray-700 mb-2 block">Your Review</label>
-                          <textarea
-                            value={reviewComment}
-                            onChange={(e) => setReviewComment(e.target.value)}
-                            placeholder="Share your experience with this product..."
-                            rows={4}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                          />
-                        </div>
-                        <div className="flex gap-3 justify-end">
-                          <button
-                            onClick={() => {
-                              setShowReviewDialog(false)
-                              setRating(0)
-                              setReviewComment('')
-                            }}
-                            className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded hover:bg-gray-50"
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            onClick={handleReviewSubmit}
-                            disabled={!rating || reviewLoading}
-                            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
-                          >
-                            {reviewLoading && (
-                              <Loader className="animate-spin h-4 w-4" />
-                            )}
-                            Submit Review
-                          </button>
-                        </div>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                  
                   {/* Order Tracking Modal */}
                   <Dialog open={showTrackingModal && trackingOrderId === order.id} onOpenChange={setShowTrackingModal}>
                     <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -765,6 +638,134 @@ export default function OrdersPage() {
           </div>
         )}
       </div>
+
+      {/* Cancel Order Dialog - Outside order loop */}
+      <Dialog open={showCancelDialog} onOpenChange={(open) => {
+        setShowCancelDialog(open)
+        if (!open) setCancelReason('')
+      }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Cancel Order</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <p className="text-sm text-gray-600">
+              Are you sure you want to cancel this order? This action cannot be undone.
+            </p>
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">
+                Reason for cancellation <span className="text-gray-500 font-normal">(optional)</span>
+              </label>
+              <textarea
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                placeholder="Please provide a reason for cancellation"
+                rows={3}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
+              />
+            </div>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => {
+                  setShowCancelDialog(false)
+                  setCancelReason('')
+                }}
+                className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded hover:bg-gray-50"
+              >
+                Go Back
+              </button>
+              <button
+                onClick={async () => {
+                  setCancelLoading(true)
+                  try {
+                    const res = await fetch(`/api/orders/${selectedOrder?.id}/cancel`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ reason: cancelReason })
+                    })
+                    if (res.ok) {
+                      setOrders(orders.map(o => o.id === selectedOrder?.id ? { ...o, status: 'cancelled', updatedAt: new Date().toISOString() } : o))
+                      setShowCancelDialog(false)
+                      setCancelReason('')
+                      setShowModal(false)
+                    }
+                  } catch (error) {
+                    console.error('Error cancelling order:', error)
+                  } finally {
+                    setCancelLoading(false)
+                  }
+                }}
+                disabled={cancelLoading}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded hover:bg-red-700 disabled:opacity-50 flex items-center gap-2"
+              >
+                {cancelLoading && (
+                 <Loader className="animate-spin h-4 w-4" />
+                )}
+                Cancel Order
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Review Dialog - Outside order loop */}
+      <Dialog open={showReviewDialog} onOpenChange={setShowReviewDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Write a Review</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <p className="text-sm font-medium text-gray-700 mb-2">{reviewProduct?.productName}</p>
+              <div className="flex gap-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    onClick={() => setRating(star)}
+                    className="focus:outline-none"
+                  >
+                    <Star
+                      className={`w-8 h-8 ${star <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">Your Review</label>
+              <textarea
+                value={reviewComment}
+                onChange={(e) => setReviewComment(e.target.value)}
+                placeholder="Share your experience with this product..."
+                rows={4}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              />
+            </div>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => {
+                  setShowReviewDialog(false)
+                  setRating(0)
+                  setReviewComment('')
+                }}
+                className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleReviewSubmit}
+                disabled={!rating || reviewLoading}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+              >
+                {reviewLoading && (
+                  <Loader className="animate-spin h-4 w-4" />
+                )}
+                Submit Review
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
