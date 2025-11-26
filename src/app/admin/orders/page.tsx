@@ -709,88 +709,91 @@ export default function AdminOrdersPage() {
               {filteredAndSortedOrders.length} of {orders.length} orders
             </p>
           </div>
-          <div className="flex items-stretch sm:items-center gap-3">
-            <div className="relative">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
+            <div className="relative w-full sm:w-auto">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <Input
                 type="text"
                 placeholder="Search orders..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 w-full "
+                className="pl-10 w-full sm:w-64"
               />
             </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-fit sm:w-auto bg-green-50 border-green-600 text-green-700 hover:bg-green-100"
-                >
-                  <FileSpreadsheet className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Export</span>
-                  <ChevronDown className="h-4 w-4 ml-2" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-64">
-                <DropdownMenuItem onClick={() => exportToExcel("current")} className="cursor-pointer">
-                  <Calendar className="h-4 w-4 mr-2 text-blue-600" />
-                  <span>Current Month</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => exportToExcel("3months")} className="cursor-pointer">
-                  <CalendarDays className="h-4 w-4 mr-2 text-green-600" />
-                  <span>Last 3 Months</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => exportToExcel("6months")} className="cursor-pointer">
-                  <CalendarRange className="h-4 w-4 mr-2 text-orange-600" />
-                  <span>Last 6 Months</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => exportToExcel("12months")} className="cursor-pointer">
-                  <CalendarClock className="h-4 w-4 mr-2 text-purple-600" />
-                  <span>Last 12 Months</span>
-                </DropdownMenuItem>
-                {deletedYearSpan && (
-                  <>
-                    <div className="my-1 border-t"></div>
-                    <div className="px-2 py-1.5 text-xs font-semibold text-gray-500">Auto-Deleted Archive</div>
-                    <DropdownMenuItem className="cursor-default hover:bg-transparent">
-                      <FileSpreadsheet className="h-4 w-4 mr-2 text-red-600" />
-                      <div className="flex flex-col">
-                        <span className="text-sm font-medium">Years {deletedYearSpan}</span>
-                        <span className="text-xs text-gray-500">{deletedCount} orders archived</span>
-                      </div>
-                    </DropdownMenuItem>
-                  </>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-fit sm:w-auto">
-                  <ArrowUpDown className="h-4 w-4 mr-2" />
-                  Sort
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem onClick={() => setSortBy("date-desc")}>
-                  Newest First
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortBy("date-asc")}>
-                  Oldest First
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortBy("price-desc")}>
-                  Price: High to Low
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortBy("price-asc")}>
-                  Price: Low to High
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortBy("name-asc")}>
-                  Name: A to Z
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortBy("name-desc")}>
-                  Name: Z to A
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="flex gap-2 w-full sm:w-auto">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="w-1/2 sm:w-auto">
+                    <ArrowUpDown className="h-4 w-4 mr-2" />
+                    Sort
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem onClick={() => setSortBy("date-desc")}>
+                    Newest First
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSortBy("date-asc")}>
+                    Oldest First
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSortBy("price-desc")}>
+                    Price: High to Low
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSortBy("price-asc")}>
+                    Price: Low to High
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSortBy("name-asc")}>
+                    Name: A to Z
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSortBy("name-desc")}>
+                    Name: Z to A
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-1/2 sm:w-auto bg-green-50 border-green-600 text-green-700 hover:bg-green-100"
+                  >
+                    <FileSpreadsheet className="h-4 w-4 mr-2" />
+                    <span>Export</span>
+                    <ChevronDown className="h-4 w-4 ml-2" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-64">
+                  <div className="px-2 py-1.5 text-xs font-semibold text-gray-500">Current Orders</div>
+                  <DropdownMenuItem onClick={() => exportToExcel("current")} className="cursor-pointer">
+                    <Calendar className="h-4 w-4 mr-2 text-blue-600" />
+                    <span>Current Month</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => exportToExcel("3months")} className="cursor-pointer">
+                    <CalendarDays className="h-4 w-4 mr-2 text-green-600" />
+                    <span>Last 3 Months</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => exportToExcel("6months")} className="cursor-pointer">
+                    <CalendarRange className="h-4 w-4 mr-2 text-orange-600" />
+                    <span>Last 6 Months</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => exportToExcel("12months")} className="cursor-pointer">
+                    <CalendarClock className="h-4 w-4 mr-2 text-purple-600" />
+                    <span>Last 12 Months</span>
+                  </DropdownMenuItem>
+                  {deletedYearSpan && (
+                    <>
+                      <div className="my-1 border-t"></div>
+                      <div className="px-2 py-1.5 text-xs font-semibold text-gray-500">Auto-Deleted Archive</div>
+                      <DropdownMenuItem className="cursor-default hover:bg-transparent">
+                        <FileSpreadsheet className="h-4 w-4 mr-2 text-red-600" />
+                        <div className="flex flex-col">
+                          <span className="text-sm font-medium">Years {deletedYearSpan}</span>
+                          <span className="text-xs text-gray-500">{deletedCount} orders archived</span>
+                        </div>
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </div>
       </header>
@@ -1029,12 +1032,13 @@ export default function AdminOrdersPage() {
               </TableBody>
             </Table>
           </div>
-
-          <div className="mt-4 p-3 mx-auto text-center">
-              <p className="text-sm">
-                <span className="font-semibold">Auto-Deleted:</span> Orders from last years were automatically deleted and added up to Excel.
+          {deletedYearSpan && (
+            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg mx-4">
+              <p className="text-sm text-red-800">
+                <span className="font-semibold">Auto-Deleted:</span> {deletedCount} orders from years {deletedYearSpan} were automatically deleted and backed up to Excel.
               </p>
             </div>
+          )}
         </div>
       </div>
 
