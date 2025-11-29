@@ -138,10 +138,19 @@ export function Footer({ className = "" }: FooterProps) {
 
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 mt-10 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-gray-400 text-center sm:text-left">
-            © 2025 Future Of Gadgets. All rights reserved.
-            {/* <span>(Made by Akash Singh, Sonu Rai)</span> */}
-          </p>
+          <div className="text-sm text-gray-400 text-center sm:text-left">
+            <p>© 2025 Future Of Gadgets. All rights reserved.</p>
+            <p className="mt-1">
+              Made by{' '}
+              <a href="https://www.linkedin.com/in/sonu-rai-r12/" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 transition-colors">
+                Sonu (Full Stack)
+              </a>
+              {' '}and{' '}
+              <a href="https://www.linkedin.com/in/aakash-singh-575205310/" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 transition-colors">
+                Aakash (Frontend)
+              </a>
+            </p>
+          </div>
 
           <div className="flex flex-wrap justify-center gap-6">
             {[
